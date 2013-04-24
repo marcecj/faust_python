@@ -38,8 +38,6 @@ cdef extern from "dattorro_notch_cut_regalia.h":
     ctypedef struct mydsp:
         pass
 
-    ctypedef struct mydsp:
-        pass
     mydsp *newmydsp()
     void deletemydsp(mydsp*)
     void metadatamydsp(MetaGlue* m)
