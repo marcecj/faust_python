@@ -51,7 +51,8 @@ class PythonUI(object):
             # namespace
             box = namespace()
 
-            setattr(self.__boxes[-1], label, box)
+            sane_label = label.replace(" ", "_").replace(".", "_")
+            setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
 
     def openVerticalBox(self, label):
@@ -79,7 +80,8 @@ class PythonUI(object):
 
     def add_input(self, label, zone, init, min, max, step):
 
-        setattr(self.__boxes[-1], label, param(zone, init, min, max, step))
+        sane_label = label.replace(" ","_").replace(".","_")
+        setattr(self.__boxes[-1], sane_label, param(zone, init, min, max, step))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
 
