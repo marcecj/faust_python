@@ -35,6 +35,11 @@ class PythonUI(object):
         else:
             self.__boxes = [self]
 
+    def __set_boxes(self, b):
+        self.__boxes = [b]
+
+    boxes = property(fget=lambda x: x.__boxes[0], fset=__set_boxes)
+
     def declare(self, zone, key, value):
         pass
 
