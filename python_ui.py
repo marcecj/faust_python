@@ -108,6 +108,18 @@ class PythonUI(object):
 
         self.add_input(label, zone, 0, 0, 1, 1)
 
+    def addNumDisplay(self, label, zone, p):
+        pass
+
+    def addTextDisplay(self, label, zone, names, min, max):
+        pass
+
+    def addHorizontalBargraph(self, label, zone, min, max):
+        pass
+
+    def addVerticalBargraph(self, label, zone, min, max):
+        pass
+
 class empty(object):
     pass
 
@@ -146,14 +158,18 @@ def addToggleButton(ignore, c_label, zone):
 def addCheckButton(ignore, c_label, zone):
     label = ffi.string(c_label)
     faust_ui.addCheckButton(label, zone)
-def addNumDisplay(ignore, label, zone, p):
-    pass
-def addTextDisplay(ignore, label, zone, names, min, max):
-    pass
-def addHorizontalBargraph(ignore, label, zone, min, max):
-    pass
-def addVerticalBargraph(ignore, label, zone, min, max):
-    pass
+def addNumDisplay(ignore, c_label, zone, p):
+    label = ffi.string(c_label)
+    faust_ui.addNumDisplay(label, zone, p)
+def addTextDisplay(ignore, c_label, zone, names, min, max):
+    label = ffi.string(c_label)
+    faust_ui.addTextDisplay(label, zone, names, min, max)
+def addHorizontalBargraph(ignore, c_label, zone, min, max):
+    label = ffi.string(c_label)
+    faust_ui.addHorizontalBargraph(label, zone, min, max)
+def addVerticalBargraph(ignore, c_label, zone, min, max):
+    label = ffi.string(c_label)
+    faust_ui.addVerticalBargraph(label, zone, min, max)
 
 # define C callbacks that call the above Python functions
 declare_c           = ffi.callback("void(void*, FAUSTFLOAT*, char*, char*)", declare)
