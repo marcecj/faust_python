@@ -11,8 +11,8 @@ faust_ui = python_ui.PythonUI(bla)
 
 # define wrapper functions that know the global PythonUI object
 # TODO: implement the dummy functions
-def declare(key, value):
-    faust_ui.declare(key, value)
+def declare(mInterface, zone, key, value):
+    faust_ui.declare(zone, key, value)
 def openVerticalBox(mInterface, label):
     faust_ui.openVerticalBox(ffi.string(label))
 def openHorizontalBox(mInterface, label):

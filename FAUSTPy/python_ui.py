@@ -35,7 +35,7 @@ class PythonUI(object):
         else:
             self.__boxes = [self]
 
-    def declare(self, key, value):
+    def declare(self, zone, key, value):
         pass
 
     ##########################
