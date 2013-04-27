@@ -96,6 +96,18 @@ class PythonUI(object):
 
         self.add_input(label, zone, init, min, max, step)
 
+    def addButton(self, label, zone):
+
+        self.add_input(label, zone, 0, 0, 1, 1)
+
+    def addToggleButton(self, label, zone):
+
+        self.add_input(label, zone, 0, 0, 1, 1)
+
+    def addCheckButton(self, label, zone):
+
+        self.add_input(label, zone, 0, 0, 1, 1)
+
 class empty(object):
     pass
 
@@ -125,12 +137,15 @@ def addVerticalSlider(ignore, c_label, zone, init, min, max, step):
 def addNumEntry(ignore, c_label, zone, init, min, max, step):
     label = ffi.string(c_label)
     faust_ui.addNumEntry(label, zone, init, min, max, step)
-def addButton(ignore, label, zone):
-    pass
-def addToggleButton(ignore, label, zone):
-    pass
-def addCheckButton(ignore, label, zone):
-    pass
+def addButton(ignore, c_label, zone):
+    label = ffi.string(c_label)
+    faust_ui.addButton(label, zone)
+def addToggleButton(ignore, c_label, zone):
+    label = ffi.string(c_label)
+    faust_ui.addToggleButton(c_label, zone)
+def addCheckButton(ignore, c_label, zone):
+    label = ffi.string(c_label)
+    faust_ui.addCheckButton(label, zone)
 def addNumDisplay(ignore, label, zone, p):
     pass
 def addTextDisplay(ignore, label, zone, names, min, max):
