@@ -26,7 +26,7 @@ class param(object):
 
     zone = property(fget=getter, fset=setter)
 
-
+# TODO: make the ui C object a member of PythonUI
 class PythonUI(object):
 
     def __init__(self, obj=None):

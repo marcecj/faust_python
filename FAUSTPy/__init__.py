@@ -1,13 +1,7 @@
 from . wrapper import ffi, C
-from . import python_ui
+from . import python_ui, python_dsp
 
-class empty(object):
-    pass
-
-# create a PythonUI object that adds namespaces and attributes to an empty object
-# TODO: replace empty() with the actual FAUST DSP wrapper
-bla = empty()
-faust_ui = python_ui.PythonUI(bla)
+faust_ui = python_ui.PythonUI()
 
 # define wrapper functions that know the global PythonUI object
 # TODO: implement the dummy functions
