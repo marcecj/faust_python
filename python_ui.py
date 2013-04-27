@@ -57,13 +57,6 @@ class PythonUI(object):
             setattr(self.__boxes[-1], label, box)
             self.__boxes.append(box)
 
-    def closeBox(self):
-
-        if len(self.__boxes) > 1:
-            self.__boxes.pop()
-        else:
-            print("Warning: Trying to close last box.")
-
     def openVerticalBox(self, label):
 
         self.openBox(label)
@@ -75,6 +68,13 @@ class PythonUI(object):
     def openTabBox(self, label):
 
         self.openBox(label)
+
+    def closeBox(self):
+
+        if len(self.__boxes) > 1:
+            self.__boxes.pop()
+        else:
+            print("Warning: Trying to close last box.")
 
     ##########################
     # stuff to do with inputs
