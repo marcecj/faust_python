@@ -140,8 +140,7 @@ class PythonUI(object):
     def __set_boxes(self, b):
         self.__boxes = [b]
 
-    boxes = property(fget=lambda x: x.__boxes[0], fset=__set_boxes)
-    ui    = property(fget=lambda x: x.__ui)
+    ui = property(fget=lambda x: x.__ui)
 
     def declare(self, zone, key, value):
         pass
