@@ -25,10 +25,10 @@ button_val = ffi.new("FAUSTFLOAT*", 1.0)
 ui.addButton(ffi.NULL, "float", button_val)
 
 #################################
-# test FAUST
+# test FAUSTDsp
 #################################
 
-dsp = python_dsp.FAUST(C,ffi,48000,python_ui.PythonUI)
+dsp = python_dsp.FAUSTDsp(C,ffi,48000,python_ui.PythonUI)
 
 print(dsp.fs)
 print(dsp.num_in)

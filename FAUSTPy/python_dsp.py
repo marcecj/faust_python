@@ -1,7 +1,7 @@
 import numpy as np
 import ctypes
 
-class FAUST(object):
+class FAUSTDsp(object):
 
     def __init__(self, C, ffi, fs, faust_ui):
 
