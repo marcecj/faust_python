@@ -4,11 +4,13 @@ from . import python_ui, python_dsp
 
 class FAUST(object):
 
-    def __init__(self, fs, faust_float, faust_dsp):
+    def __init__(self, fs, faust_float, faust_dsp,
+                dsp_class=python_dsp.FAUSTDsp,
+                ui_class=python_ui.PythonUI):
 
         self.__ffi, self.__C = self.__gen_ffi(faust_float, faust_dsp)
 
-        self.__dsp = python_dsp.FAUSTDsp(self.__C,self.__ffi,fs,python_ui.PythonUI)
+        self.__dsp = dsp_class(self.__C, self.__ffi, fs,ui_class)
 
     def compute(self, audio):
 
