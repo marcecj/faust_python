@@ -8,7 +8,7 @@ from FAUSTPy import *
 class empty(object):
     pass
 
-dattorro = FAUST(48000, "dattorro_notch_cut_regalia", "float")
+dattorro = FAUST("dattorro_notch_cut_regalia", 48000, "float")
 ffi = dattorro.ffi
 C   = dattorro.C
 
