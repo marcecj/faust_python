@@ -4,7 +4,7 @@ from . import python_ui, python_dsp
 
 class FAUST(object):
 
-    def __init__(self, fs, faust_float, faust_dsp,
+    def __init__(self, fs, faust_dsp, faust_float="float",
                 dsp_class=python_dsp.FAUSTDsp,
                 ui_class=python_ui.PythonUI):
 
