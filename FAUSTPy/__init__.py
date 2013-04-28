@@ -1,2 +1,3 @@
 from . wrapper import FAUST
-from . import python_ui, python_dsp
+from . python_ui import PythonUI
+from . python_dsp import FAUSTDsp

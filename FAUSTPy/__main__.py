@@ -13,7 +13,7 @@ ffi = dattorro.ffi
 C   = dattorro.C
 
 bla = empty()
-ui = python_ui.PythonUI(ffi, bla).ui
+ui = PythonUI(ffi, bla).ui
 ui.openVerticalBox(ffi.NULL,"bla")
 
 slider_val = ffi.new("FAUSTFLOAT*", 1.0)
@@ -32,7 +32,7 @@ ui.addButton(ffi.NULL, "float", button_val)
 # test FAUSTDsp
 #################################
 
-dsp = python_dsp.FAUSTDsp(C,ffi,48000,python_ui.PythonUI)
+dsp = FAUSTDsp(C,ffi,48000,PythonUI)
 
 print(dsp.fs)
 print(dsp.num_in)
