@@ -8,6 +8,10 @@ from FAUSTPy import *
 class empty(object):
     pass
 
+dattorro = FAUST(48000, "float", "dattorro_notch_cut_regalia")
+ffi = dattorro.ffi
+C   = dattorro.C
+
 bla = empty()
 ui = python_ui.PythonUI(ffi, bla).ui
 ui.openVerticalBox(ffi.NULL,"bla")
@@ -41,6 +45,15 @@ out = dsp.compute(audio)
 
 print(audio)
 print(out)
+
+#################################
+# test FAUST
+#################################
+
+out2 = dattorro.compute(audio)
+
+print(audio)
+print(out2)
 
 #################################
 # THE END
