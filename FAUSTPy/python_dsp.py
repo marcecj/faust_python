@@ -3,7 +3,7 @@ import ctypes
 
 class FAUST(object):
 
-    def __init__(self, C, ffi, fs, faust_ui, ui):
+    def __init__(self, C, ffi, fs, faust_ui):
 
         self.__C   = C
         self.__ffi = ffi
@@ -11,8 +11,8 @@ class FAUST(object):
 
         # calls both classInitmydsp() and instanceInitmydsp()
         C.initmydsp(self.__dsp, fs)
-        faust_ui.boxes = self
-        C.buildUserInterfacemydsp(self.__dsp, ui)
+        UI = faust_ui(self.__ffi, self)
+        C.buildUserInterfacemydsp(self.__dsp, UI.ui)
 
         # self.__meta = MetaGlue()
         # self._metadata = C.metadatamydsp(meta)

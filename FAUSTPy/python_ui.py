@@ -26,19 +26,110 @@ class param(object):
 
     zone = property(fget=getter, fset=setter)
 
-# TODO: make the ui C object a member of PythonUI
 class PythonUI(object):
 
-    def __init__(self, obj=None):
+    def __init__(self, ffi, obj=None):
         if obj:
             self.__boxes = [obj]
         else:
             self.__boxes = [self]
 
+        # define wrapper functions that know the global PythonUI object
+        # TODO: implement the dummy functions
+        def declare(mInterface, zone, key, value):
+            self.declare(zone, key, value)
+        def openVerticalBox(mInterface, label):
+            self.openVerticalBox(ffi.string(label))
+        def openHorizontalBox(mInterface, label):
+            self.openHorizontalBox(ffi.string(label))
+        def openTabBox(mInterface, label):
+            self.openTabBox(ffi.string(label))
+        def closeBox(mInterface):
+            self.closeBox()
+        def addHorizontalSlider(ignore, c_label, zone, init, min, max, step):
+            label = ffi.string(c_label)
+            self.addHorizontalSlider(label, zone, init, min, max, step)
+        def addVerticalSlider(ignore, c_label, zone, init, min, max, step):
+            label = ffi.string(c_label)
+            self.addVerticalSlider(label, zone, init, min, max, step)
+        def addNumEntry(ignore, c_label, zone, init, min, max, step):
+            label = ffi.string(c_label)
+            self.addNumEntry(label, zone, init, min, max, step)
+        def addButton(ignore, c_label, zone):
+            label = ffi.string(c_label)
+            self.addButton(label, zone)
+        def addToggleButton(ignore, c_label, zone):
+            label = ffi.string(c_label)
+            self.addToggleButton(c_label, zone)
+        def addCheckButton(ignore, c_label, zone):
+            label = ffi.string(c_label)
+            self.addCheckButton(label, zone)
+        def addNumDisplay(ignore, c_label, zone, p):
+            label = ffi.string(c_label)
+            self.addNumDisplay(label, zone, p)
+        def addTextDisplay(ignore, c_label, zone, names, min, max):
+            label = ffi.string(c_label)
+            self.addTextDisplay(label, zone, names, min, max)
+        def addHorizontalBargraph(ignore, c_label, zone, min, max):
+            label = ffi.string(c_label)
+            self.addHorizontalBargraph(label, zone, min, max)
+        def addVerticalBargraph(ignore, c_label, zone, min, max):
+            label = ffi.string(c_label)
+            self.addVerticalBargraph(label, zone, min, max)
+
+        # define C callbacks that call the above Python functions
+        self.__declare_c           = ffi.callback("void(void*, FAUSTFLOAT*, char*, char*)", declare)
+        self.__openVerticalBox_c   = ffi.callback("void(void*, char*)", openVerticalBox)
+        self.__openHorizontalBox_c = ffi.callback("void(void*, char*)", openHorizontalBox)
+        self.__openTabBox_c        = ffi.callback("void(void*, char*)", openTabBox)
+        self.__closeBox_c          = ffi.callback("void(void*)", closeBox)
+        self.__addHorizontalSlider_c = ffi.callback(
+            "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
+            addHorizontalSlider
+        )
+        self.__addVerticalSlider_c = ffi.callback(
+            "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
+            addVerticalSlider
+        )
+        self.__addNumEntry_c = ffi.callback(
+            "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
+            addNumEntry
+        )
+        self.__addButton_c       = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addButton)
+        self.__addToggleButton_c = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addToggleButton)
+        self.__addCheckButton_c  = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addCheckButton)
+        self.__addNumDisplay_c   = ffi.callback("void(void*, char*, FAUSTFLOAT*, int)", addNumDisplay)
+        self.__addTextDisplay_c  = ffi.callback("void(void*, char*, FAUSTFLOAT*, char*[], FAUSTFLOAT, FAUSTFLOAT)", addTextDisplay)
+        self.__addHorizontalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addHorizontalBargraph)
+        self.__addVerticalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addVerticalBargraph)
+
+        # create a UI object and store the above callbacks as it's function pointers
+        ui = ffi.new("UIGlue*")
+        ui.declare               = self.__declare_c
+        ui.openVerticalBox       = self.__openVerticalBox_c
+        ui.openHorizontalBox     = self.__openHorizontalBox_c
+        ui.openTabBox            = self.__openTabBox_c
+        ui.closeBox              = self.__closeBox_c
+        ui.addHorizontalSlider   = self.__addHorizontalSlider_c
+        ui.addVerticalSlider     = self.__addVerticalSlider_c
+        ui.addNumEntry           = self.__addNumEntry_c
+        ui.addButton             = self.__addButton_c
+        ui.addToggleButton       = self.__addToggleButton_c
+        ui.addCheckButton        = self.__addCheckButton_c
+        ui.addNumDisplay         = self.__addNumDisplay_c
+        ui.addTextDisplay        = self.__addTextDisplay_c
+        ui.addHorizontalBargraph = self.__addHorizontalBargraph_c
+        ui.addVerticalBargraph   = self.__addVerticalBargraph_c
+        # we don't use this anyway
+        ui.uiInterface           = ffi.NULL
+
+        self.__ui = ui
+
     def __set_boxes(self, b):
         self.__boxes = [b]
 
     boxes = property(fget=lambda x: x.__boxes[0], fset=__set_boxes)
+    ui    = property(fget=lambda x: x.__ui)
 
     def declare(self, zone, key, value):
         pass
