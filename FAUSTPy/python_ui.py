@@ -13,6 +13,18 @@ class param(object):
         self._zone[0] = init
         self.__doc__ = "min={0}, max={1}, step={2}".format(min,max,step)
 
+    def __get__(self, obj, type=None):
+
+        return self
+
+    def __set__(self, obj, value):
+
+        self.zone = value
+
+    def __delete__(self, obj):
+
+        print("Please do not delete this.")
+
     def getter(self):
         return self._zone[0]
 
@@ -177,7 +189,7 @@ class PythonUI(object):
     def add_input(self, label, zone, init, min, max, step):
 
         sane_label = label.replace(" ","_").replace(".","_")
-        setattr(self.__boxes[-1], sane_label, param(zone, init, min, max, step))
+        setattr(self.__boxes[-1].__class__, sane_label, param(zone, init, min, max, step))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
 
