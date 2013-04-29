@@ -2,8 +2,33 @@ from numpy import atleast_2d, ndarray
 from ctypes import addressof, c_void_p
 
 class FAUSTDsp(object):
+    """A FAUST DSP wrapper.
+
+    This class is more low-level than the FAUST class. It can be viewed as an
+    abstraction that sits directly on top of the FAUST DSP struct.
+    """
 
     def __init__(self, C, ffi, fs, faust_ui):
+        """Initialise a FAUSTDsp object.
+
+        To instantiate this object, you create a cffi.FFI object that contains
+        all required declarations (check the FAUSTPy.FAUST code for an example).
+        Then you compile the code via ffi.verfiy(), which creates an FFILibrary
+        object.  Both of these are then passed to this constructor along with
+        the other parameters specified below.
+
+        Parameters:
+        -----------
+
+        C : cffi.FFILibrary
+            The FFILibrary that represents the compiled code.
+        ffi : cffi.FFI
+            The CFFI instance that holds all the data type declarations.
+        fs : int
+            The sampling rate the FAUST DSP should be initialised with.
+        faust_ui : FAUSTPy.PythonUI-like
+            A class that implements the UIGlue C type.
+        """
 
         self.__C   = C
         self.__ffi = ffi
@@ -24,10 +49,35 @@ class FAUSTDsp(object):
         self.__output_p = self.__ffi.new("FAUSTFLOAT*[]", self.num_out)
 
     def __del__(self):
+        """Deallocate the FAUST DSP object.
+
+        This method makes sure to properly deallocate the internal C data
+        structures (as required).
+        """
 
         self.__C.deletemydsp(self.__dsp)
 
     def compute(self, audio):
+        """
+        Process an ndarray with the FAUST DSP.
+
+        Parameters:
+        -----------
+
+        audio : numpy.ndarray
+            The audio signal to process.
+
+        Returns:
+        --------
+
+        out : numpy.ndarray
+            The output of the DSP.
+
+        Notes:
+        ------
+
+        This function uses the buffer protocol to avoid copying the input data.
+        """
 
         audio = atleast_2d(audio)
 
@@ -48,6 +98,9 @@ class FAUSTDsp(object):
 
         return output
 
-    fs = property(fget=lambda s: s.__C.getSampleRatemydsp(s.__dsp))
-    num_in = property(fget=lambda s: s.__C.getNumInputsmydsp(s.__dsp))
-    num_out = property(fget=lambda s: s.__C.getNumOutputsmydsp(s.__dsp))
+    fs = property(fget=lambda s: s.__C.getSampleRatemydsp(s.__dsp),
+                 doc="The sampling rate of the DSP.")
+    num_in = property(fget=lambda s: s.__C.getNumInputsmydsp(s.__dsp),
+                      doc="The number of input channels.")
+    num_out = property(fget=lambda s: s.__C.getNumOutputsmydsp(s.__dsp),
+                       doc="The number of output channels.")

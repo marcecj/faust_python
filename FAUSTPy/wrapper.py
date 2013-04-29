@@ -8,11 +8,37 @@ from . import python_ui, python_dsp
 FAUST_PATH = ""
 
 class FAUST(object):
+    """Wraps a FAUST DSP using the CFFI.  The DSP file is compiled to C, which
+    is then compiled and linked to the running Python interpreter by the CFFI.
+    It exposes the compute() function of the DSP along with some other
+    attributes (see below).
+    """
 
     def __init__(self, faust_dsp, fs, faust_float="float",
                 dsp_class=python_dsp.FAUSTDsp,
                 ui_class=python_ui.PythonUI,
                 faust_flags=["-lang", "c"]):
+        """
+        Initialise a FAUST object.
+
+        Parameters
+        ----------
+
+        faust_dsp : string
+            The path to the FAUST DSP file to be wrapped.
+        fs : int
+            The sampling rate the FAUST DSP should be initialised with.
+        faust_float : string (optional)
+            The value of the FAUSTFLOAT type.  This is used internally by FAUST
+            to generalise to different precisions. Possible values are "float",
+            "double" or "long double".
+        ui_class : PythonUI-like (optional)
+            The constructor of a UIGlue wrapper.  Just in case you want to write
+            your own.
+        faust_flags : list of strings (optional)
+            A list of flags to pass to the FAUST compiler.  You must make sure
+            to pass "-lang c" (the default), otherwise FAUST defaults to C++.
+        """
 
         self.FAUST_PATH = FAUST_PATH
         self.FAUST_FLAGS = faust_flags
@@ -33,14 +59,39 @@ class FAUST(object):
         self.__dsp = dsp_class(self.__C, self.__ffi, fs,ui_class)
 
     def compute(self, audio):
+        """
+        Process an ndarray with the FAUST DSP.
+
+        Parameters:
+        -----------
+
+        audio : numpy.ndarray
+            The audio signal to process.
+
+        Returns:
+        --------
+
+        out : numpy.ndarray
+            The output of the DSP.
+
+        See also:
+        ---------
+
+        FAUSTDsp.compute() : The function wrapped by this one.
+        """
 
         return self.__dsp.compute(audio)
 
-    dsp = property(fget=lambda x: x.__dsp)
-    ffi = property(fget=lambda x: x.__ffi)
-    C   = property(fget=lambda x: x.__C)
-    dtype = property(fget=lambda x: x.__dtype)
-    faustfloat = property(fget=lambda x: x.__faust_float)
+    dsp = property(fget=lambda x: x.__dsp,
+                   doc="The internal FAUSTDsp object.")
+    ffi = property(fget=lambda x: x.__ffi,
+                   doc="The internal FFI object.")
+    C   = property(fget=lambda x: x.__C,
+                   doc="The internal FFILibrary object.")
+    dtype = property(fget=lambda x: x.__dtype,
+                     doc="A dtype corresponding to the value of FAUSTFLOAT.")
+    faustfloat = property(fget=lambda x: x.__faust_float,
+                          doc="The value of FAUSTFLOAT for this DSP.")
 
     def __compile_faust(self, faust_dsp, faust_c):
 

@@ -3,8 +3,34 @@
 # PythonUI to know the type of the UI elements
 
 class param(object):
+    """A UI parameter object.
+
+    This objects represents a FAUST UI input.  It makes sure to enforce the
+    constraints specified by the minimum, maximum and step size.
+
+    This object implements the descriptor protocol: reading it works just like
+    normal objects, but assignment is redirects to its "zone" attribute.
+    Furthermore, it cannot be deleted.
+    """
 
     def __init__(self, zone, init, min, max, step):
+        """Initialise a param object.
+
+        Parameters:
+        -----------
+
+        zone : cffi.CData
+            Points to the FAUSTFLOAT object inside the DSP C object.
+        init : float
+            The initialisation value.
+        min : float
+            The minimum allowed value.
+        max : float
+            The maximum allowed value.
+        step : float
+            The step size of the parameter.
+        """
+
         self.min = min
         self.max = max
         self.step = step
@@ -36,11 +62,43 @@ class param(object):
         else:
             self._zone[0] = self.min + round((x-self.min)/self.step)*self.step
 
-    zone = property(fget=getter, fset=setter)
+    zone = property(fget=getter, fset=setter,
+                    doc="Pointer to the value of the parameter.")
 
 class PythonUI(object):
+    """
+    Maps the UI elements of a FAUST DSP to attributes of another object,
+    specifically a FAUST wrapper object.
+
+    In FAUST, UI's are specified by the DSP object, which calls methods of a UI
+    object to create them.  The PythonUI class implements such a UI object.  It
+    creates C callbacks to its methods and stores then in a UI struct, which can
+    then be passed to the buildUserInterface() function of a FAUST DSP object.
+
+    The DSP object basically calls the methods of the PythonUI class from C via
+    the callbacks in the UI struct and thus creates a hierarchical namespace of
+    attributes which map back to the DSP's UI elements.
+
+    See also:
+    ---------
+
+    FAUSTPy.param - wraps the UI input parameters.
+    """
 
     def __init__(self, ffi, obj=None):
+        """
+        Initialise a PythonUI object.
+
+        Parameters:
+        -----------
+
+        ffi : cffi.FFI
+            The CFFI instance that holds all the data type declarations.
+        obj : object (optional)
+            The Python object to which the UI elements are to be added.  If None
+            (the default) the PythonUI instance manipulates itself.
+        """
+
         if obj:
             self.__boxes = [obj]
         else:
@@ -137,7 +195,8 @@ class PythonUI(object):
 
         self.__ui = ui
 
-    ui = property(fget=lambda x: x.__ui)
+    ui = property(fget=lambda x: x.__ui,
+                  doc="The UI struct that calls back to its parent object.")
 
     def declare(self, zone, key, value):
         pass
