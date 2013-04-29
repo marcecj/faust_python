@@ -32,12 +32,12 @@ class FAUSTDsp(object):
         output = np.ndarray((num_out,count), dtype=audio.dtype)
         output_p = self.__ffi.new("FAUSTFLOAT*[]", num_out)
         for i in range(num_out):
-            in_addr = ctypes.addressof(ctypes.c_float.from_buffer(output[i]))
+            in_addr = ctypes.addressof(ctypes.c_void_p.from_buffer(output[i]))
             output_p[i] = self.__ffi.cast('FAUSTFLOAT *', in_addr)
 
         input_p  = self.__ffi.new("FAUSTFLOAT*[]", num_in)
         for i in range(num_in):
-            out_addr = ctypes.addressof(ctypes.c_float.from_buffer(audio[i]))
+            out_addr = ctypes.addressof(ctypes.c_void_p.from_buffer(audio[i]))
             input_p[i] = self.__ffi.cast('FAUSTFLOAT *', out_addr)
 
         self.__C.computemydsp(self.__dsp, count, input_p, output_p)
