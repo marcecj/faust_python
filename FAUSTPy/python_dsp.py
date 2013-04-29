@@ -79,21 +79,27 @@ class FAUSTDsp(object):
         This function uses the buffer protocol to avoid copying the input data.
         """
 
+        # returns a view, so very little overhead
         audio = atleast_2d(audio)
 
         count   = audio.shape[1] # number of samples
-        num_in  = self.num_in
-        num_out = self.num_out
+        num_in  = self.num_in    # number of input channels
+        num_out = self.num_out   # number of output channels
 
+        # initialise the output array
         output = ndarray((num_out,count), dtype=audio.dtype)
+
+        # set up the output pointers
         for i in range(num_out):
             in_addr = addressof(c_void_p.from_buffer(output[i]))
             self.__output_p[i] = self.__ffi.cast('FAUSTFLOAT *', in_addr)
 
+        # set up the input pointers
         for i in range(num_in):
             out_addr = addressof(c_void_p.from_buffer(audio[i]))
             self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *', out_addr)
 
+        # call the DSP
         self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
 
         return output

@@ -1,6 +1,7 @@
 # TODO: test the MetaGlue and UIGlue types
 # TODO: store meta-data about the UI type in the param class to enable users of
 # PythonUI to know the type of the UI elements
+# TODO: verify the label sanity checking (maybe Python has something built in?)
 
 class param(object):
     """A UI parameter object.
@@ -31,10 +32,10 @@ class param(object):
             The step size of the parameter.
         """
 
+        # NOTE: _zone is a CData holding a float*
         self.min = min
         self.max = max
         self.step = step
-        # _zone is a CData holding a float*
         self._zone = zone
         self._zone[0] = init
         self.__doc__ = "min={0}, max={1}, step={2}".format(min,max,step)
@@ -190,8 +191,7 @@ class PythonUI(object):
         ui.addTextDisplay        = self.__addTextDisplay_c
         ui.addHorizontalBargraph = self.__addHorizontalBargraph_c
         ui.addVerticalBargraph   = self.__addVerticalBargraph_c
-        # we don't use this anyway
-        ui.uiInterface           = ffi.NULL
+        ui.uiInterface           = ffi.NULL # we don't use this anyway
 
         self.__ui = ui
 
@@ -206,6 +206,9 @@ class PythonUI(object):
     ##########################
 
     def openBox(self, label):
+        # If the label is an empty string, don't do anything, just stay at the
+        # current position in the namespace hierarchy.
+        # TODO: figure out how to store the original intended hierarchy
         if label:
             class namespace(object):
                 pass

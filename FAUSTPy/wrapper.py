@@ -52,10 +52,12 @@ class FAUST(object):
         elif faust_float == "long double":
             self.__dtype = "float128"
 
+        # compile the FAUST DSP to C and compile it with the CFFI
         with NamedTemporaryFile(suffix=".c") as f:
             self.__compile_faust(faust_dsp, f.name)
             self.__ffi, self.__C = self.__gen_ffi(f.name)
 
+        # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, fs,ui_class)
 
     def compute(self, audio):
@@ -82,6 +84,8 @@ class FAUST(object):
 
         return self.__dsp.compute(audio)
 
+    # expose some internal attributes as properties
+    # TODO: see if you can remove the ffi and C properties
     dsp = property(fget=lambda x: x.__dsp,
                    doc="The internal FAUSTDsp object.")
     ffi = property(fget=lambda x: x.__ffi,
@@ -111,12 +115,17 @@ class FAUST(object):
 
         check_call([faust_cmd] + faust_args)
 
+    # TODO: allow passing on additional options to ffi.verify()
     def __gen_ffi(self, FAUSTC):
 
         # define the ffi object
         ffi = cffi.FFI()
 
         # declare various types and functions
+        #
+        # These declarations need to be here -- independently of the code in the
+        # ffi.verify() call below -- so that the CFFI knows the contents of the
+        # data structures and the available functions.
         cdefs = "typedef {0} FAUSTFLOAT;".format(self.__faust_float) + """
 
         typedef struct {

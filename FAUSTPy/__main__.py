@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 from FAUSTPy import *
 
+# set up command line arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--faustfloat',
                     dest="faustfloat",
