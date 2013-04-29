@@ -137,9 +137,6 @@ class PythonUI(object):
 
         self.__ui = ui
 
-    def __set_boxes(self, b):
-        self.__boxes = [b]
-
     ui = property(fget=lambda x: x.__ui)
 
     def declare(self, zone, key, value):
