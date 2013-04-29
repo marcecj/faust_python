@@ -1,5 +1,5 @@
-import numpy as np
-import ctypes
+from numpy import atleast_2d, ndarray
+from ctypes import addressof, c_void_p
 
 class FAUSTDsp(object):
 
@@ -23,21 +23,21 @@ class FAUSTDsp(object):
 
     def compute(self, audio):
 
-        audio = np.atleast_2d(audio)
+        audio = atleast_2d(audio)
 
         count   = audio.shape[1] # number of samples
         num_in  = self.num_in
         num_out = self.num_out
 
-        output = np.ndarray((num_out,count), dtype=audio.dtype)
+        output = ndarray((num_out,count), dtype=audio.dtype)
         output_p = self.__ffi.new("FAUSTFLOAT*[]", num_out)
         for i in range(num_out):
-            in_addr = ctypes.addressof(ctypes.c_void_p.from_buffer(output[i]))
+            in_addr = addressof(c_void_p.from_buffer(output[i]))
             output_p[i] = self.__ffi.cast('FAUSTFLOAT *', in_addr)
 
         input_p  = self.__ffi.new("FAUSTFLOAT*[]", num_in)
         for i in range(num_in):
-            out_addr = ctypes.addressof(ctypes.c_void_p.from_buffer(audio[i]))
+            out_addr = addressof(c_void_p.from_buffer(audio[i]))
             input_p[i] = self.__ffi.cast('FAUSTFLOAT *', out_addr)
 
         self.__C.computemydsp(self.__dsp, count, input_p, output_p)
