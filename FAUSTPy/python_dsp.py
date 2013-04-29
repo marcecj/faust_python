@@ -17,6 +17,12 @@ class FAUSTDsp(object):
         # self.__meta = MetaGlue()
         # self._metadata = C.metadatamydsp(meta)
 
+        # allocate the input and output pointers so that they are not
+        # allocated/deallocated at every call to compute()
+        # TODO: can the number of inputs/outputs change at run time?
+        self.__input_p  = self.__ffi.new("FAUSTFLOAT*[]", self.num_in)
+        self.__output_p = self.__ffi.new("FAUSTFLOAT*[]", self.num_out)
+
     def __del__(self):
 
         self.__C.deletemydsp(self.__dsp)
@@ -30,17 +36,15 @@ class FAUSTDsp(object):
         num_out = self.num_out
 
         output = ndarray((num_out,count), dtype=audio.dtype)
-        output_p = self.__ffi.new("FAUSTFLOAT*[]", num_out)
         for i in range(num_out):
             in_addr = addressof(c_void_p.from_buffer(output[i]))
-            output_p[i] = self.__ffi.cast('FAUSTFLOAT *', in_addr)
+            self.__output_p[i] = self.__ffi.cast('FAUSTFLOAT *', in_addr)
 
-        input_p  = self.__ffi.new("FAUSTFLOAT*[]", num_in)
         for i in range(num_in):
             out_addr = addressof(c_void_p.from_buffer(audio[i]))
-            input_p[i] = self.__ffi.cast('FAUSTFLOAT *', out_addr)
+            self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *', out_addr)
 
-        self.__C.computemydsp(self.__dsp, count, input_p, output_p)
+        self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
 
         return output
 
