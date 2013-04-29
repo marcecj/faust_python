@@ -29,11 +29,11 @@ class FAUSTDsp(object):
 
         output = np.ndarray(audio.shape, dtype=np.float32)
         # ctypes.c_float.from_buffer(output)
-        output_p = self.__ffi.new("float*[]", audio.shape[0])
-        output_p[0] = self.__ffi.cast('float *', ctypes.addressof(ctypes.c_float.from_buffer(output[0])))
+        output_p = self.__ffi.new("FAUSTFLOAT*[]", audio.shape[0])
+        output_p[0] = self.__ffi.cast('FAUSTFLOAT *', ctypes.addressof(ctypes.c_float.from_buffer(output[0])))
 
-        input_p  = self.__ffi.new("float*[]", audio.shape[0])
-        input_p[0] = self.__ffi.cast('float *', ctypes.addressof(ctypes.c_float.from_buffer(audio[0])))
+        input_p  = self.__ffi.new("FAUSTFLOAT*[]", audio.shape[0])
+        input_p[0] = self.__ffi.cast('FAUSTFLOAT *', ctypes.addressof(ctypes.c_float.from_buffer(audio[0])))
 
         self.__C.computemydsp(self.__dsp, count, input_p, output_p)
 
