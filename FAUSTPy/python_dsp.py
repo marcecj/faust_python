@@ -25,17 +25,18 @@ class FAUSTDsp(object):
 
         audio = np.atleast_2d(audio)
 
-        count = audio.shape[1]
-        num_chan = audio.shape[0]
+        count   = audio.shape[1] # number of samples
+        num_in  = self.num_in
+        num_out = self.num_out
 
-        output = np.ndarray(audio.shape, dtype=audio.dtype)
-        output_p = self.__ffi.new("FAUSTFLOAT*[]", num_chan)
-        for i in range(num_chan):
+        output = np.ndarray((num_out,count), dtype=audio.dtype)
+        output_p = self.__ffi.new("FAUSTFLOAT*[]", num_out)
+        for i in range(num_out):
             in_addr = ctypes.addressof(ctypes.c_float.from_buffer(output[i]))
             output_p[i] = self.__ffi.cast('FAUSTFLOAT *', in_addr)
 
-        input_p  = self.__ffi.new("FAUSTFLOAT*[]", num_chan)
-        for i in range(num_chan):
+        input_p  = self.__ffi.new("FAUSTFLOAT*[]", num_in)
+        for i in range(num_in):
             out_addr = ctypes.addressof(ctypes.c_float.from_buffer(audio[i]))
             input_p[i] = self.__ffi.cast('FAUSTFLOAT *', out_addr)
 
