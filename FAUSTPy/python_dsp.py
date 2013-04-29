@@ -27,7 +27,7 @@ class FAUSTDsp(object):
 
         count = audio.shape[1]
 
-        output = np.ndarray(audio.shape, dtype=np.float32)
+        output = np.ndarray(audio.shape, dtype=audio.dtype)
         # ctypes.c_float.from_buffer(output)
         output_p = self.__ffi.new("FAUSTFLOAT*[]", audio.shape[0])
         output_p[0] = self.__ffi.cast('FAUSTFLOAT *', ctypes.addressof(ctypes.c_float.from_buffer(output[0])))
