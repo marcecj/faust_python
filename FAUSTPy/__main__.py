@@ -39,7 +39,7 @@ print(dsp.num_in)
 print(dsp.num_out)
 print(dir(dsp))
 
-audio = np.zeros((2,48e3), dtype=np.float32)
+audio = np.zeros((2,48e3), dtype=dattorro.dtype)
 audio[0][0] = 1
 out = dsp.compute(audio)
 

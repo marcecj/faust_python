@@ -8,6 +8,13 @@ class FAUST(object):
                 dsp_class=python_dsp.FAUSTDsp,
                 ui_class=python_ui.PythonUI):
 
+        if   faust_float == "float":
+            self.__dtype = "float32"
+        elif faust_float == "double":
+            self.__dtype = "float64"
+        elif faust_float == "long double":
+            self.__dtype = "float128"
+
         self.__ffi, self.__C = self.__gen_ffi(faust_float, faust_dsp)
 
         self.__dsp = dsp_class(self.__C, self.__ffi, fs,ui_class)
@@ -19,6 +26,7 @@ class FAUST(object):
     dsp = property(fget=lambda x: x.__dsp)
     ffi = property(fget=lambda x: x.__ffi)
     C   = property(fget=lambda x: x.__C)
+    dtype = property(fget=lambda x: x.__dtype)
 
     def __gen_ffi(self, FAUSTFLOAT, FAUSTDSP):
 
