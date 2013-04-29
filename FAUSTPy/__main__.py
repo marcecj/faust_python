@@ -1,5 +1,19 @@
+import argparse
 import numpy as np
 from FAUSTPy import *
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--faustfloat',
+                    dest="faustfloat",
+                    default="float",
+                    help="The value of FAUSTFLOAT.")
+parser.add_argument('-p', '--path',
+                    dest="faust_path",
+                    default="",
+                    help="The path of FAUSTFLOAT.")
+args = parser.parse_args()
+
+wrapper.FAUST_PATH = args.faust_path
 
 #################################
 # test PythonUI
@@ -8,7 +22,7 @@ from FAUSTPy import *
 class empty(object):
     pass
 
-dattorro = FAUST("dattorro_notch_cut_regalia.dsp", 48000, "float")
+dattorro = FAUST("dattorro_notch_cut_regalia.dsp", 48000, args.faustfloat)
 ffi = dattorro.ffi
 C   = dattorro.C
 
