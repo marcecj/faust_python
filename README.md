@@ -13,6 +13,5 @@ More documentation will follow soon, once FAUSTPy is a bit further developed
 ## TODO
 
 - finish the MetaGlue and UIGlue wrappers
-- compile the FAUST program in the background instead of expecting a header file
 - write a test suite
 - write a demo program

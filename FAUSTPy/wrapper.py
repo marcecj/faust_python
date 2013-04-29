@@ -1,12 +1,23 @@
 import cffi
+import os
+from subprocess import check_call
+from tempfile import NamedTemporaryFile
 from string import Template
 from . import python_ui, python_dsp
+
+FAUST_PATH = ""
 
 class FAUST(object):
 
     def __init__(self, faust_dsp, fs, faust_float="float",
                 dsp_class=python_dsp.FAUSTDsp,
-                ui_class=python_ui.PythonUI):
+                ui_class=python_ui.PythonUI,
+                faust_flags=["-lang", "c"]):
+
+        self.FAUST_PATH = FAUST_PATH
+        self.FAUST_FLAGS = faust_flags
+
+        self.__faust_float = faust_float
 
         self.__faust_float = faust_float
 
@@ -17,7 +28,9 @@ class FAUST(object):
         elif faust_float == "long double":
             self.__dtype = "float128"
 
-        self.__ffi, self.__C = self.__gen_ffi(faust_dsp)
+        with NamedTemporaryFile(suffix=".c") as f:
+            self.__compile_faust(faust_dsp, f.name)
+            self.__ffi, self.__C = self.__gen_ffi(f.name)
 
         self.__dsp = dsp_class(self.__C, self.__ffi, fs,ui_class)
 
@@ -31,7 +44,25 @@ class FAUST(object):
     dtype = property(fget=lambda x: x.__dtype)
     faustfloat = property(fget=lambda x: x.__faust_float)
 
-    def __gen_ffi(self, FAUSTDSP):
+    def __compile_faust(self, faust_dsp, faust_c):
+
+        if   self.__faust_float == "float":
+            self.FAUST_FLAGS.append("-single")
+        elif self.__faust_float == "double":
+            self.FAUST_FLAGS.append("-double")
+        elif self.__faust_float == "long double":
+            self.FAUST_FLAGS.append("-quad")
+
+        if self.FAUST_PATH:
+            faust_cmd  = os.sep.join([self.FAUST_PATH, "faust"])
+        else:
+            faust_cmd  = "faust"
+
+        faust_args = self.FAUST_FLAGS + ["-o",  faust_c, faust_dsp]
+
+        check_call([faust_cmd] + faust_args)
+
+    def __gen_ffi(self, FAUSTC):
 
         # define the ffi object
         ffi = cffi.FFI()
@@ -122,8 +153,8 @@ class FAUST(object):
                 void* uiInterface;
             } UIGlue;
 
-            #include "${FAUSTDSP}.h"
-            """).substitute(FAUSTFLOAT=self.__faust_float, FAUSTDSP=FAUSTDSP),
+            #include "${FAUSTC}"
+            """).substitute(FAUSTFLOAT=self.__faust_float, FAUSTC=FAUSTC),
             libraries=[],
             include_dirs=["."],
             extra_compile_args=["-std=c99"],
