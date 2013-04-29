@@ -8,6 +8,8 @@ class FAUST(object):
                 dsp_class=python_dsp.FAUSTDsp,
                 ui_class=python_ui.PythonUI):
 
+        self.__faust_float = faust_float
+
         if   faust_float == "float":
             self.__dtype = "float32"
         elif faust_float == "double":
@@ -15,7 +17,7 @@ class FAUST(object):
         elif faust_float == "long double":
             self.__dtype = "float128"
 
-        self.__ffi, self.__C = self.__gen_ffi(faust_float, faust_dsp)
+        self.__ffi, self.__C = self.__gen_ffi(faust_dsp)
 
         self.__dsp = dsp_class(self.__C, self.__ffi, fs,ui_class)
 
@@ -27,14 +29,15 @@ class FAUST(object):
     ffi = property(fget=lambda x: x.__ffi)
     C   = property(fget=lambda x: x.__C)
     dtype = property(fget=lambda x: x.__dtype)
+    faustfloat = property(fget=lambda x: x.__faust_float)
 
-    def __gen_ffi(self, FAUSTFLOAT, FAUSTDSP):
+    def __gen_ffi(self, FAUSTDSP):
 
         # define the ffi object
         ffi = cffi.FFI()
 
         # declare various types and functions
-        cdefs = "typedef {0} FAUSTFLOAT;".format(FAUSTFLOAT) + """
+        cdefs = "typedef {0} FAUSTFLOAT;".format(self.__faust_float) + """
 
         typedef struct {
             void *mInterface;
@@ -120,7 +123,7 @@ class FAUST(object):
             } UIGlue;
 
             #include "${FAUSTDSP}.h"
-            """).substitute(FAUSTFLOAT=FAUSTFLOAT, FAUSTDSP=FAUSTDSP),
+            """).substitute(FAUSTFLOAT=self.__faust_float, FAUSTDSP=FAUSTDSP),
             libraries=[],
             include_dirs=["."],
             extra_compile_args=["-std=c99"],
