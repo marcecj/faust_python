@@ -26,4 +26,4 @@ notch_resonator_regalia(k, fc) = H with {
     H     = _ : *(0.5) <: *(1+k),(A:*(1-k)) :> _;
 };
 
-process = notch_resonator_regalia(k,fc);
+process = par(i,2,notch_resonator_regalia(k,fc));
