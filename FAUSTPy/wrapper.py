@@ -156,7 +156,7 @@ class FAUST(object):
             #include "${FAUSTC}"
             """).substitute(FAUSTFLOAT=self.__faust_float, FAUSTC=FAUSTC),
             libraries=[],
-            include_dirs=["."],
+            include_dirs=[],
             extra_compile_args=["-std=c99"],
         )
 
