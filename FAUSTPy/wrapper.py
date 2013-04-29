@@ -19,8 +19,6 @@ class FAUST(object):
 
         self.__faust_float = faust_float
 
-        self.__faust_float = faust_float
-
         if   faust_float == "float":
             self.__dtype = "float32"
         elif faust_float == "double":
