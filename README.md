@@ -15,9 +15,12 @@ FAUSTPy has the following requirements:
 
 - [FAUST](http://faust.grame.fr/), specifically the FAUST2 branch, because
   FAUSTPy requires the C backend.
-- [CFFI](https://cffi.readthedocs.org/)
+- [CFFI](https://cffi.readthedocs.org/), tested with version 0.6.
+- A C compiler; a GCC compatible one is assumed.
+- [NumPy](http://numpy.scipy.org/), tested with version 1.6.
 
-Theoretically, FAUSTPy should work with Python 3, but I have not tested it.
+Theoretically FAUSTPy should work with Python 3, since all Python dependencies
+habe been ported to it, but I have not tested it.
 
 You can install FAUSTPy via the provided setup.py script by running
 
