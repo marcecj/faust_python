@@ -33,12 +33,12 @@ class param(object):
         """
 
         # NOTE: _zone is a CData holding a float*
-        self.min = min
-        self.max = max
-        self.step = step
-        self._zone = zone
+        self.min      = min
+        self.max      = max
+        self.step     = step
+        self._zone    = zone
         self._zone[0] = init
-        self.__doc__ = "min={0}, max={1}, step={2}".format(min,max,step)
+        self.__doc__  = "min={0}, max={1}, step={2}".format(min,max,step)
 
     def __get__(self, obj, type=None):
 
@@ -215,8 +215,7 @@ class PythonUI(object):
 
             # create a new sub-namespace and set it's parent to the current
             # namespace
-            box = namespace()
-
+            box        = namespace()
             sane_label = label.replace(" ", "_").replace(".", "_")
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)

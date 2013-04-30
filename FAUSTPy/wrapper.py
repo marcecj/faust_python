@@ -58,7 +58,7 @@ class FAUST(object):
             self.__ffi, self.__C = self.__gen_ffi(f.name)
 
         # initialise the DSP object
-        self.__dsp = dsp_class(self.__C, self.__ffi, fs,ui_class)
+        self.__dsp = dsp_class(self.__C, self.__ffi, fs, ui_class)
 
     def compute(self, audio):
         """
@@ -107,11 +107,11 @@ class FAUST(object):
             self.FAUST_FLAGS.append("-quad")
 
         if self.FAUST_PATH:
-            faust_cmd  = os.sep.join([self.FAUST_PATH, "faust"])
+            faust_cmd = os.sep.join([self.FAUST_PATH, "faust"])
         else:
-            faust_cmd  = "faust"
+            faust_cmd = "faust"
 
-        faust_args = self.FAUST_FLAGS + ["-o",  faust_c, faust_dsp]
+        faust_args = self.FAUST_FLAGS + ["-o", faust_c, faust_dsp]
 
         check_call([faust_cmd] + faust_args)
 
