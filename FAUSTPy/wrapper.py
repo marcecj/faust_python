@@ -22,8 +22,8 @@ class FAUST(object):
         """
         Initialise a FAUST object.
 
-        Parameters
-        ----------
+        Parameters:
+        -----------
 
         faust_dsp : string
             The path to the FAUST DSP file to be wrapped.
@@ -44,8 +44,8 @@ class FAUST(object):
         directly to cffi.FFI.verify().  This lets you override the compiler
         flags, for example.
 
-        Notes
-        -----
+        Notes:
+        ------
 
         The default compiler flags are "-std=c99 -march=native -O3".  The
         reasons for this are:
