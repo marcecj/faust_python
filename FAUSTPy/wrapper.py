@@ -132,7 +132,6 @@ class FAUST(object):
 
         check_call([faust_cmd] + faust_args)
 
-    # TODO: allow passing on additional options to ffi.verify()
     def __gen_ffi(self, FAUSTC, **kwargs):
 
         # define the ffi object
