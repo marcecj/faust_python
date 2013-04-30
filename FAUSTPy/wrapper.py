@@ -17,7 +17,8 @@ class FAUST(object):
     def __init__(self, faust_dsp, fs, faust_float="float",
                 dsp_class=python_dsp.FAUSTDsp,
                 ui_class=python_ui.PythonUI,
-                faust_flags=["-lang", "c"]):
+                faust_flags=["-lang", "c"],
+                **kwargs):
         """
         Initialise a FAUST object.
 
@@ -38,6 +39,22 @@ class FAUST(object):
         faust_flags : list of strings (optional)
             A list of flags to pass to the FAUST compiler.  You must make sure
             to pass "-lang c" (the default), otherwise FAUST defaults to C++.
+
+        You may also pass additional keyword arguments, which will get passed
+        directly to cffi.FFI.verify().  This lets you override the compiler
+        flags, for example.
+
+        Notes
+        -----
+
+        The default compiler flags are "-std=c99 -march=native -O3".  The
+        reasons for this are:
+
+        - compilation happens at run time, so -march=native should be safe,
+        - FAUST programs usually profit from -O3, especially since it activates
+        auto-vectorisation, and
+        - since additional flags are appended to this default, you *can*
+        override it in situations where it is unsuitable.
         """
 
         self.FAUST_PATH = FAUST_PATH
@@ -55,7 +72,7 @@ class FAUST(object):
         # compile the FAUST DSP to C and compile it with the CFFI
         with NamedTemporaryFile(suffix=".c") as f:
             self.__compile_faust(faust_dsp, f.name)
-            self.__ffi, self.__C = self.__gen_ffi(f.name)
+            self.__ffi, self.__C = self.__gen_ffi(f.name, **kwargs)
 
         # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, fs, ui_class)
@@ -116,10 +133,13 @@ class FAUST(object):
         check_call([faust_cmd] + faust_args)
 
     # TODO: allow passing on additional options to ffi.verify()
-    def __gen_ffi(self, FAUSTC):
+    def __gen_ffi(self, FAUSTC, **kwargs):
 
         # define the ffi object
         ffi = cffi.FFI()
+
+        c_flags = ["-std=c99", "-march=native", "-O3"]
+        kwargs["extra_compile_args"] = c_flags + kwargs.get("extra_compile_args", [])
 
         # declare various types and functions
         #
@@ -213,9 +233,7 @@ class FAUST(object):
 
             #include "${FAUSTC}"
             """).substitute(FAUSTFLOAT=self.__faust_float, FAUSTC=FAUSTC),
-            libraries=[],
-            include_dirs=[],
-            extra_compile_args=["-std=c99"],
+            **kwargs
         )
 
         return ffi, C
