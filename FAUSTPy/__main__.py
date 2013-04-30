@@ -12,6 +12,11 @@ parser.add_argument('-p', '--path',
                     dest="faust_path",
                     default="",
                     help="The path of FAUSTFLOAT.")
+parser.add_argument('-c', '--cflags',
+                    dest="cflags",
+                    default=[],
+                    type=str.split,
+                    help="Extra compiler flags")
 args = parser.parse_args()
 
 wrapper.FAUST_PATH = args.faust_path
@@ -23,7 +28,8 @@ wrapper.FAUST_PATH = args.faust_path
 class empty(object):
     pass
 
-dattorro = FAUST("dattorro_notch_cut_regalia.dsp", 48000, args.faustfloat)
+dattorro = FAUST("dattorro_notch_cut_regalia.dsp", 48000, args.faustfloat,
+                 extra_compile_args=args.cflags)
 ffi = dattorro.ffi
 C   = dattorro.C
 
