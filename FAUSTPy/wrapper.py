@@ -6,6 +6,7 @@ from string import Template
 from . import python_ui, python_dsp
 
 FAUST_PATH = ""
+FAUSTFLOATS = frozenset(("float", "double", "long double"))
 
 class FAUST(object):
     """Wraps a FAUST DSP using the CFFI.  The DSP file is compiled to C, which
@@ -56,6 +57,9 @@ class FAUST(object):
         - since additional flags are appended to this default, you *can*
         override it in situations where it is unsuitable.
         """
+
+        if faust_float not in FAUSTFLOATS:
+            raise ValueError("Invalid value for faust_float!")
 
         self.FAUST_PATH = FAUST_PATH
         self.FAUST_FLAGS = faust_flags
