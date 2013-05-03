@@ -98,6 +98,12 @@ class FAUSTDsp(object):
         # returns a view, so very little overhead
         audio = atleast_2d(audio)
 
+        # Verify that audio.dtype == self.dtype, because a) Python SEGFAULTs
+        # when audio.dtype < self.dtype and b) the computation is garbage when
+        # audio.dtype > self.dtype.
+        if audio.dtype != self.__dtype:
+            raise ValueError("audio.dtype must be {}".format(self.__dtype))
+
         count   = audio.shape[1] # number of samples
         num_in  = self.num_in    # number of input channels
         num_out = self.num_out   # number of output channels
