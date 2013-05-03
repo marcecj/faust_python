@@ -17,7 +17,7 @@ class FAUST(object):
     def __init__(self, faust_dsp, fs, faust_float="float",
                 dsp_class=python_dsp.FAUSTDsp,
                 ui_class=python_ui.PythonUI,
-                faust_flags=["-lang", "c"],
+                faust_flags=[],
                 **kwargs):
         """
         Initialise a FAUST object.
@@ -37,8 +37,8 @@ class FAUST(object):
             The constructor of a UIGlue wrapper.  Just in case you want to write
             your own.
         faust_flags : list of strings (optional)
-            A list of flags to pass to the FAUST compiler.  You must make sure
-            to pass "-lang c" (the default), otherwise FAUST defaults to C++.
+            A list of additional flags to pass to the FAUST compiler, which are
+            appended to "-lang c" (since FAUSTPy requires the FAUST C backend).
 
         You may also pass additional keyword arguments, which will get passed
         directly to cffi.FFI.verify().  This lets you override the compiler
@@ -58,7 +58,7 @@ class FAUST(object):
         """
 
         self.FAUST_PATH = FAUST_PATH
-        self.FAUST_FLAGS = faust_flags
+        self.FAUST_FLAGS = ["-lang", "c"] + faust_flags
 
         # compile the FAUST DSP to C and compile it with the CFFI
         with NamedTemporaryFile(suffix=".c") as f:
