@@ -53,14 +53,14 @@ ui.addButton(ffi.NULL, "float", button_val)
 # test FAUSTDsp
 #################################
 
-dsp = FAUSTDsp(C,ffi,48000,PythonUI)
+dsp = FAUSTDsp(C,ffi,args.faustfloat,48000,PythonUI)
 
 print(dsp.fs)
 print(dsp.num_in)
 print(dsp.num_out)
 print(dir(dsp))
 
-audio = np.zeros((dattorro.dsp.num_in,48e3), dtype=dattorro.dtype)
+audio = np.zeros((dattorro.dsp.num_in,48e3), dtype=dattorro.dsp.dtype)
 audio[:,0] = 1
 out = dsp.compute(audio)
 

@@ -6,7 +6,6 @@ from string import Template
 from . import python_ui, python_dsp
 
 FAUST_PATH = ""
-FAUSTFLOATS = frozenset(("float", "double", "long double"))
 
 class FAUST(object):
     """Wraps a FAUST DSP using the CFFI.  The DSP file is compiled to C, which
@@ -58,28 +57,16 @@ class FAUST(object):
         override it in situations where it is unsuitable.
         """
 
-        if faust_float not in FAUSTFLOATS:
-            raise ValueError("Invalid value for faust_float!")
-
         self.FAUST_PATH = FAUST_PATH
         self.FAUST_FLAGS = faust_flags
 
-        self.__faust_float = faust_float
-
-        if   faust_float == "float":
-            self.__dtype = "float32"
-        elif faust_float == "double":
-            self.__dtype = "float64"
-        elif faust_float == "long double":
-            self.__dtype = "float128"
-
         # compile the FAUST DSP to C and compile it with the CFFI
         with NamedTemporaryFile(suffix=".c") as f:
-            self.__compile_faust(faust_dsp, f.name)
-            self.__ffi, self.__C = self.__gen_ffi(f.name, **kwargs)
+            self.__compile_faust(faust_dsp, f.name, faust_float)
+            self.__ffi, self.__C = self.__gen_ffi(f.name, faust_float, **kwargs)
 
         # initialise the DSP object
-        self.__dsp = dsp_class(self.__C, self.__ffi, fs, ui_class)
+        self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs, ui_class)
 
     def compute(self, audio):
         """
@@ -113,18 +100,14 @@ class FAUST(object):
                    doc="The internal FFI object.")
     C   = property(fget=lambda x: x.__C,
                    doc="The internal FFILibrary object.")
-    dtype = property(fget=lambda x: x.__dtype,
-                     doc="A dtype corresponding to the value of FAUSTFLOAT.")
-    faustfloat = property(fget=lambda x: x.__faust_float,
-                          doc="The value of FAUSTFLOAT for this DSP.")
 
-    def __compile_faust(self, faust_dsp, faust_c):
+    def __compile_faust(self, faust_dsp, faust_c, faust_float):
 
-        if   self.__faust_float == "float":
+        if   faust_float == "float":
             self.FAUST_FLAGS.append("-single")
-        elif self.__faust_float == "double":
+        elif faust_float == "double":
             self.FAUST_FLAGS.append("-double")
-        elif self.__faust_float == "long double":
+        elif faust_float == "long double":
             self.FAUST_FLAGS.append("-quad")
 
         if self.FAUST_PATH:
@@ -136,7 +119,7 @@ class FAUST(object):
 
         check_call([faust_cmd] + faust_args)
 
-    def __gen_ffi(self, FAUSTC, **kwargs):
+    def __gen_ffi(self, FAUSTC, faust_float, **kwargs):
 
         # define the ffi object
         ffi = cffi.FFI()
@@ -149,7 +132,7 @@ class FAUST(object):
         # These declarations need to be here -- independently of the code in the
         # ffi.verify() call below -- so that the CFFI knows the contents of the
         # data structures and the available functions.
-        cdefs = "typedef {0} FAUSTFLOAT;".format(self.__faust_float) + """
+        cdefs = "typedef {0} FAUSTFLOAT;".format(faust_float) + """
 
         typedef struct {
             void *mInterface;
@@ -235,7 +218,7 @@ class FAUST(object):
             } UIGlue;
 
             #include "${FAUSTC}"
-            """).substitute(FAUSTFLOAT=self.__faust_float, FAUSTC=FAUSTC),
+            """).substitute(FAUSTFLOAT=faust_float, FAUSTC=FAUSTC),
             **kwargs
         )
 
