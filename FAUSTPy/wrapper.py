@@ -68,29 +68,8 @@ class FAUST(object):
         # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs, ui_class)
 
-    def compute(self, audio):
-        """
-        Process an ndarray with the FAUST DSP.
-
-        Parameters:
-        -----------
-
-        audio : numpy.ndarray
-            The audio signal to process.
-
-        Returns:
-        --------
-
-        out : numpy.ndarray
-            The output of the DSP.
-
-        See also:
-        ---------
-
-        FAUSTDsp.compute() : The function wrapped by this one.
-        """
-
-        return self.__dsp.compute(audio)
+        # add a shortcut to the compute function
+        self.compute  = self.__dsp.compute
 
     # expose some internal attributes as properties
     # TODO: see if you can remove the ffi and C properties
