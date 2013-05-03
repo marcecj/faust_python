@@ -68,8 +68,9 @@ class FAUST(object):
         # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs, ui_class)
 
-        # add a shortcut to the compute function
+        # add shortcuts to the compute* functions
         self.compute  = self.__dsp.compute
+        self.compute2 = self.__dsp.compute2
 
     # expose some internal attributes as properties
     # TODO: see if you can remove the ffi and C properties

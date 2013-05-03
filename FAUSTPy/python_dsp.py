@@ -126,6 +126,55 @@ class FAUSTDsp(object):
 
         return output
 
+    # TODO: Run some more serious tests to check whether compute2() is worth
+    # keeping, because with the bundled DSP the run-time is about 83 us for 2x64
+    # samples versus about 90 us for compute(), so only about 7 us difference.
+    def compute2(self, audio):
+        """
+        Process an ndarray with the FAUST DSP, like compute(), but without any
+        safety checks.  NOTE: compute2() can crash Python if "audio" is an
+        incompatible NumPy array!
+
+        Parameters:
+        -----------
+
+        audio : numpy.ndarray
+            The audio signal to process.
+
+        Returns:
+        --------
+
+        out : numpy.ndarray
+            The output of the DSP.
+
+        Notes:
+        ------
+
+        This function uses the buffer protocol to avoid copying the input data.
+        """
+
+        count   = audio.shape[1] # number of samples
+        num_in  = self.num_in    # number of input channels
+        num_out = self.num_out   # number of output channels
+
+        # initialise the output array
+        output = ndarray((num_out,count), dtype=audio.dtype)
+
+        # set up the output pointers
+        for i in range(num_out):
+            self.__output_p[i] = self.__ffi.cast('FAUSTFLOAT *',
+                                                 output[i].ctypes.data)
+
+        # set up the input pointers
+        for i in range(num_in):
+            self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *',
+                                                audio[i].ctypes.data)
+
+        # call the DSP
+        self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
+
+        return output
+
     dtype = property(fget=lambda x: x.__dtype,
                      doc="A dtype corresponding to the value of FAUSTFLOAT.")
     faustfloat = property(fget=lambda x: x.__faust_float,
