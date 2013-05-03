@@ -1,5 +1,4 @@
 from numpy import atleast_2d, ndarray
-from ctypes import addressof, c_void_p
 
 class FAUSTDsp(object):
     """A FAUST DSP wrapper.
@@ -91,13 +90,13 @@ class FAUSTDsp(object):
 
         # set up the output pointers
         for i in range(num_out):
-            in_addr = addressof(c_void_p.from_buffer(output[i]))
-            self.__output_p[i] = self.__ffi.cast('FAUSTFLOAT *', in_addr)
+            self.__output_p[i] = self.__ffi.cast('FAUSTFLOAT *',
+                                                 output[i].ctypes.data)
 
         # set up the input pointers
         for i in range(num_in):
-            out_addr = addressof(c_void_p.from_buffer(audio[i]))
-            self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *', out_addr)
+            self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *',
+                                                audio[i].ctypes.data)
 
         # call the DSP
         self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
