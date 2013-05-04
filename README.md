@@ -70,5 +70,5 @@ For more details, see the built-in documentation (aka `pydoc FAUSTPy`).
 ## TODO
 
 - finish the MetaGlue and UIGlue wrappers
-- write a test suite
+- finish the test suite
 - write a demo program
