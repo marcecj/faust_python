@@ -38,6 +38,7 @@ class param(object):
         self.step     = step
         self._zone    = zone
         self._zone[0] = init
+        self.default  = init
         self.__doc__  = "min={0}, max={1}, step={2}".format(min,max,step)
 
     def __get__(self, obj, type=None):
