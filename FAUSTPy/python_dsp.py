@@ -1,7 +1,5 @@
 from numpy import atleast_2d, ndarray, float32, float64, float128
 
-FAUSTFLOATS = frozenset(("float", "double", "long double"))
-
 class FAUSTDsp(object):
     """A FAUST DSP wrapper.
 
@@ -34,9 +32,6 @@ class FAUSTDsp(object):
         faust_ui : FAUSTPy.PythonUI-like
             A class that implements the UIGlue C type.
         """
-
-        if faust_float not in FAUSTFLOATS:
-            raise ValueError("Invalid value for faust_float!")
 
         self.__C   = C
         self.__ffi = ffi
