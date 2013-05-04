@@ -17,14 +17,19 @@ parser.add_argument('-c', '--cflags',
                     default=[],
                     type=str.split,
                     help="Extra compiler flags")
+parser.add_argument('-s', '--fs',
+                    dest="fs",
+                    default=48000,
+                    type=int,
+                    help="The sampling frequency")
 args = parser.parse_args()
 
 wrapper.FAUST_PATH = args.faust_path
 
-dattorro = FAUST("dattorro_notch_cut_regalia.dsp", 48000, args.faustfloat,
+dattorro = FAUST("dattorro_notch_cut_regalia.dsp", args.fs, args.faustfloat,
                  extra_compile_args=args.cflags)
 
-audio = np.zeros((dattorro.dsp.num_in,48e3), dtype=dattorro.dsp.dtype)
+audio = np.zeros((dattorro.dsp.num_in, args.fs), dtype=dattorro.dsp.dtype)
 audio[:,0] = 1
 
 out = dattorro.compute(audio)
