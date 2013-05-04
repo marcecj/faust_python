@@ -1,5 +1,6 @@
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 from FAUSTPy import *
 
 # set up command line arguments
@@ -36,5 +37,13 @@ out = dattorro.compute(audio)
 
 print(audio)
 print(out)
+
+spec = np.fft.fft(out)[:,:args.fs/2]
+
+fig = plt.figure()
+p   = fig.add_subplot(1,1,1)
+p.plot(20*np.log10(np.absolute(spec.T)+1e-8))
+
+plt.show()
 
 print("everything passes!")
