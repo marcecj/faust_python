@@ -30,6 +30,11 @@ or
 
     python setup.py install --user
 
+Although you can want to verify that everything works beforehand by running the
+test suite first:
+
+    python setup.py test
+
 ## Useage
 
 Usage is fairly simple, the main class is FAUSTPy.FAUST, which takes care of the
