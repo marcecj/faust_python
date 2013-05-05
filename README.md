@@ -67,8 +67,22 @@ are processed, but not less.
 
 For more details, see the built-in documentation (aka `pydoc FAUSTPy`).
 
+## Demo script
+
+The `__main__.py` of the FAUST package contains a small demo application the
+plots some magnitude frequency responses of the example FAUST DSP.  You can
+execute it by executing
+
+    PYTHONPATH=. python FAUSTPy
+
+in the source directory.  This will display four plots:
+
+- the magnitude frequency response of the FAUST DSP at default settings,
+- the magnitude frequency with varying Q,
+- the magnitude frequency with varying gain, and
+- the magnitude frequency with varying center frequency.
+
 ## TODO
 
 - finish the MetaGlue and UIGlue wrappers
 - finish the test suite
-- write a demo program
