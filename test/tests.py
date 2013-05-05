@@ -116,7 +116,7 @@ def init_ffi():
 # test PythonUI
 #################################
 
-class test_1_faustui(unittest.TestCase):
+class test_faustui(unittest.TestCase):
 
     def setUp(self):
 
@@ -157,7 +157,7 @@ class test_1_faustui(unittest.TestCase):
 # test FAUSTDsp
 #################################
 
-class test_2_faustdsp(unittest.TestCase):
+class test_faustdsp(unittest.TestCase):
 
     def setUp(self):
 
@@ -193,7 +193,7 @@ class test_2_faustdsp(unittest.TestCase):
 # test FAUST
 #################################
 
-class test_3_faustwrapper(unittest.TestCase):
+class test_faustwrapper(unittest.TestCase):
 
     def test_init(self):
         """Test initialisation of FAUST objects."""
