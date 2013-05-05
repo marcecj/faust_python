@@ -74,7 +74,7 @@ For more details, see the built-in documentation (aka `pydoc FAUSTPy`).
 
 ## Demo script
 
-The `__main__.py` of the FAUST package contains a small demo application the
+The `__main__.py` of the FAUST package contains a small demo application which
 plots some magnitude frequency responses of the example FAUST DSP.  You can
 execute it by executing
 
