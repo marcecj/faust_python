@@ -142,12 +142,12 @@ class test_faustui(unittest.TestCase):
         "Test miscellanea."
 
         ui = PythonUI(self.ffi, self.bla).ui
-        ui.openVerticalBox(self.ffi.NULL,"bla")
+        ui.openVerticalBox(self.ffi.NULL,b"bla")
 
         slider_val = self.ffi.new("FAUSTFLOAT*", 1.0)
         self.assertEqual(slider_val[0], 1.0)
 
-        ui.addHorizontalSlider(self.ffi.NULL, "float", slider_val, 0.0, 0.0, 2.0, 0.1)
+        ui.addHorizontalSlider(self.ffi.NULL, b"float", slider_val, 0.0, 0.0, 2.0, 0.1)
         self.assertTrue(hasattr(self.bla.bla, "float"))
         self.assertEqual(self.bla.bla.float.zone, 0.0)
 
@@ -156,7 +156,7 @@ class test_faustui(unittest.TestCase):
 
         button_val = self.ffi.new("FAUSTFLOAT*", 1.0)
         # should do nothing
-        ui.addButton(self.ffi.NULL, "float", button_val)
+        ui.addButton(self.ffi.NULL, b"float", button_val)
 
 
 #################################
