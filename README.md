@@ -19,8 +19,7 @@ FAUSTPy has the following requirements:
 - A C compiler; a GCC compatible one is assumed.
 - [NumPy](http://numpy.scipy.org/), tested with version 1.6.
 
-Theoretically FAUSTPy should work with Python 3, since all Python dependencies
-habe been ported to it, but I have not tested it.
+FAUSTPy works with Python 2.7 and 3.2+.
 
 You can install FAUSTPy via the provided setup.py script by running
 
