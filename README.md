@@ -83,9 +83,9 @@ execute it by executing
 in the source directory.  This will display four plots:
 
 - the magnitude frequency response of the FAUST DSP at default settings,
-- the magnitude frequency with varying Q,
-- the magnitude frequency with varying gain, and
-- the magnitude frequency with varying center frequency.
+- the magnitude frequency response with varying Q,
+- the magnitude frequency response with varying gain, and
+- the magnitude frequency response with varying center frequency.
 
 ## TODO
 
