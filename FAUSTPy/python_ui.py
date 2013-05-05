@@ -216,8 +216,11 @@ class PythonUI(object):
 
             # create a new sub-namespace and set it's parent to the current
             # namespace
+            #
+            # NOTE: labels are char*, which map to strings in Python2 and bytes
+            # in Python3, so they need to be decoded to work in both
             box        = namespace()
-            sane_label = label.replace(" ", "_").replace(".", "_")
+            sane_label = label.decode().replace(" ", "_").replace(".", "_")
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
 
@@ -246,7 +249,9 @@ class PythonUI(object):
 
     def add_input(self, label, zone, init, min, max, step):
 
-        sane_label = label.replace(" ","_").replace(".","_")
+        # labels are char*, which map to strings in Python2 and bytes in
+        # Python3, so they need to be decoded to work in both
+        sane_label = label.decode().replace(" ","_").replace(".","_")
         setattr(self.__boxes[-1].__class__, sane_label, param(zone, init, min, max, step))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
