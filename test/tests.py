@@ -1,3 +1,4 @@
+import os
 import unittest
 import cffi
 import numpy as np
@@ -126,6 +127,11 @@ class test_faustui(unittest.TestCase):
 
         self.ffi, self.C, self.faust_float = init_ffi()
 
+        self.addCleanup(
+            cffi.verifier.cleanup_tmpdir,
+            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
+        )
+
     def test_init(self):
         "Test initialisation of PythonUI objects."
 
@@ -163,6 +169,11 @@ class test_faustdsp(unittest.TestCase):
 
         self.ffi, self.C, self.faust_float = init_ffi()
 
+        self.addCleanup(
+            cffi.verifier.cleanup_tmpdir,
+            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
+        )
+
     def test_init(self):
         "Test initialisation of FAUSTDsp objects."
 
@@ -194,6 +205,13 @@ class test_faustdsp(unittest.TestCase):
 #################################
 
 class test_faustwrapper(unittest.TestCase):
+
+    def setUp(self):
+
+        self.addCleanup(
+            cffi.verifier.cleanup_tmpdir,
+            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
+        )
 
     def test_init(self):
         """Test initialisation of FAUST objects."""
