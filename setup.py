@@ -18,6 +18,12 @@ setup(
     long_description = read('README.md'),
     platforms        = 'any',
 
+    # the ctypes field was added before NumPy 1.0, so any version is OK
+    # TODO: do I need requires, too (it makes the --requires option work)?
+    requires         = ["cffi", "numpy"],
+    install_requires = ["cffi", "numpy"],
+    provides         = ["FAUSTPy"],
+
     classifiers=[
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
