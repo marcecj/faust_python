@@ -3,7 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from FAUSTPy import *
 
+#######################################################
 # set up command line arguments
+#######################################################
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--faustfloat',
                     dest="faustfloat",
@@ -25,10 +28,18 @@ parser.add_argument('-s', '--fs',
                     help="The sampling frequency")
 args = parser.parse_args()
 
+#######################################################
+# initialise the FAUST object and get the default parameters
+#######################################################
+
 wrapper.FAUST_PATH = args.faust_path
 
 dattorro = FAUST("dattorro_notch_cut_regalia.dsp", args.fs, args.faustfloat,
                  extra_compile_args=args.cflags)
+
+#######################################################
+# plot the frequency response with the default settings
+#######################################################
 
 audio = np.zeros((dattorro.dsp.num_in, args.fs), dtype=dattorro.dsp.dtype)
 audio[:,0] = 1
@@ -43,6 +54,10 @@ spec = np.fft.fft(out)[:,:args.fs/2]
 fig = plt.figure()
 p   = fig.add_subplot(1,1,1)
 p.plot(20*np.log10(np.absolute(spec.T)+1e-8))
+
+################
+# show the plots
+################
 
 plt.show()
 
