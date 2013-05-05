@@ -37,6 +37,10 @@ wrapper.FAUST_PATH = args.faust_path
 dattorro = FAUST("dattorro_notch_cut_regalia.dsp", args.fs, args.faustfloat,
                  extra_compile_args=args.cflags)
 
+def_Q = dattorro.dsp.dattorro_notch_cut_regalia.Q
+def_Gain = dattorro.dsp.dattorro_notch_cut_regalia.Gain
+def_Freq = dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq_
+
 #######################################################
 # plot the frequency response with the default settings
 #######################################################
@@ -52,8 +56,18 @@ print(out)
 spec = np.fft.fft(out)[:,:args.fs/2]
 
 fig = plt.figure()
-p   = fig.add_subplot(1,1,1)
+p   = fig.add_subplot(
+    1,1,1,
+    title="Frequency response with the default settings\n"
+          "(Q={}, F={:.2f} Hz, G={:.0f} dB FS)".format(
+              def_Q.zone, def_Freq.zone, 20*np.log10(def_Gain.zone+1e-8)
+          ),
+    xlabel="Frequency in Hz (log)",
+    ylabel="Magnitude in dB FS",
+    xscale="log"
+)
 p.plot(20*np.log10(np.absolute(spec.T)+1e-8))
+p.legend(("Left channel", "Right channel"), loc="best")
 
 ################
 # show the plots
