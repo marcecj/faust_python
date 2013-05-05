@@ -30,7 +30,7 @@ or
 
     python setup.py install --user
 
-Although you can want to verify that everything works beforehand by running the
+Although you may want to verify that everything works beforehand by running the
 test suite first:
 
     python setup.py test
