@@ -15,10 +15,11 @@ class FAUST(object):
     attributes (see below).
     """
 
-    def __init__(self, faust_dsp, fs, faust_float="float",
-                dsp_class=python_dsp.FAUSTDsp,
-                ui_class=python_ui.PythonUI,
-                faust_flags=[],
+    def __init__(self, faust_dsp, fs,
+                 faust_float = "float",
+                 dsp_class   = python_dsp.FAUSTDsp,
+                 ui_class    = python_ui.PythonUI,
+                 faust_flags = [],
                 **kwargs):
         """
         Initialise a FAUST object.
