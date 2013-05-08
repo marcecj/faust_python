@@ -221,6 +221,18 @@ class test_faustwrapper(unittest.TestCase):
         FAUST("dattorro_notch_cut_regalia.dsp", 48000, "double")
         FAUST("dattorro_notch_cut_regalia.dsp", 48000, "long double")
 
+    def test_init_inline_code(self):
+        """Test initialisation of FAUST objects with inline FAUST code."""
+
+        dsp = FAUST(b"process=_:*(0.5);", 48000)
+
+        audio = np.zeros((dsp.dsp.num_in,48e3), dtype=dsp.dsp.dtype)
+        audio[0,0] = 1
+
+        out = dsp.compute(audio)
+
+        self.assertEqual(out[0,0], audio[0,0]*0.5)
+
     def test_init_wrong_args(self):
         """Test initialisation of FAUST objects with bad arguments."""
 

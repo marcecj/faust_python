@@ -69,6 +69,12 @@ the impulse response of the DSP.  In general `audio` is allowed to have more
 channels (rows) than the DSP, in which case the first `dsp.dsp.num_in` channels
 are processed, but not less.
 
+As a final example, you can also pass in-line FAUST code as the first argument,
+which will be written to a temporary file and compiled by FAUST as usual.  In
+Python 3:
+
+    dsp = FAUSTPy.FAUST(b"process = _:*(0.5);", fs)
+
 For more details, see the built-in documentation (aka `pydoc FAUSTPy`).
 
 ## Demo script

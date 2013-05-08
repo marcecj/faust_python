@@ -26,8 +26,10 @@ class FAUST(object):
         Parameters:
         -----------
 
-        faust_dsp : string
-            The path to the FAUST DSP file to be wrapped.
+        faust_dsp : string / bytes
+            This can be either the path to a FAUST DSP file (which should end in
+            ".dsp") or a string of FAUST code.  Note that in Python 3 a code
+            string must be of type "bytes".
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
         faust_float : string (optional)
@@ -72,9 +74,28 @@ class FAUST(object):
         self.FAUST_FLAGS = ["-lang", "c"] + faust_flags
 
         # compile the FAUST DSP to C and compile it with the CFFI
-        with NamedTemporaryFile(suffix=".c") as f:
-            self.__compile_faust(faust_dsp, f.name, faust_float)
-            self.__ffi, self.__C = self.__gen_ffi(f.name, faust_float, **kwargs)
+        with NamedTemporaryFile(suffix=".dsp") as dsp_file:
+
+            # Two things:
+            #
+            # 1.) In Python 3, in-line code *has* to be a byte array, so if
+            # faust_dsp is a string the test is short-circuited and we assume
+            # that it represents a file name.
+            #
+            # 2.) In Python 2, string literals are all byte arrays, so also
+            # check whether the string ends with ".dsp", in which case we assume
+            # that it represents a file name, otherwise it must be a code block.
+            if type(faust_dsp) is bytes and not faust_dsp.endswith(b".dsp"):
+                dsp_file.write(faust_dsp)
+
+                # make sure the data is immediately written to disc
+                dsp_file.flush()
+
+                faust_dsp = dsp_file.name
+
+            with NamedTemporaryFile(suffix=".c") as c_file:
+                self.__compile_faust(faust_dsp, c_file.name, faust_float)
+                self.__ffi, self.__C = self.__gen_ffi(c_file.name, faust_float, **kwargs)
 
         # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs, ui_class)
