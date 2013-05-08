@@ -1,3 +1,5 @@
+#/usr/bin/env python
+
 """
 A set of classes used to dynamically wrap FAUST DSP programs in Python.
 
