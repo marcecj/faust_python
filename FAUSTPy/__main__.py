@@ -39,7 +39,7 @@ dattorro = FAUST("dattorro_notch_cut_regalia.dsp", args.fs, args.faustfloat,
 
 def_Q = dattorro.dsp.dattorro_notch_cut_regalia.Q
 def_Gain = dattorro.dsp.dattorro_notch_cut_regalia.Gain
-def_Freq = dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq_
+def_Freq = dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq
 
 #######################################################
 # plot the frequency response with the default settings
@@ -75,11 +75,11 @@ p.legend(("Left channel", "Right channel"), loc="best")
 
 Q  = np.linspace(def_Q.min, def_Q.max, 10)
 
-dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq_ = 1e2
+dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq = 1e2
 dattorro.dsp.dattorro_notch_cut_regalia.Gain = 10**(-0.5) # -10 dB
 
 cur_G = dattorro.dsp.dattorro_notch_cut_regalia.Gain.zone
-cur_F = dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq_.zone
+cur_F = dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq.zone
 
 fig = plt.figure()
 p = fig.add_subplot(
@@ -111,7 +111,7 @@ G  = np.logspace(-3, np.log10(def_Gain.max), 10)
 dattorro.dsp.dattorro_notch_cut_regalia.Q = 2
 
 cur_Q = dattorro.dsp.dattorro_notch_cut_regalia.Q.zone
-cur_F = dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq_.zone
+cur_F = dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq.zone
 
 fig = plt.figure()
 p = fig.add_subplot(
@@ -155,7 +155,7 @@ p = fig.add_subplot(
 )
 
 for f in F:
-    dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq_ = f
+    dattorro.dsp.dattorro_notch_cut_regalia.Center_Freq = f
     out = dattorro.compute(audio)
     spec = np.fft.fft(out)[0,:args.fs/2]
 

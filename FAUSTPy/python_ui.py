@@ -1,7 +1,33 @@
 # TODO: test the MetaGlue and UIGlue types
 # TODO: store meta-data about the UI type in the param class to enable users of
 # PythonUI to know the type of the UI elements
-# TODO: verify the label sanity checking (maybe Python has something built in?)
+
+# a string consisting of characters that are valid identifiers in both
+# Python 2 and Python 3
+import string
+valid_ident = string.ascii_letters + string.digits + "_"
+
+def str_to_identifier(s):
+    """Convert a "bytes" to a valid (in Python 2 and 3) identifier."""
+
+    # convert to unicode string
+    s = s.decode()
+
+    def filter_chars(s):
+        for c in s:
+            # periods are used for abbreviations and look ugly when converted to
+            # underscore, so filter them out completely
+            if   c == ".":
+                yield ""
+            elif c in valid_ident or c == "_":
+                yield c
+            else:
+                yield "_"
+
+    if s[0] in string.digits:
+        s = "_"+s
+
+    return ''.join(filter_chars(s))
 
 class param(object):
     """A UI parameter object.
@@ -220,7 +246,7 @@ class PythonUI(object):
             # NOTE: labels are char*, which map to strings in Python2 and bytes
             # in Python3, so they need to be decoded to work in both
             box        = namespace()
-            sane_label = label.decode().replace(" ", "_").replace(".", "_")
+            sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
 
@@ -251,7 +277,7 @@ class PythonUI(object):
 
         # labels are char*, which map to strings in Python2 and bytes in
         # Python3, so they need to be decoded to work in both
-        sane_label = label.decode().replace(" ","_").replace(".","_")
+        sane_label = str_to_identifier(label)
         setattr(self.__boxes[-1].__class__, sane_label, param(zone, init, min, max, step))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
