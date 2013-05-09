@@ -15,6 +15,8 @@ from . wrapper import FAUST
 from . python_ui import PythonUI, param
 from . python_dsp import FAUSTDsp
 
+# TODO: see which meta-data is still relevant. pydoc definitely uses "author",
+# "credits" and "version" (and "date"), should the rest be removed?
 __author__           = "Marc Joliet"
 __copyright__        = "Copyright 2013, Marc Joliet"
 __credits__          = "Marc Joliet"
