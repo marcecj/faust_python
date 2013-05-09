@@ -17,7 +17,7 @@ from . python_dsp import FAUSTDsp
 
 __author__           = "Marc Joliet"
 __copyright__        = "Copyright 2013, Marc Joliet"
-__credits__          = ["Marc Joliet"]
+__credits__          = "Marc Joliet"
 __license__          = "MIT"
 __version__          = "0.1"
 __maintainer__       = "Marc Joliet"
