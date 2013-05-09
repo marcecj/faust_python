@@ -1,4 +1,3 @@
-# TODO: test the MetaGlue and UIGlue types
 # TODO: store meta-data about the UI type in the param class to enable users of
 # PythonUI to know the type of the UI elements
 
