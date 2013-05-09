@@ -39,7 +39,7 @@ class param(object):
     Furthermore, it cannot be deleted.
     """
 
-    def __init__(self, zone, init, min, max, step):
+    def __init__(self, label, zone, init, min, max, step):
         """Initialise a param object.
 
         Parameters:
@@ -58,6 +58,7 @@ class param(object):
         """
 
         # NOTE: _zone is a CData holding a float*
+        self.label    = label
         self.min      = min
         self.max      = max
         self.step     = step
@@ -245,6 +246,7 @@ class PythonUI(object):
             # NOTE: labels are char*, which map to strings in Python2 and bytes
             # in Python3, so they need to be decoded to work in both
             box        = namespace()
+            box.label  = label
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
@@ -277,7 +279,7 @@ class PythonUI(object):
         # labels are char*, which map to strings in Python2 and bytes in
         # Python3, so they need to be decoded to work in both
         sane_label = str_to_identifier(label)
-        setattr(self.__boxes[-1].__class__, sane_label, param(zone, init, min, max, step))
+        setattr(self.__boxes[-1].__class__, sane_label, param(label, zone, init, min, max, step))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
 
