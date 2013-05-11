@@ -241,7 +241,7 @@ class PythonUI(object):
         # current position in the namespace hierarchy.
         # TODO: figure out how to store the original intended hierarchy
         if label:
-            # create a new sub-namespace and set it's parent to the current
+            # create a new sub-namespace and make it a child of the current
             # namespace
             #
             # NOTE: labels are char*, which map to strings in Python2 and bytes
