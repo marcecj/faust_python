@@ -136,6 +136,8 @@ class PythonUI(object):
         else:
             self.__boxes = [self]
 
+        self.__empty_label = [False]
+
         # define wrapper functions that know the global PythonUI object
         # TODO: implement the dummy functions
         def declare(mInterface, zone, key, value):
@@ -250,6 +252,9 @@ class PythonUI(object):
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
+            self.__empty_label.append(False)
+        else:
+            self.__empty_label.append(True)
 
     def openVerticalBox(self, label):
 
@@ -265,10 +270,11 @@ class PythonUI(object):
 
     def closeBox(self):
 
-        if len(self.__boxes) > 1:
-            self.__boxes.pop()
-        else:
-            print("Warning: Trying to close last box.")
+        # if the namespace has no name, don't try to close it
+        if self.__empty_label.pop():
+            return
+
+        self.__boxes.pop()
 
     ##########################
     # stuff to do with inputs
