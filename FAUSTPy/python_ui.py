@@ -95,7 +95,8 @@ class param(object):
 
 class namespace(object):
     def __init__(self, label):
-        self.label = label
+        self.anon_params = []
+        self.label       = label
 
 class PythonUI(object):
     """
@@ -285,8 +286,11 @@ class PythonUI(object):
 
         # labels are char*, which map to strings in Python2 and bytes in
         # Python3, so they need to be decoded to work in both
-        sane_label = str_to_identifier(label)
-        setattr(self.__boxes[-1].__class__, sane_label, param(label, zone, init, min, max, step))
+        if label:
+            sane_label = str_to_identifier(label)
+            setattr(self.__boxes[-1].__class__, sane_label, param(label, zone, init, min, max, step))
+        else:
+            self.__boxes[-1].anon_params.append(param(label, zone, init, min, max, step))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
 
