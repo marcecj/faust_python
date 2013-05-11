@@ -93,6 +93,10 @@ class param(object):
     zone = property(fget=getter, fset=setter,
                     doc="Pointer to the value of the parameter.")
 
+class namespace(object):
+    def __init__(self, label):
+        self.label = label
+
 class PythonUI(object):
     """
     Maps the UI elements of a FAUST DSP to attributes of another object,
@@ -237,16 +241,12 @@ class PythonUI(object):
         # current position in the namespace hierarchy.
         # TODO: figure out how to store the original intended hierarchy
         if label:
-            class namespace(object):
-                pass
-
             # create a new sub-namespace and set it's parent to the current
             # namespace
             #
             # NOTE: labels are char*, which map to strings in Python2 and bytes
             # in Python3, so they need to be decoded to work in both
-            box        = namespace()
-            box.label  = label
+            box        = namespace(label)
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
