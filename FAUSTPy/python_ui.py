@@ -274,6 +274,7 @@ class PythonUI(object):
         if self.__empty_label.pop():
             return
 
+        # now pop the box off the stack
         self.__boxes.pop()
 
     ##########################
