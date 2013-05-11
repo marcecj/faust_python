@@ -4,6 +4,7 @@
 # a string consisting of characters that are valid identifiers in both
 # Python 2 and Python 3
 import string
+from . python_dsp import FAUSTDsp
 valid_ident = string.ascii_letters + string.digits + "_"
 
 def str_to_identifier(s):
@@ -59,6 +60,7 @@ class param(object):
 
         # NOTE: _zone is a CData holding a float*
         self.label    = label
+        self.metadata = {}
         self.min      = min
         self.max      = max
         self.step     = step
@@ -95,6 +97,7 @@ class param(object):
 
 class namespace(object):
     def __init__(self, label):
+        self.metadata    = {}
         self.anon_params = []
         self.label       = label
 
@@ -138,6 +141,8 @@ class PythonUI(object):
             self.__boxes = [self]
 
         self.__empty_label = [False]
+        self.__metadata    = [{}]
+        self.__group_metadata = {}
 
         # define wrapper functions that know the global PythonUI object
         # TODO: implement the dummy functions
@@ -228,12 +233,32 @@ class PythonUI(object):
         ui.uiInterface           = ffi.NULL # we don't use this anyway
 
         self.__ui = ui
+        self.__ffi = ffi
 
     ui = property(fget=lambda x: x.__ui,
                   doc="The UI struct that calls back to its parent object.")
 
     def declare(self, zone, key, value):
-        pass
+
+        # get python strings from the CData char*
+        key   = self.__ffi.string(key)
+        value = self.__ffi.string(value)
+
+        if zone == self.__ffi.NULL:
+            # set group meta-data
+            #
+            # the group meta-data is stored temporarily here and is set during
+            # the next openBox()
+            self.__group_metadata[key] = value
+        else:
+            # store parameter meta-data
+            #
+            # since the only identifier we get is the zone (pointer to the
+            # control value), we have to store this for now and assign it to the
+            # corresponding parameter later in closeBox()
+            if zone not in self.__metadata[-1]:
+                self.__metadata[-1][zone] = {}
+            self.__metadata[-1][zone][key] = value
 
     ##########################
     # stuff to do with boxes
@@ -253,9 +278,17 @@ class PythonUI(object):
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
+
             self.__empty_label.append(False)
         else:
             self.__empty_label.append(True)
+
+        # store the group meta-data in the newly opened box and reset
+        # self.__group_metadata
+        self.__boxes[-1].metadata.update(self.__group_metadata)
+        self.__group_metadata = {}
+
+        self.__metadata.append({})
 
     def openVerticalBox(self, label):
 
@@ -270,6 +303,21 @@ class PythonUI(object):
         self.openBox(label)
 
     def closeBox(self):
+
+        cur_metadata = self.__metadata.pop()
+
+        # iterate over the objects in the current box and assign the meta-data
+        # to the correct parameters
+        for p in self.__boxes[-1].__class__.__dict__.values():
+
+            if type(p) not in (param, namespace, FAUSTDsp):
+                continue
+
+            # iterate over the meta-data that has accumulated in the current box
+            # and assign it to its corresponding param objects
+            for zone, mdata in cur_metadata.items():
+                if p._zone == zone:
+                    p.metadata.update(mdata)
 
         # if the namespace has no name, don't try to close it
         if self.__empty_label.pop():
