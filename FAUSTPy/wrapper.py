@@ -198,8 +198,8 @@ class FAUST(object):
             #define FAUSTFLOAT ${FAUSTFLOAT}
 
             // helper function definitions
-            int min(int x, int y) { return x < y ? x : y;};
-            int max(int x, int y) { return x > y ? x : y;};
+            FAUSTFLOAT min(FAUSTFLOAT x, FAUSTFLOAT y) { return x < y ? x : y;};
+            FAUSTFLOAT max(FAUSTFLOAT x, FAUSTFLOAT y) { return x > y ? x : y;};
 
             // the MetaGlue struct that will be wrapped
             typedef struct {
