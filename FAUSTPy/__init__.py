@@ -12,7 +12,7 @@ This package defines three types:
 """
 
 from . wrapper import FAUST
-from . python_ui import PythonUI, param
+from . python_ui import PythonUI, Param
 from . python_dsp import FAUSTDsp
 
 # TODO: see which meta-data is still relevant. pydoc definitely uses "author",
@@ -26,4 +26,4 @@ __maintainer__       = "Marc Joliet"
 __email__            = "marcec@gmx.de"
 __status__           = "Prototype"
 
-__all__ = ["FAUST", "PythonUI", "FAUSTDsp", "param", "wrapper"]
+__all__ = ["FAUST", "PythonUI", "FAUSTDsp", "Param", "wrapper"]

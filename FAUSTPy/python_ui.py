@@ -26,7 +26,7 @@ def str_to_identifier(s):
 
     return ''.join(filter_chars(s))
 
-class param(object):
+class Param(object):
     """A UI parameter object.
 
     This objects represents a FAUST UI input.  It makes sure to enforce the
@@ -38,7 +38,7 @@ class param(object):
     """
 
     def __init__(self, label, zone, init, min, max, step, param_type):
-        """Initialise a param object.
+        """Initialise a Param object.
 
         Parameters:
         -----------
@@ -120,7 +120,7 @@ class PythonUI(object):
     See also:
     ---------
 
-    FAUSTPy.param - wraps the UI input parameters.
+    FAUSTPy.Param - wraps the UI input parameters.
     """
 
     def __init__(self, ffi, obj=None):
@@ -310,11 +310,11 @@ class PythonUI(object):
         # to the correct parameters
         for p in self.__boxes[-1].__class__.__dict__.values():
 
-            if type(p) not in (param, Box, FAUSTDsp):
+            if type(p) not in (Param, Box, FAUSTDsp):
                 continue
 
             # iterate over the meta-data that has accumulated in the current box
-            # and assign it to its corresponding param objects
+            # and assign it to its corresponding Param objects
             for zone, mdata in cur_metadata.items():
                 if p._zone == zone:
                     p.metadata.update(mdata)
@@ -337,10 +337,10 @@ class PythonUI(object):
         if label:
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1].__class__, sane_label,
-                    param(label, zone, init, min, max, step, param_type))
+                    Param(label, zone, init, min, max, step, param_type))
         else:
             self.__boxes[-1].anon_params.append(
-                param(label, zone, init, min, max, step, param_type)
+                Param(label, zone, init, min, max, step, param_type)
             )
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
