@@ -60,13 +60,15 @@ class param(object):
 
         # NOTE: _zone is a CData holding a float*
         self.label    = label
-        self.metadata = {}
+        self._zone    = zone
+        self._zone[0] = init
         self.min      = min
         self.max      = max
         self.step     = step
-        self._zone    = zone
-        self._zone[0] = init
+
+        # extra attributes
         self.default  = init
+        self.metadata = {}
         self.__doc__  = "min={0}, max={1}, step={2}".format(min,max,step)
 
     def __get__(self, obj, type=None):
