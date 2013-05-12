@@ -97,10 +97,10 @@ class Param(object):
 
 class Box(object):
     def __init__(self, label, layout):
-        self.metadata    = {}
-        self.anon_params = []
         self.label       = label
         self.layout      = layout
+        self.metadata    = {}
+        self.anon_params = []
 
 # TODO: implement the *Display() and *Bargraph() methods
 class PythonUI(object):
