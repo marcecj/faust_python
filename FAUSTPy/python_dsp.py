@@ -7,7 +7,8 @@ class FAUSTDsp(object):
     abstraction that sits directly on top of the FAUST DSP struct.
     """
 
-    def __init__(self, C, ffi, faust_float, fs, faust_ui):
+    def __init__(self, C, ffi, faust_float, fs, faust_ui,
+                 faust_meta=None):
         """Initialise a FAUSTDsp object.
 
         To instantiate this object, you create a cffi.FFI object that contains
@@ -31,12 +32,15 @@ class FAUSTDsp(object):
             The sampling rate the FAUST DSP should be initialised with.
         faust_ui : FAUSTPy.PythonUI-like
             A class that implements the UIGlue C type.
+        faust_meta : FAUSTPy.PythonMeta-like (optional)
+            A class that implements the MetaGlue C type.
         """
 
-        self.__C   = C
-        self.__ffi = ffi
+        self.__C           = C
+        self.__ffi         = ffi
         self.__faust_float = faust_float
-        self.__dsp = C.newmydsp()
+        self.__dsp         = C.newmydsp()
+        self.metadata      = {}
 
         if   faust_float == "float":
             self.__dtype = float32
@@ -50,8 +54,9 @@ class FAUSTDsp(object):
         UI = faust_ui(self.__ffi, self)
         C.buildUserInterfacemydsp(self.__dsp, UI.ui)
 
-        # self.__meta = MetaGlue()
-        # self._metadata = C.metadatamydsp(meta)
+        if faust_meta:
+            Meta = faust_meta(self.__ffi, self)
+            C.metadatamydsp(Meta.meta)
 
         # allocate the input and output pointers so that they are not
         # allocated/deallocated at every call to compute()

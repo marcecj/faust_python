@@ -3,7 +3,7 @@ import os
 from subprocess import check_call
 from tempfile import NamedTemporaryFile
 from string import Template
-from . import python_ui, python_dsp
+from . import python_ui, python_meta, python_dsp
 
 FAUST_PATH = ""
 FAUSTFLOATS = frozenset(("float", "double", "long double"))
@@ -19,6 +19,7 @@ class FAUST(object):
                  faust_float = "float",
                  dsp_class   = python_dsp.FAUSTDsp,
                  ui_class    = python_ui.PythonUI,
+                 meta_class  = python_meta.PythonMeta,
                  faust_flags = [],
                 **kwargs):
         """
@@ -40,6 +41,9 @@ class FAUST(object):
         ui_class : PythonUI-like (optional)
             The constructor of a UIGlue wrapper.  Just in case you want to write
             your own.
+        meta_class : PythonMeta-like (optional)
+            The constructor of a MetaGlue wrapper.  Just in case you want to
+            write your own.
         faust_flags : list of strings (optional)
             A list of additional flags to pass to the FAUST compiler, which are
             appended to "-lang c" (since FAUSTPy requires the FAUST C backend).
@@ -99,7 +103,8 @@ class FAUST(object):
                 self.__ffi, self.__C = self.__gen_ffi(c_file.name, faust_float, **kwargs)
 
         # initialise the DSP object
-        self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs, ui_class)
+        self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs,
+                               ui_class, meta_class)
 
         # add shortcuts to the compute* functions
         self.compute  = self.__dsp.compute

@@ -94,7 +94,7 @@ in the source directory.  This will display four plots:
 
 ## TODO
 
-- finish the MetaGlue and UIGlue wrappers
+- finish the UIGlue wrapper
 - finish the test suite
 - Find out why cdef/verify string caching does not work.  Since the sources don't
   actually change, the strings should not change and hence the cffi should not
