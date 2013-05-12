@@ -15,7 +15,7 @@ parser.add_argument('-f', '--faustfloat',
 parser.add_argument('-p', '--path',
                     dest="faust_path",
                     default="",
-                    help="The path of FAUSTFLOAT.")
+                    help="The path to the FAUST compiler.")
 parser.add_argument('-c', '--cflags',
                     dest="cflags",
                     default=[],
