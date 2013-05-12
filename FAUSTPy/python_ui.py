@@ -148,7 +148,7 @@ class PythonUI(object):
 
         # define wrapper functions that know the global PythonUI object
         def declare(mInterface, zone, key, value):
-            self.declare(zone, key, value)
+            self.declare(zone, ffi.string(key), ffi.string(value))
         def openVerticalBox(mInterface, label):
             self.openVerticalBox(ffi.string(label))
         def openHorizontalBox(mInterface, label):
@@ -240,10 +240,6 @@ class PythonUI(object):
                   doc="The UI struct that calls back to its parent object.")
 
     def declare(self, zone, key, value):
-
-        # get python strings from the CData char*
-        key   = self.__ffi.string(key)
-        value = self.__ffi.string(value)
 
         if zone == self.__ffi.NULL:
             # set group meta-data
