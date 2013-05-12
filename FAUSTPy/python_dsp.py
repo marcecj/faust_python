@@ -7,7 +7,8 @@ class FAUSTDsp(object):
     abstraction that sits directly on top of the FAUST DSP struct.
     """
 
-    def __init__(self, C, ffi, faust_float, fs, faust_ui,
+    def __init__(self, C, ffi, faust_float, fs,
+                 faust_ui=None,
                  faust_meta=None):
         """Initialise a FAUSTDsp object.
 
@@ -30,7 +31,7 @@ class FAUSTDsp(object):
             "double" or "long double".
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
-        faust_ui : FAUSTPy.PythonUI-like
+        faust_ui : FAUSTPy.PythonUI-like (optional)
             A class that implements the UIGlue C type.
         faust_meta : FAUSTPy.PythonMeta-like (optional)
             A class that implements the MetaGlue C type.
@@ -51,8 +52,10 @@ class FAUSTDsp(object):
 
         # calls both classInitmydsp() and instanceInitmydsp()
         C.initmydsp(self.__dsp, fs)
-        UI = faust_ui(self.__ffi, self)
-        C.buildUserInterfacemydsp(self.__dsp, UI.ui)
+
+        if faust_ui:
+            UI = faust_ui(self.__ffi, self)
+            C.buildUserInterfacemydsp(self.__dsp, UI.ui)
 
         if faust_meta:
             Meta = faust_meta(self.__ffi, self)
