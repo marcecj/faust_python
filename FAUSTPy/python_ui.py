@@ -101,6 +101,7 @@ class Box(object):
         self.anon_params = []
         self.label       = label
 
+# TODO: implement the *Display() and *Bargraph() methods
 class PythonUI(object):
     """
     Maps the UI elements of a FAUST DSP to attributes of another object,
@@ -145,7 +146,6 @@ class PythonUI(object):
         self.__group_metadata = {}
 
         # define wrapper functions that know the global PythonUI object
-        # TODO: implement the dummy functions
         def declare(mInterface, zone, key, value):
             self.declare(zone, key, value)
         def openVerticalBox(mInterface, label):
