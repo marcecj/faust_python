@@ -43,6 +43,8 @@ class Param(object):
         Parameters:
         -----------
 
+        label : str
+            The full label as specified in the FAUST DSP file.
         zone : cffi.CData
             Points to the FAUSTFLOAT object inside the DSP C object.
         init : float
@@ -53,6 +55,8 @@ class Param(object):
             The maximum allowed value.
         step : float
             The step size of the parameter.
+        param_type : str
+            The parameter type (e.g., HorizontalSlider)
         """
 
         # NOTE: _zone is a CData holding a float*

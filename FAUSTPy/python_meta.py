@@ -20,8 +20,8 @@ class PythonMeta(object):
         ffi : cffi.FFI
             The CFFI instance that holds all the data type declarations.
         obj : object (optional)
-            The Python object to which the UI elements are to be added.  If None
-            (the default) the PythonUI instance manipulates itself.
+            The Python object in which the meta-data is to be stored.  If None
+            (the default) the PythonMeta instance manipulates itself.
         """
 
         if obj:
