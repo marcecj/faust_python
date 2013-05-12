@@ -95,7 +95,7 @@ class param(object):
     zone = property(fget=getter, fset=setter,
                     doc="Pointer to the value of the parameter.")
 
-class namespace(object):
+class Box(object):
     def __init__(self, label):
         self.metadata    = {}
         self.anon_params = []
@@ -265,16 +265,15 @@ class PythonUI(object):
     ##########################
 
     def openBox(self, label):
-        # If the label is an empty string, don't do anything, just stay at the
-        # current position in the namespace hierarchy.
+        # If the label is an empty string, don't do anything, just stay in the
+        # current Box
         # TODO: figure out how to store the original intended hierarchy
         if label:
-            # create a new sub-namespace and make it a child of the current
-            # namespace
+            # create a new sub-Box and make it a child of the current Box
             #
             # NOTE: labels are char*, which map to strings in Python2 and bytes
             # in Python3, so they need to be decoded to work in both
-            box        = namespace(label)
+            box        = Box(label)
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
@@ -310,7 +309,7 @@ class PythonUI(object):
         # to the correct parameters
         for p in self.__boxes[-1].__class__.__dict__.values():
 
-            if type(p) not in (param, namespace, FAUSTDsp):
+            if type(p) not in (param, Box, FAUSTDsp):
                 continue
 
             # iterate over the meta-data that has accumulated in the current box
@@ -319,7 +318,7 @@ class PythonUI(object):
                 if p._zone == zone:
                     p.metadata.update(mdata)
 
-        # if the namespace has no name, don't try to close it
+        # if the Box has no name, don't try to close it
         if self.__empty_label.pop():
             return
 
