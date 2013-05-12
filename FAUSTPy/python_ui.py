@@ -1,6 +1,3 @@
-# TODO: store meta-data about the UI type in the param class to enable users of
-# PythonUI to know the type of the UI elements
-
 # a string consisting of characters that are valid identifiers in both
 # Python 2 and Python 3
 import string
@@ -40,7 +37,7 @@ class param(object):
     Furthermore, it cannot be deleted.
     """
 
-    def __init__(self, label, zone, init, min, max, step):
+    def __init__(self, label, zone, init, min, max, step, param_type):
         """Initialise a param object.
 
         Parameters:
@@ -65,6 +62,7 @@ class param(object):
         self.min      = min
         self.max      = max
         self.step     = step
+        self.type     = param_type
 
         # extra attributes
         self.default  = init
@@ -98,10 +96,11 @@ class param(object):
                     doc="Pointer to the value of the parameter.")
 
 class Box(object):
-    def __init__(self, label):
+    def __init__(self, label, layout):
         self.metadata    = {}
         self.anon_params = []
         self.label       = label
+        self.layout      = layout
 
 # TODO: implement the *Display() and *Bargraph() methods
 class PythonUI(object):
@@ -266,7 +265,7 @@ class PythonUI(object):
     # stuff to do with boxes
     ##########################
 
-    def openBox(self, label):
+    def openBox(self, label, layout):
         # If the label is an empty string, don't do anything, just stay in the
         # current Box
         # TODO: figure out how to store the original intended hierarchy
@@ -275,7 +274,7 @@ class PythonUI(object):
             #
             # NOTE: labels are char*, which map to strings in Python2 and bytes
             # in Python3, so they need to be decoded to work in both
-            box        = Box(label)
+            box        = Box(label, layout)
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
             self.__boxes.append(box)
@@ -293,15 +292,15 @@ class PythonUI(object):
 
     def openVerticalBox(self, label):
 
-        self.openBox(label)
+        self.openBox(label, "vertical")
 
     def openHorizontalBox(self, label):
 
-        self.openBox(label)
+        self.openBox(label, "horizontal")
 
     def openTabBox(self, label):
 
-        self.openBox(label)
+        self.openBox(label, "tab")
 
     def closeBox(self):
 
@@ -331,39 +330,42 @@ class PythonUI(object):
     # stuff to do with inputs
     ##########################
 
-    def add_input(self, label, zone, init, min, max, step):
+    def add_input(self, label, zone, init, min, max, step, param_type):
 
         # labels are char*, which map to strings in Python2 and bytes in
         # Python3, so they need to be decoded to work in both
         if label:
             sane_label = str_to_identifier(label)
-            setattr(self.__boxes[-1].__class__, sane_label, param(label, zone, init, min, max, step))
+            setattr(self.__boxes[-1].__class__, sane_label,
+                    param(label, zone, init, min, max, step, param_type))
         else:
-            self.__boxes[-1].anon_params.append(param(label, zone, init, min, max, step))
+            self.__boxes[-1].anon_params.append(
+                param(label, zone, init, min, max, step, param_type)
+            )
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
 
-        self.add_input(label, zone, init, min, max, step)
+        self.add_input(label, zone, init, min, max, step, "HorizontalSlider")
 
     def addVerticalSlider(self, label, zone, init, min, max, step):
 
-        self.add_input(label, zone, init, min, max, step)
+        self.add_input(label, zone, init, min, max, step, "VerticalSlider")
 
     def addNumEntry(self, label, zone, init, min, max, step):
 
-        self.add_input(label, zone, init, min, max, step)
+        self.add_input(label, zone, init, min, max, step, "NumEntry")
 
     def addButton(self, label, zone):
 
-        self.add_input(label, zone, 0, 0, 1, 1)
+        self.add_input(label, zone, 0, 0, 1, 1, "Button")
 
     def addToggleButton(self, label, zone):
 
-        self.add_input(label, zone, 0, 0, 1, 1)
+        self.add_input(label, zone, 0, 0, 1, 1, "ToggleButton")
 
     def addCheckButton(self, label, zone):
 
-        self.add_input(label, zone, 0, 0, 1, 1)
+        self.add_input(label, zone, 0, 0, 1, 1, "CheckButton")
 
     def addNumDisplay(self, label, zone, p):
         pass
