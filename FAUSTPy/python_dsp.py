@@ -68,6 +68,7 @@ class FAUSTDsp(object):
 
         self.__C.deletemydsp(self.__dsp)
 
+    # TODO: support DSPs without inputs
     def compute(self, audio):
         """
         Process an ndarray with the FAUST DSP.
