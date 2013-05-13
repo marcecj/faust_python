@@ -177,8 +177,8 @@ FAUST object might look like.  It is based on the DSP
            [ 0.74657288, -0.30020767,  0.0227801 , ...,  0.        ,
              0.        ,  0.        ]])
 
-For more details, see the built-in documentation (aka `pydoc FAUSTPy`) and - if
-you are so inclined - the source code.
+For more details, see the built-in documentation (aka `pydoc FAUSTPy`) and -- if
+you are so inclined -- the source code.
 
 ## Demo script
 
