@@ -111,13 +111,8 @@ class FAUST(object):
         self.compute2 = self.__dsp.compute2
 
     # expose some internal attributes as properties
-    # TODO: see if you can remove the ffi and C properties
     dsp = property(fget=lambda x: x.__dsp,
                    doc="The internal FAUSTDsp object.")
-    ffi = property(fget=lambda x: x.__ffi,
-                   doc="The internal FFI object.")
-    C   = property(fget=lambda x: x.__C,
-                   doc="The internal FFILibrary object.")
 
     def __compile_faust(self, faust_dsp, faust_c, faust_float):
 
