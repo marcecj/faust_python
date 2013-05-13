@@ -7,7 +7,7 @@ valid_ident = string.ascii_letters + string.digits + "_"
 def str_to_identifier(s):
     """Convert a "bytes" to a valid (in Python 2 and 3) identifier."""
 
-    # convert to unicode string
+    # convert str/bytes to unicode string
     s = s.decode()
 
     def filter_chars(s):
@@ -271,9 +271,6 @@ class PythonUI(object):
         # TODO: figure out how to store the original intended hierarchy
         if label:
             # create a new sub-Box and make it a child of the current Box
-            #
-            # NOTE: labels are char*, which map to strings in Python2 and bytes
-            # in Python3, so they need to be decoded to work in both
             box        = Box(label, layout)
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1], sane_label, box)
@@ -332,8 +329,6 @@ class PythonUI(object):
 
     def add_input(self, label, zone, init, min, max, step, param_type):
 
-        # labels are char*, which map to strings in Python2 and bytes in
-        # Python3, so they need to be decoded to work in both
         if label:
             sane_label = str_to_identifier(label)
             setattr(self.__boxes[-1].__class__, sane_label,
