@@ -120,6 +120,12 @@ class PythonUI(object):
     the callbacks in the UI struct and thus creates a hierarchical namespace of
     attributes which map back to the DSP's UI elements.
 
+    Notes:
+    ------
+
+    Box and Param attributes are prefixed with "b_" and "p_", respectively, in
+    order to differentiate them from each other and from regular attributes.
+
     See also:
     ---------
 
@@ -277,7 +283,7 @@ class PythonUI(object):
 
         # create a new sub-Box and make it a child of the current Box
         box        = Box(label, layout)
-        setattr(self.__boxes[-1], sane_label, box)
+        setattr(self.__boxes[-1], "b_"+sane_label, box)
         self.__boxes.append(box)
 
 
@@ -338,7 +344,7 @@ class PythonUI(object):
             self.__num_anon_params[-1] += 1
             sane_label = "anon_param" + str(self.__num_anon_params[-1])
 
-        setattr(self.__boxes[-1].__class__, sane_label,
+        setattr(self.__boxes[-1].__class__, "p_"+sane_label,
                 Param(label, zone, init, min, max, step, param_type))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):

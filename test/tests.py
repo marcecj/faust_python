@@ -143,18 +143,18 @@ class test_faustui(unittest.TestCase):
 
         ui = PythonUI(self.ffi, self.bla).ui
         ui.openVerticalBox(self.ffi.NULL,b"bla")
-        self.assertEqual(self.bla.bla.layout, "vertical")
+        self.assertEqual(self.bla.b_bla.layout, "vertical")
 
         slider_val = self.ffi.new("FAUSTFLOAT*", 1.0)
         self.assertEqual(slider_val[0], 1.0)
 
         ui.addHorizontalSlider(self.ffi.NULL, b"float", slider_val, 0.0, 0.0, 2.0, 0.1)
-        self.assertTrue(hasattr(self.bla.bla, "float"))
-        self.assertEqual(self.bla.bla.float.zone, 0.0)
-        self.assertEqual(self.bla.bla.float.type, "HorizontalSlider")
+        self.assertTrue(hasattr(self.bla.b_bla, "p_float"))
+        self.assertEqual(self.bla.b_bla.p_float.zone, 0.0)
+        self.assertEqual(self.bla.b_bla.p_float.type, "HorizontalSlider")
 
-        self.bla.bla.float.zone = 0.5
-        self.assertEqual(self.bla.bla.float.zone, slider_val[0])
+        self.bla.b_bla.p_float.zone = 0.5
+        self.assertEqual(self.bla.b_bla.p_float.zone, slider_val[0])
 
         button_val = self.ffi.new("FAUSTFLOAT*", 1.0)
         # should do nothing
