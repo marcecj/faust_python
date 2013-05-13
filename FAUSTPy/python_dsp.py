@@ -67,6 +67,21 @@ class FAUSTDsp(object):
         self.__input_p  = self.__ffi.new("FAUSTFLOAT*[]", self.num_in)
         self.__output_p = self.__ffi.new("FAUSTFLOAT*[]", self.num_out)
 
+    dtype = property(fget=lambda x: x.__dtype,
+                     doc="A dtype corresponding to the value of FAUSTFLOAT.")
+
+    faustfloat = property(fget=lambda x: x.__faust_float,
+                          doc="The value of FAUSTFLOAT for this DSP.")
+
+    fs = property(fget=lambda s: s.__C.getSampleRatemydsp(s.__dsp),
+                 doc="The sampling rate of the DSP.")
+
+    num_in = property(fget=lambda s: s.__C.getNumInputsmydsp(s.__dsp),
+                      doc="The number of input channels.")
+
+    num_out = property(fget=lambda s: s.__C.getNumOutputsmydsp(s.__dsp),
+                       doc="The number of output channels.")
+
     def __del__(self):
         """Deallocate the FAUST DSP object.
 
@@ -178,14 +193,3 @@ class FAUSTDsp(object):
         self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
 
         return output
-
-    dtype = property(fget=lambda x: x.__dtype,
-                     doc="A dtype corresponding to the value of FAUSTFLOAT.")
-    faustfloat = property(fget=lambda x: x.__faust_float,
-                          doc="The value of FAUSTFLOAT for this DSP.")
-    fs = property(fget=lambda s: s.__C.getSampleRatemydsp(s.__dsp),
-                 doc="The sampling rate of the DSP.")
-    num_in = property(fget=lambda s: s.__C.getNumInputsmydsp(s.__dsp),
-                      doc="The number of input channels.")
-    num_out = property(fget=lambda s: s.__C.getNumOutputsmydsp(s.__dsp),
-                       doc="The number of output channels.")

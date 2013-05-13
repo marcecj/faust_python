@@ -73,18 +73,6 @@ class Param(object):
         self.metadata = {}
         self.__doc__  = "min={0}, max={1}, step={2}".format(min,max,step)
 
-    def __get__(self, obj, type=None):
-
-        return self
-
-    def __set__(self, obj, value):
-
-        self.zone = value
-
-    def __delete__(self, obj):
-
-        print("Please do not delete this.")
-
     def getter(self):
         return self._zone[0]
 
@@ -98,6 +86,18 @@ class Param(object):
 
     zone = property(fget=getter, fset=setter,
                     doc="Pointer to the value of the parameter.")
+
+    def __get__(self, obj, type=None):
+
+        return self
+
+    def __set__(self, obj, value):
+
+        self.zone = value
+
+    def __delete__(self, obj):
+
+        print("Please do not delete this.")
 
 class Box(object):
     def __init__(self, label, layout):
