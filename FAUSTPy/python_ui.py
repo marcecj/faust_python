@@ -74,10 +74,10 @@ class Param(object):
         self.metadata = {}
         self.__doc__  = "min={0}, max={1}, step={2}".format(min,max,step)
 
-    def getter(self):
+    def __zone_getter(self):
         return self._zone[0]
 
-    def setter(self, x):
+    def __zone_setter(self, x):
         if   x >= self.max:
             self._zone[0] = self.max
         elif x <= self.min:
@@ -85,7 +85,7 @@ class Param(object):
         else:
             self._zone[0] = self.min + round((x-self.min)/self.step)*self.step
 
-    zone = property(fget=getter, fset=setter,
+    zone = property(fget=__zone_getter, fset=__zone_setter,
                     doc="Pointer to the value of the parameter.")
 
     def __get__(self, obj, type=None):
