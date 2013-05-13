@@ -145,10 +145,10 @@ class PythonUI(object):
         else:
             self.__boxes = [self]
 
-        self.__empty_label = [False]
+        self.__num_anon_boxes  = [0]
         self.__num_anon_params = [0]
-        self.__metadata    = [{}]
-        self.__group_metadata = {}
+        self.__metadata        = [{}]
+        self.__group_metadata  = {}
 
         # define wrapper functions that know the global PythonUI object
         def declare(mInterface, zone, key, value):
@@ -268,23 +268,25 @@ class PythonUI(object):
     def openBox(self, label, layout):
         # If the label is an empty string, don't do anything, just stay in the
         # current Box
-        # TODO: figure out how to store the original intended hierarchy
         if label:
-            # create a new sub-Box and make it a child of the current Box
-            box        = Box(label, layout)
             sane_label = str_to_identifier(label)
-            setattr(self.__boxes[-1], sane_label, box)
-            self.__boxes.append(box)
-
-            self.__empty_label.append(False)
         else:
-            self.__empty_label.append(True)
+            # if the label is empty, create a default label
+            self.__num_anon_boxes[-1] += 1
+            sane_label = "anon_box" + str(self.__num_anon_boxes[-1])
+
+        # create a new sub-Box and make it a child of the current Box
+        box        = Box(label, layout)
+        setattr(self.__boxes[-1], sane_label, box)
+        self.__boxes.append(box)
+
 
         # store the group meta-data in the newly opened box and reset
         # self.__group_metadata
         self.__boxes[-1].metadata.update(self.__group_metadata)
         self.__group_metadata = {}
 
+        self.__num_anon_boxes.append(0)
         self.__num_anon_params.append(0)
         self.__metadata.append({})
 
@@ -317,10 +319,7 @@ class PythonUI(object):
                 if p._zone == zone:
                     p.metadata.update(mdata)
 
-        # if the Box has no name, don't try to close it
-        if self.__empty_label.pop():
-            return
-
+        self.__num_anon_boxes.pop()
         self.__num_anon_params.pop()
 
         # now pop the box off the stack
