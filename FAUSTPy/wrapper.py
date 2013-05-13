@@ -107,7 +107,7 @@ class FAUST(object):
 
         # set up the UI
         if ui_class:
-            UI = ui_class(self.__ffi, self.__dsp)
+            UI = ui_class(self.__ffi, faust_dsp, self.__dsp)
             self.__C.buildUserInterfacemydsp(self.__dsp.dsp, UI.ui)
 
         # get the meta-data of the DSP

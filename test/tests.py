@@ -135,13 +135,13 @@ class test_faustui(unittest.TestCase):
     def test_init(self):
         "Test initialisation of PythonUI objects."
 
-        PythonUI(self.ffi, self.bla)
+        PythonUI(self.ffi, "", self.bla)
 
     # TODO: split up these tests and complete them
     def test_misc(self):
         "Test miscellanea."
 
-        ui = PythonUI(self.ffi, self.bla).ui
+        ui = PythonUI(self.ffi, "", self.bla).ui
         ui.openVerticalBox(self.ffi.NULL,b"bla")
         self.assertEqual(self.bla.b_bla.layout, "vertical")
 
@@ -163,7 +163,6 @@ class test_faustui(unittest.TestCase):
         self.assertTrue(hasattr(self.bla, "p_float"))
         self.assertEqual(self.bla.p_float.zone, 0.0)
         self.assertEqual(self.bla.p_float.type, "Button")
-
 
 #################################
 # test FAUSTDsp

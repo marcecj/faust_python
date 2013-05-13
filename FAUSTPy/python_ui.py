@@ -1,6 +1,7 @@
 # a string consisting of characters that are valid identifiers in both
 # Python 2 and Python 3
 import string
+import os
 from . python_dsp import FAUSTDsp
 valid_ident = string.ascii_letters + string.digits + "_"
 
@@ -132,7 +133,7 @@ class PythonUI(object):
     FAUSTPy.Param - wraps the UI input parameters.
     """
 
-    def __init__(self, ffi, obj=None):
+    def __init__(self, ffi, dsp_file_name="", obj=None):
         """
         Initialise a PythonUI object.
 
@@ -141,6 +142,11 @@ class PythonUI(object):
 
         ffi : cffi.FFI
             The CFFI instance that holds all the data type declarations.
+        dsp_file_name : file name of the DSP (optional)
+            The file name of the DSP whose UI is being wrapped.  This is used to
+            special case the first UI group, which is constructed from the DSP's
+            file name.  If empty (the default), the first group is named after
+            the file name, otherwise it will be named "ui".
         obj : object (optional)
             The Python object to which the UI elements are to be added.  If None
             (the default) the PythonUI instance manipulates itself.
@@ -155,6 +161,9 @@ class PythonUI(object):
         self.__num_anon_params = [0]
         self.__metadata        = [{}]
         self.__group_metadata  = {}
+
+        # get the DSP file name sans suffix
+        self.__dsp_fname = os.path.basename(dsp_file_name).rpartition('.')[0]
 
         # define wrapper functions that know the global PythonUI object
         def declare(mInterface, zone, key, value):
@@ -275,15 +284,22 @@ class PythonUI(object):
         # If the label is an empty string, don't do anything, just stay in the
         # current Box
         if label:
-            sane_label = str_to_identifier(label)
+            # special case the first box, which is always the file name sans
+            # suffix, so that it has a consistent name independent of file name;
+            # this is also important for in-line DSP code, which is stored in a
+            # temporary file with a randomised name
+            if label.decode() == self.__dsp_fname:
+                sane_label = "ui"
+            else:
+                sane_label = "b_"+str_to_identifier(label)
         else:
             # if the label is empty, create a default label
             self.__num_anon_boxes[-1] += 1
-            sane_label = "anon_box" + str(self.__num_anon_boxes[-1])
+            sane_label = "b_anon_box" + str(self.__num_anon_boxes[-1])
 
         # create a new sub-Box and make it a child of the current Box
         box        = Box(label, layout)
-        setattr(self.__boxes[-1], "b_"+sane_label, box)
+        setattr(self.__boxes[-1], sane_label, box)
         self.__boxes.append(box)
 
 
