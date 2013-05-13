@@ -7,9 +7,7 @@ class FAUSTDsp(object):
     abstraction that sits directly on top of the FAUST DSP struct.
     """
 
-    def __init__(self, C, ffi, faust_float, fs,
-                 faust_ui=None,
-                 faust_meta=None):
+    def __init__(self, C, ffi, faust_float, fs):
         """Initialise a FAUSTDsp object.
 
         To instantiate this object, you create a cffi.FFI object that contains
@@ -31,10 +29,6 @@ class FAUSTDsp(object):
             "double" or "long double".
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
-        faust_ui : FAUSTPy.PythonUI-like (optional)
-            A class that implements the UIGlue C type.
-        faust_meta : FAUSTPy.PythonMeta-like (optional)
-            A class that implements the MetaGlue C type.
         """
 
         self.__C           = C
@@ -53,19 +47,14 @@ class FAUSTDsp(object):
         # calls both classInitmydsp() and instanceInitmydsp()
         C.initmydsp(self.__dsp, fs)
 
-        if faust_ui:
-            UI = faust_ui(self.__ffi, self)
-            C.buildUserInterfacemydsp(self.__dsp, UI.ui)
-
-        if faust_meta:
-            Meta = faust_meta(self.__ffi, self)
-            C.metadatamydsp(Meta.meta)
-
         # allocate the input and output pointers so that they are not
         # allocated/deallocated at every call to compute()
         # TODO: can the number of inputs/outputs change at run time?
         self.__input_p  = self.__ffi.new("FAUSTFLOAT*[]", self.num_in)
         self.__output_p = self.__ffi.new("FAUSTFLOAT*[]", self.num_out)
+
+    dsp = property(fget=lambda x: x.__dsp,
+                   doc="The DSP struct that calls back to its parent object.")
 
     dtype = property(fget=lambda x: x.__dtype,
                      doc="A dtype corresponding to the value of FAUSTFLOAT.")

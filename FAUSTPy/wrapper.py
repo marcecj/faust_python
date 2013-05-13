@@ -103,8 +103,17 @@ class FAUST(object):
                 self.__ffi, self.__C = self.__gen_ffi(c_file.name, faust_float, **kwargs)
 
         # initialise the DSP object
-        self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs,
-                               ui_class, meta_class)
+        self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs)
+
+        # set up the UI
+        if ui_class:
+            UI = ui_class(self.__ffi, self.__dsp)
+            self.__C.buildUserInterfacemydsp(self.__dsp.dsp, UI.ui)
+
+        # get the meta-data of the DSP
+        if meta_class:
+            Meta = meta_class(self.__ffi, self.__dsp)
+            self.__C.metadatamydsp(Meta.meta)
 
         # add shortcuts to the compute* functions
         self.compute  = self.__dsp.compute
