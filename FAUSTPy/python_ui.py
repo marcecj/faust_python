@@ -88,23 +88,22 @@ class Param(object):
     zone = property(fget=__zone_getter, fset=__zone_setter,
                     doc="Pointer to the value of the parameter.")
 
-    def __get__(self, obj, type=None):
-
-        return self
-
     def __set__(self, obj, value):
 
         self.zone = value
-
-    def __delete__(self, obj):
-
-        print("Please do not delete this.")
 
 class Box(object):
     def __init__(self, label, layout):
         self.label       = label
         self.layout      = layout
         self.metadata    = {}
+
+    def __setattr__(self, name, value):
+
+        if name in self.__dict__ and hasattr(self.__dict__[name], "__set__"):
+            self.__dict__[name].__set__(self, value)
+        else:
+            object.__setattr__(self, name, value)
 
 # TODO: implement the *Display() and *Bargraph() methods
 class PythonUI(object):
@@ -333,7 +332,7 @@ class PythonUI(object):
 
         # iterate over the objects in the current box and assign the meta-data
         # to the correct parameters
-        for p in self.__boxes[-1].__class__.__dict__.values():
+        for p in self.__boxes[-1].__dict__.values():
 
             if type(p) not in (Param, Box, PythonDSP):
                 continue
@@ -363,7 +362,7 @@ class PythonUI(object):
             self.__num_anon_params[-1] += 1
             sane_label = "anon" + str(self.__num_anon_params[-1])
 
-        setattr(self.__boxes[-1].__class__, "p_"+sane_label,
+        setattr(self.__boxes[-1], "p_"+sane_label,
                 Param(label, zone, init, min, max, step, param_type))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
