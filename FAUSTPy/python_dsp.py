@@ -80,7 +80,6 @@ class PythonDSP(object):
 
         self.__C.deletemydsp(self.__dsp)
 
-    # TODO: support DSPs without inputs
     def compute(self, audio):
         """
         Process an ndarray with the FAUST DSP.
@@ -88,8 +87,18 @@ class PythonDSP(object):
         Parameters:
         -----------
 
+        The first argument depends on the type of DSP (synthesizer or effect):
+
         audio : numpy.ndarray
-            The audio signal to process.
+            If the DSP is an effect (i.e., it processes input data and produces
+            output), the first argument is an audio signal to process.
+
+        or
+
+        count : int
+            If the DSP is a synthesizer (i.e., it has zero inputs and produces
+            output), the first argument is the number of output samples to
+            produce
 
         Returns:
         --------
@@ -103,31 +112,37 @@ class PythonDSP(object):
         This function uses the buffer protocol to avoid copying the input data.
         """
 
-        # returns a view, so very little overhead
-        audio = atleast_2d(audio)
+        if self.num_in > 0:
+            # returns a view, so very little overhead
+            audio = atleast_2d(audio)
 
-        # Verify that audio.dtype == self.dtype, because a) Python SEGFAULTs
-        # when audio.dtype < self.dtype and b) the computation is garbage when
-        # audio.dtype > self.dtype.
-        if audio.dtype != self.__dtype:
-            raise ValueError("audio.dtype must be {}".format(self.__dtype))
+            # Verify that audio.dtype == self.dtype, because a) Python SEGFAULTs
+            # when audio.dtype < self.dtype and b) the computation is garbage when
+            # audio.dtype > self.dtype.
+            if audio.dtype != self.__dtype:
+                raise ValueError("audio.dtype must be {}".format(self.__dtype))
 
-        count   = audio.shape[1] # number of samples
-        num_in  = self.num_in    # number of input channels
+            count   = audio.shape[1] # number of samples
+            num_in  = self.num_in    # number of input channels
+
+            # set up the input pointers
+            for i in range(num_in):
+                self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *',
+                                                    audio[i].ctypes.data)
+        else:
+            # special case for synthesizers: the input argument is the number of
+            # samples
+            count = audio
+
         num_out = self.num_out   # number of output channels
 
         # initialise the output array
-        output = ndarray((num_out,count), dtype=audio.dtype)
+        output = ndarray((num_out,count), dtype=self.__dtype)
 
         # set up the output pointers
         for i in range(num_out):
             self.__output_p[i] = self.__ffi.cast('FAUSTFLOAT *',
                                                  output[i].ctypes.data)
-
-        # set up the input pointers
-        for i in range(num_in):
-            self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *',
-                                                audio[i].ctypes.data)
 
         # call the DSP
         self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
@@ -142,6 +157,9 @@ class PythonDSP(object):
         Process an ndarray with the FAUST DSP, like compute(), but without any
         safety checks.  NOTE: compute2() can crash Python if "audio" is an
         incompatible NumPy array!
+
+        This function is only useful if the DSP is an effect since the checks
+        not made here do not apply to synthesizers.
 
         Parameters:
         -----------
