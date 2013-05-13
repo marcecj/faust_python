@@ -35,7 +35,6 @@ class Param(object):
 
     This object implements the descriptor protocol: reading it works just like
     normal objects, but assignment is redirects to its "zone" attribute.
-    Furthermore, it cannot be deleted.
     """
 
     def __init__(self, label, zone, init, min, max, step, param_type):
