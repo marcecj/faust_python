@@ -127,6 +127,9 @@ class PythonUI(object):
     Box and Param attributes are prefixed with "b_" and "p_", respectively, in
     order to differentiate them from each other and from regular attributes.
 
+    Boxes and parameters without a label are given a default name of "anon<N>",
+    where N is an integer (e.g., "p_anon1" for a label-less parameter).
+
     See also:
     ---------
 
