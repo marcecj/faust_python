@@ -295,7 +295,7 @@ class PythonUI(object):
         else:
             # if the label is empty, create a default label
             self.__num_anon_boxes[-1] += 1
-            sane_label = "b_anon_box" + str(self.__num_anon_boxes[-1])
+            sane_label = "b_anon" + str(self.__num_anon_boxes[-1])
 
         # create a new sub-Box and make it a child of the current Box
         box        = Box(label, layout)
@@ -358,7 +358,7 @@ class PythonUI(object):
         else:
             # if the label is empty, create a default label
             self.__num_anon_params[-1] += 1
-            sane_label = "anon_param" + str(self.__num_anon_params[-1])
+            sane_label = "anon" + str(self.__num_anon_params[-1])
 
         setattr(self.__boxes[-1].__class__, "p_"+sane_label,
                 Param(label, zone, init, min, max, step, param_type))
