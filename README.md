@@ -50,7 +50,7 @@ precision that is set by the FAUST compiler).  Note that this
 3. initialises the C objects,
 
 all of which happens in the background, thanks to the CFFI.  Furthermore, this
-wrapper class:
+wrapper class
 
 1. initialises the UI as a `ui` attribute of the DSP, and
 2. stores the meta-data declared by the DSP as a `metadata` attribute.
@@ -91,11 +91,14 @@ FAUST object might look like.  It is based on the DSP
     In [4]: dattorro = FAUSTPy.FAUST("dattorro_notch_cut_regalia.dsp", fs, "double")
 
     In [5]: dattorro.
-    dattorro.compute      dattorro.compute2     dattorro.dsp          dattorro.FAUST_FLAGS  dattorro.FAUST_PATH
+    dattorro.compute      dattorro.dsp          dattorro.FAUST_PATH
+    dattorro.compute2     dattorro.FAUST_FLAGS
 
     In [5]: dattorro.dsp.
-    dattorro.dsp.compute     dattorro.dsp.dsp         dattorro.dsp.faustfloat  dattorro.dsp.metadata    dattorro.dsp.num_out
-    dattorro.dsp.compute2    dattorro.dsp.dtype       dattorro.dsp.fs          dattorro.dsp.num_in      dattorro.dsp.ui
+    dattorro.dsp.compute     dattorro.dsp.faustfloat  dattorro.dsp.num_out
+    dattorro.dsp.compute2    dattorro.dsp.fs          dattorro.dsp.ui
+    dattorro.dsp.dsp         dattorro.dsp.metadata
+    dattorro.dsp.dtype       dattorro.dsp.num_in
 
     In [5]: dattorro.dsp.metadata
     Out[5]:
@@ -131,7 +134,8 @@ FAUST object might look like.  It is based on the DSP
     Out[8]: 2
 
     In [9]: dattorro.dsp.ui.
-    dattorro.dsp.ui.label          dattorro.dsp.ui.layout         dattorro.dsp.ui.metadata       dattorro.dsp.ui.p_Center_Freq  dattorro.dsp.ui.p_Gain         dattorro.dsp.ui.p_Q
+    dattorro.dsp.ui.label          dattorro.dsp.ui.metadata       dattorro.dsp.ui.p_Gain
+    dattorro.dsp.ui.layout         dattorro.dsp.ui.p_Center_Freq  dattorro.dsp.ui.p_Q
 
     In [9]: dattorro.dsp.ui.label
     Out[9]: 'dattorro_notch_cut_regalia'
@@ -143,8 +147,10 @@ FAUST object might look like.  It is based on the DSP
     Out[11]: <FAUSTPy.python_ui.Param at 0x31617d0>
 
     In [12]: dattorro.dsp.ui.p_Center_Freq.
-    dattorro.dsp.ui.p_Center_Freq.default   dattorro.dsp.ui.p_Center_Freq.max       dattorro.dsp.ui.p_Center_Freq.min       dattorro.dsp.ui.p_Center_Freq.type
-    dattorro.dsp.ui.p_Center_Freq.label     dattorro.dsp.ui.p_Center_Freq.metadata  dattorro.dsp.ui.p_Center_Freq.step      dattorro.dsp.ui.p_Center_Freq.zone
+    dattorro.dsp.ui.p_Center_Freq.default   dattorro.dsp.ui.p_Center_Freq.min
+    dattorro.dsp.ui.p_Center_Freq.label     dattorro.dsp.ui.p_Center_Freq.step
+    dattorro.dsp.ui.p_Center_Freq.max       dattorro.dsp.ui.p_Center_Freq.type
+    dattorro.dsp.ui.p_Center_Freq.metadata  dattorro.dsp.ui.p_Center_Freq.zone
 
     In [12]: dattorro.dsp.ui.p_Center_Freq.label
     Out[12]: 'Center Freq.'
