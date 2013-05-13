@@ -165,7 +165,7 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.p_float.type, "Button")
 
 #################################
-# test FAUSTDsp
+# test PythonDSP
 #################################
 
 class test_faustdsp(unittest.TestCase):
@@ -180,17 +180,17 @@ class test_faustdsp(unittest.TestCase):
         )
 
     def test_init(self):
-        "Test initialisation of FAUSTDsp objects."
+        "Test initialisation of PythonDSP objects."
 
         # TODO: how best to keep this test separate, yet in this class, without
         # recompiling the DSP in every test. Maybe I can just set self.dsp if
         # the method order of unittest is equal to the definition order.
-        FAUSTDsp(self.C,self.ffi,self.faust_float,48000)
+        PythonDSP(self.C,self.ffi,self.faust_float,48000)
 
     def test_attributes(self):
         "Verify presence of various attributes."
 
-        dsp = FAUSTDsp(self.C,self.ffi,self.faust_float,48000)
+        dsp = PythonDSP(self.C,self.ffi,self.faust_float,48000)
         self.assertTrue(hasattr(dsp, "fs"))
         self.assertTrue(hasattr(dsp, "num_in"))
         self.assertTrue(hasattr(dsp, "num_out"))
@@ -200,7 +200,7 @@ class test_faustdsp(unittest.TestCase):
     def test_compute(self):
         "Test the compute() method."
 
-        dsp = FAUSTDsp(self.C,self.ffi,self.faust_float,48000)
+        dsp = PythonDSP(self.C,self.ffi,self.faust_float,48000)
         audio = np.zeros((dsp.num_in,48e3), dtype=dsp.dtype)
         audio[:,0] = 1
         out = dsp.compute(audio)

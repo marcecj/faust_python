@@ -58,7 +58,7 @@ can instead simply do:
 
 To process an array, simply call:
 
-    # dsp.dsp is a FAUSTDsp object wrapped by the FAUST object
+    # dsp.dsp is a PythonDSP object wrapped by the FAUST object
     audio = numpy.zeros((dsp.dsp.num_in, count))
     audio[:,0] = 1
     out = dsp.compute(audio)

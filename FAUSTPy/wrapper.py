@@ -17,7 +17,7 @@ class FAUST(object):
 
     def __init__(self, faust_dsp, fs,
                  faust_float = "float",
-                 dsp_class   = python_dsp.FAUSTDsp,
+                 dsp_class   = python_dsp.PythonDSP,
                  ui_class    = python_ui.PythonUI,
                  meta_class  = python_meta.PythonMeta,
                  faust_flags = [],
@@ -121,7 +121,7 @@ class FAUST(object):
 
     # expose some internal attributes as properties
     dsp = property(fget=lambda x: x.__dsp,
-                   doc="The internal FAUSTDsp object.")
+                   doc="The internal PythonDSP object.")
 
     def __compile_faust(self, faust_dsp, faust_c, faust_float):
 

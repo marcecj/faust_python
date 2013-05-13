@@ -2,7 +2,7 @@
 # Python 2 and Python 3
 import string
 import os
-from . python_dsp import FAUSTDsp
+from . python_dsp import PythonDSP
 valid_ident = string.ascii_letters + string.digits + "_"
 
 def str_to_identifier(s):
@@ -335,7 +335,7 @@ class PythonUI(object):
         # to the correct parameters
         for p in self.__boxes[-1].__class__.__dict__.values():
 
-            if type(p) not in (Param, Box, FAUSTDsp):
+            if type(p) not in (Param, Box, PythonDSP):
                 continue
 
             # iterate over the meta-data that has accumulated in the current box

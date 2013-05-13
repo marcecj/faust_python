@@ -1,6 +1,6 @@
 from numpy import atleast_2d, ndarray, float32, float64, float128
 
-class FAUSTDsp(object):
+class PythonDSP(object):
     """A FAUST DSP wrapper.
 
     This class is more low-level than the FAUST class. It can be viewed as an
@@ -8,7 +8,7 @@ class FAUSTDsp(object):
     """
 
     def __init__(self, C, ffi, faust_float, fs):
-        """Initialise a FAUSTDsp object.
+        """Initialise a PythonDSP object.
 
         To instantiate this object, you create a cffi.FFI object that contains
         all required declarations (check the FAUSTPy.FAUST code for an example).
