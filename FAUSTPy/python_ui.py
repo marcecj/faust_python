@@ -104,7 +104,6 @@ class Box(object):
         self.label       = label
         self.layout      = layout
         self.metadata    = {}
-        self.anon_params = []
 
 # TODO: implement the *Display() and *Bargraph() methods
 class PythonUI(object):
@@ -147,6 +146,7 @@ class PythonUI(object):
             self.__boxes = [self]
 
         self.__empty_label = [False]
+        self.__num_anon_params = [0]
         self.__metadata    = [{}]
         self.__group_metadata = {}
 
@@ -285,6 +285,7 @@ class PythonUI(object):
         self.__boxes[-1].metadata.update(self.__group_metadata)
         self.__group_metadata = {}
 
+        self.__num_anon_params.append(0)
         self.__metadata.append({})
 
     def openVerticalBox(self, label):
@@ -320,6 +321,8 @@ class PythonUI(object):
         if self.__empty_label.pop():
             return
 
+        self.__num_anon_params.pop()
+
         # now pop the box off the stack
         self.__boxes.pop()
 
@@ -331,12 +334,13 @@ class PythonUI(object):
 
         if label:
             sane_label = str_to_identifier(label)
-            setattr(self.__boxes[-1].__class__, sane_label,
-                    Param(label, zone, init, min, max, step, param_type))
         else:
-            self.__boxes[-1].anon_params.append(
-                Param(label, zone, init, min, max, step, param_type)
-            )
+            # if the label is empty, create a default label
+            self.__num_anon_params[-1] += 1
+            sane_label = "anon_param" + str(self.__num_anon_params[-1])
+
+        setattr(self.__boxes[-1].__class__, sane_label,
+                Param(label, zone, init, min, max, step, param_type))
 
     def addHorizontalSlider(self, label, zone, init, min, max, step):
 
