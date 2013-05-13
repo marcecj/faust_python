@@ -156,9 +156,13 @@ class test_faustui(unittest.TestCase):
         self.bla.b_bla.p_float.zone = 0.5
         self.assertEqual(self.bla.b_bla.p_float.zone, slider_val[0])
 
+        ui.closeBox(self.ffi.NULL)
+
         button_val = self.ffi.new("FAUSTFLOAT*", 1.0)
-        # should do nothing
         ui.addButton(self.ffi.NULL, b"float", button_val)
+        self.assertTrue(hasattr(self.bla, "p_float"))
+        self.assertEqual(self.bla.p_float.zone, 0.0)
+        self.assertEqual(self.bla.p_float.type, "Button")
 
 
 #################################
