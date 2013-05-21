@@ -38,6 +38,9 @@ class FAUST(object):
             The value of the FAUSTFLOAT type.  This is used internally by FAUST
             to generalise to different precisions. Possible values are "float",
             "double" or "long double".
+        dsp_class : PythonDSP-like (optional)
+            The constructor of a DSP wrapper.  Just in case you want to write
+            your own.
         ui_class : PythonUI-like (optional)
             The constructor of a UIGlue wrapper.  Just in case you want to write
             your own.
