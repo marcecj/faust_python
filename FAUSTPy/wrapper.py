@@ -60,11 +60,11 @@ class FAUST(object):
         ------
 
         You can override the C compiler (at least on Unix-like systems) by
-        overriding the ``CC`` environment variable, which you can verify by
-        viewing the output of the test suite when called via setup.py, for
-        example using clang::
+        overriding the ``CC`` and ``LDSHARED`` environment variables, which you
+        can verify by viewing the output of the test suite when called via
+        setup.py, for example using clang::
 
-            CC=clang python setup.py test
+            CC=clang LDSHARED="clang -pthreads -shared" python setup.py test
 
         The default compiler flags are "-std=c99 -march=native -O3".  The
         reasons for this are:
