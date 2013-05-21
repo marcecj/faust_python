@@ -107,4 +107,4 @@ def init_ffi():
             extra_compile_args=["-std=c99"],
         )
 
-        return ffi, C, faust_float
+        return ffi, C

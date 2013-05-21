@@ -16,7 +16,7 @@ class test_faustui(unittest.TestCase):
             pass
         self.bla = empty()
 
-        self.ffi, self.C, self.faust_float = init_ffi()
+        self.ffi, self.C = init_ffi()
 
         self.addCleanup(
             cffi.verifier.cleanup_tmpdir,
