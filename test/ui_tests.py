@@ -62,7 +62,7 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(slider_val1[0], 1.0)
         self.assertEqual(slider_val2[0], 1.0)
 
-        c_ui.addHorizontalSlider(self.ffi.NULL, b"slider0", slider_val0, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addHorizontalSlider(c_ui.uiInterface, b"slider0", slider_val0, 0.0, 0.0, 2.0, 0.1)
         self.assertTrue(hasattr(self.bla, "p_slider0"))
         self.assertEqual(self.bla.p_slider0.label, b"slider0")
         self.assertEqual(self.bla.p_slider0.zone, 0.0)
@@ -76,7 +76,7 @@ class test_faustui(unittest.TestCase):
         self.bla.p_slider0.zone = 0.5
         self.assertEqual(self.bla.p_slider0.zone, slider_val0[0])
 
-        c_ui.addVerticalSlider(self.ffi.NULL, b"slider1", slider_val1, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addVerticalSlider(c_ui.uiInterface, b"slider1", slider_val1, 0.0, 0.0, 2.0, 0.1)
         self.assertTrue(hasattr(self.bla, "p_slider1"))
         self.assertEqual(self.bla.p_slider1.label, b"slider1")
         self.assertEqual(self.bla.p_slider1.zone, 0.0)
@@ -90,7 +90,7 @@ class test_faustui(unittest.TestCase):
         self.bla.p_slider1.zone = 0.5
         self.assertEqual(self.bla.p_slider1.zone, slider_val1[0])
 
-        c_ui.addNumEntry(self.ffi.NULL, b"slider2", slider_val2, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addNumEntry(c_ui.uiInterface, b"slider2", slider_val2, 0.0, 0.0, 2.0, 0.1)
         self.assertTrue(hasattr(self.bla, "p_slider2"))
         self.assertEqual(self.bla.p_slider2.label, b"slider2")
         self.assertEqual(self.bla.p_slider2.zone, 0.0)
@@ -111,7 +111,7 @@ class test_faustui(unittest.TestCase):
         c_ui = self.ui.ui
 
         button_val0 = self.ffi.new("FAUSTFLOAT*", 1.0)
-        c_ui.addButton(self.ffi.NULL, b"but0", button_val0)
+        c_ui.addButton(c_ui.uiInterface, b"but0", button_val0)
         self.assertTrue(hasattr(self.bla, "p_but0"))
         self.assertEqual(self.bla.p_but0.label, b"but0")
         self.assertEqual(self.bla.p_but0.zone, 0.0)
@@ -126,7 +126,7 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.p_but0.zone, button_val0[0])
 
         button_val1 = self.ffi.new("FAUSTFLOAT*", 1.0)
-        c_ui.addToggleButton(self.ffi.NULL, b"but1", button_val1)
+        c_ui.addToggleButton(c_ui.uiInterface, b"but1", button_val1)
         self.assertTrue(hasattr(self.bla, "p_but1"))
         self.assertEqual(self.bla.p_but1.label, b"but1")
         self.assertEqual(self.bla.p_but1.zone, 0.0)
@@ -141,7 +141,7 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.p_but1.zone, button_val0[0])
 
         button_val2 = self.ffi.new("FAUSTFLOAT*", 1.0)
-        c_ui.addCheckButton(self.ffi.NULL, b"but2", button_val2)
+        c_ui.addCheckButton(c_ui.uiInterface, b"but2", button_val2)
         self.assertTrue(hasattr(self.bla, "p_but2"))
         self.assertEqual(self.bla.p_but2.label, b"but2")
         self.assertEqual(self.bla.p_but2.zone, 0.0)

@@ -34,8 +34,8 @@ class test_faustmeta(unittest.TestCase):
 
         c_meta = self.meta.meta
 
-        c_meta.declare(self.ffi.NULL, b"foo", b"bar")
+        c_meta.declare(c_meta.mInterface, b"foo", b"bar")
         self.assertDictEqual(self.bla.metadata, {b"foo": b"bar"})
-        c_meta.declare(self.ffi.NULL, b"baz", b"biz")
+        c_meta.declare(c_meta.mInterface, b"baz", b"biz")
         self.assertDictEqual(self.bla.metadata, {b"foo": b"bar",
                                                  b"baz": b"biz"})
