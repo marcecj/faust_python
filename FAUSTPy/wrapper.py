@@ -103,7 +103,7 @@ class FAUST(object):
                 self.__ffi, self.__C = self.__gen_ffi(c_file.name, faust_float, **kwargs)
 
         # initialise the DSP object
-        self.__dsp = dsp_class(self.__C, self.__ffi, faust_float, fs)
+        self.__dsp = dsp_class(self.__C, self.__ffi, fs)
 
         # set up the UI
         if ui_class:

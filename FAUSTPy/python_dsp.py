@@ -7,7 +7,7 @@ class PythonDSP(object):
     abstraction that sits directly on top of the FAUST DSP struct.
     """
 
-    def __init__(self, C, ffi, faust_float, fs):
+    def __init__(self, C, ffi, fs):
         """Initialise a PythonDSP object.
 
         To instantiate this object, you create a cffi.FFI object that contains
@@ -23,25 +23,21 @@ class PythonDSP(object):
             The FFILibrary that represents the compiled code.
         ffi : cffi.FFI
             The CFFI instance that holds all the data type declarations.
-        faust_float : string
-            The value of the FAUSTFLOAT type.  This is used internally by FAUST
-            to generalise to different precisions. Possible values are "float",
-            "double" or "long double".
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
         """
 
         self.__C           = C
         self.__ffi         = ffi
-        self.__faust_float = faust_float
+        self.__faust_float = ffi.getctype("FAUSTFLOAT")
         self.__dsp         = C.newmydsp()
         self.metadata      = {}
 
-        if   faust_float == "float":
+        if   self.__faust_float == "float":
             self.__dtype = float32
-        elif faust_float == "double":
+        elif self.__faust_float == "double":
             self.__dtype = float64
-        elif faust_float == "long double":
+        elif self.__faust_float == "long double":
             self.__dtype = float128
 
         # calls both classInitmydsp() and instanceInitmydsp()
