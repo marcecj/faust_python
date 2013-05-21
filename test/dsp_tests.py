@@ -32,6 +32,7 @@ class test_faustdsp(unittest.TestCase):
         "Verify presence of various attributes."
 
         dsp = PythonDSP(self.C,self.ffi,48000)
+        self.assertTrue(hasattr(dsp, "dsp"))
         self.assertTrue(hasattr(dsp, "fs"))
         self.assertTrue(hasattr(dsp, "num_in"))
         self.assertTrue(hasattr(dsp, "num_out"))
