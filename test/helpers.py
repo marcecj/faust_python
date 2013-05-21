@@ -60,7 +60,14 @@ def init_ffi(faust_dsp="dattorro_notch_cut_regalia.dsp",
 
     with NamedTemporaryFile(suffix=".c") as f:
 
-        faust_args = ["-lang", "c", "-single", "-o", f.name, faust_dsp]
+        faust_args = ["-lang", "c", "-o", f.name, faust_dsp]
+
+        if faust_float == "float":
+            faust_args = ["-single"] + faust_args
+        elif faust_float == "double":
+            faust_args = ["-double"] + faust_args
+        elif faust_float == "long double":
+            faust_args = ["-quad"] + faust_args
 
         check_call(["faust"] + faust_args)
 
