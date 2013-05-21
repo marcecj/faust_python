@@ -190,7 +190,7 @@ class PythonUI(object):
             self.addButton(label, zone)
         def addToggleButton(ignore, c_label, zone):
             label = ffi.string(c_label)
-            self.addToggleButton(c_label, zone)
+            self.addToggleButton(label, zone)
         def addCheckButton(ignore, c_label, zone):
             label = ffi.string(c_label)
             self.addCheckButton(label, zone)
