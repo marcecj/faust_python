@@ -14,7 +14,7 @@ setup(
     author_email     = 'marcec@gmx.de',
     description      = 'FAUSTPy is a Python wrapper for the FAUST DSP language.',
     packages         = ['FAUSTPy'],
-    test_suite       = "test.tests",
+    test_suite       = "test",
     long_description = read('README.md'),
     platforms        = 'any',
 
