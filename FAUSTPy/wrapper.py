@@ -17,10 +17,10 @@ class FAUST(object):
 
     def __init__(self, faust_dsp, fs,
                  faust_float = "float",
+                 faust_flags = [],
                  dsp_class   = python_dsp.PythonDSP,
                  ui_class    = python_ui.PythonUI,
                  meta_class  = python_meta.PythonMeta,
-                 faust_flags = [],
                 **kwargs):
         """
         Initialise a FAUST object.
@@ -38,18 +38,19 @@ class FAUST(object):
             The value of the FAUSTFLOAT type.  This is used internally by FAUST
             to generalise to different precisions. Possible values are "float",
             "double" or "long double".
-        dsp_class : PythonDSP-like (optional)
-            The constructor of a DSP wrapper.  Just in case you want to write
-            your own.
-        ui_class : PythonUI-like (optional)
-            The constructor of a UIGlue wrapper.  Just in case you want to write
-            your own.
-        meta_class : PythonMeta-like (optional)
-            The constructor of a MetaGlue wrapper.  Just in case you want to
-            write your own.
         faust_flags : list of strings (optional)
             A list of additional flags to pass to the FAUST compiler, which are
             appended to "-lang c" (since FAUSTPy requires the FAUST C backend).
+
+        And in case you want to write your own DSP/UI/Meta class (for whatever
+        reason), you can override any of the following arguments:
+
+        dsp_class : PythonDSP-like (optional)
+            The constructor of a DSP wrapper.
+        ui_class : PythonUI-like (optional)
+            The constructor of a UIGlue wrapper.
+        meta_class : PythonMeta-like (optional)
+            The constructor of a MetaGlue wrapper.
 
         You may also pass additional keyword arguments, which will get passed
         directly to cffi.FFI.verify().  This lets you override the compiler
