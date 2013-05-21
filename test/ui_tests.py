@@ -20,34 +20,137 @@ class test_faustui(unittest.TestCase):
             tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
         )
 
-    def test_init(self):
-        "Test initialisation of PythonUI objects."
+        # grab the C object from the PythonUI instance
+        self.ui = PythonUI(self.ffi, "", self.bla)
 
-        PythonUI(self.ffi, "", self.bla)
+    def test_attributes(self):
+
+        self.assertTrue(hasattr(self.ui, "ui"))
+
+    def test_boxes(self):
+        "Test the box related C callbacks."
+
+        c_ui = self.ui.ui
+
+        c_ui.openVerticalBox(c_ui.uiInterface, b"foo")
+        self.assertTrue(hasattr(self.bla, "b_foo"))
+        self.assertEqual(self.bla.b_foo.layout, "vertical")
+        self.assertEqual(self.bla.b_foo.label, b"foo")
+        c_ui.closeBox(c_ui.uiInterface)
+
+        c_ui.openHorizontalBox(c_ui.uiInterface, b"bar")
+        self.assertTrue(hasattr(self.bla, "b_bar"))
+        self.assertEqual(self.bla.b_bar.layout, "horizontal")
+        self.assertEqual(self.bla.b_bar.label, b"bar")
+        c_ui.closeBox(c_ui.uiInterface)
+
+        c_ui.openTabBox(c_ui.uiInterface, b"baz")
+        self.assertTrue(hasattr(self.bla, "b_baz"))
+        self.assertEqual(self.bla.b_baz.layout, "tab")
+        self.assertEqual(self.bla.b_baz.label, b"baz")
+        c_ui.closeBox(c_ui.uiInterface)
+
+    def test_sliders(self):
+        "Test the sliders related C callbacks."
+
+        c_ui = self.ui.ui
+
+        slider_val0 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        slider_val1 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        slider_val2 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        self.assertEqual(slider_val0[0], 1.0)
+        self.assertEqual(slider_val1[0], 1.0)
+        self.assertEqual(slider_val2[0], 1.0)
+
+        c_ui.addHorizontalSlider(self.ffi.NULL, b"slider0", slider_val0, 0.0, 0.0, 2.0, 0.1)
+        self.assertTrue(hasattr(self.bla, "p_slider0"))
+        self.assertEqual(self.bla.p_slider0.label, b"slider0")
+        self.assertEqual(self.bla.p_slider0.zone, 0.0)
+        self.assertEqual(self.bla.p_slider0.min, 0.0)
+        self.assertEqual(self.bla.p_slider0.max, 2.0)
+        self.assertAlmostEqual(self.bla.p_slider0.step, 0.1, 8)
+        self.assertEqual(self.bla.p_slider0.default, 0.0)
+        self.assertEqual(self.bla.p_slider0.metadata, {})
+        self.assertEqual(self.bla.p_slider0.type, "HorizontalSlider")
+
+        self.bla.p_slider0.zone = 0.5
+        self.assertEqual(self.bla.p_slider0.zone, slider_val0[0])
+
+        c_ui.addVerticalSlider(self.ffi.NULL, b"slider1", slider_val1, 0.0, 0.0, 2.0, 0.1)
+        self.assertTrue(hasattr(self.bla, "p_slider1"))
+        self.assertEqual(self.bla.p_slider1.label, b"slider1")
+        self.assertEqual(self.bla.p_slider1.zone, 0.0)
+        self.assertEqual(self.bla.p_slider1.min, 0.0)
+        self.assertEqual(self.bla.p_slider1.max, 2.0)
+        self.assertAlmostEqual(self.bla.p_slider1.step, 0.1, 8)
+        self.assertEqual(self.bla.p_slider1.default, 0.0)
+        self.assertEqual(self.bla.p_slider1.metadata, {})
+        self.assertEqual(self.bla.p_slider1.type, "VerticalSlider")
+
+        self.bla.p_slider1.zone = 0.5
+        self.assertEqual(self.bla.p_slider1.zone, slider_val1[0])
+
+        c_ui.addNumEntry(self.ffi.NULL, b"slider2", slider_val2, 0.0, 0.0, 2.0, 0.1)
+        self.assertTrue(hasattr(self.bla, "p_slider2"))
+        self.assertEqual(self.bla.p_slider2.label, b"slider2")
+        self.assertEqual(self.bla.p_slider2.zone, 0.0)
+        self.assertEqual(self.bla.p_slider2.min, 0.0)
+        self.assertEqual(self.bla.p_slider2.max, 2.0)
+        self.assertAlmostEqual(self.bla.p_slider2.step, 0.1, 8)
+        self.assertEqual(self.bla.p_slider2.default, 0.0)
+        self.assertEqual(self.bla.p_slider2.metadata, {})
+        self.assertEqual(self.bla.p_slider2.type, "NumEntry")
+
+        self.bla.p_slider2.zone = 0.5
+        self.assertEqual(self.bla.p_slider2.zone, slider_val2[0])
 
     # TODO: split up these tests and complete them
-    def test_misc(self):
-        "Test miscellanea."
+    def test_buttons(self):
+        "Test the buttons related C callbacks."
 
-        ui = PythonUI(self.ffi, "", self.bla).ui
-        ui.openVerticalBox(self.ffi.NULL,b"bla")
-        self.assertEqual(self.bla.b_bla.layout, "vertical")
+        c_ui = self.ui.ui
 
-        slider_val = self.ffi.new("FAUSTFLOAT*", 1.0)
-        self.assertEqual(slider_val[0], 1.0)
+        button_val0 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        c_ui.addButton(self.ffi.NULL, b"but0", button_val0)
+        self.assertTrue(hasattr(self.bla, "p_but0"))
+        self.assertEqual(self.bla.p_but0.label, b"but0")
+        self.assertEqual(self.bla.p_but0.zone, 0.0)
+        self.assertEqual(self.bla.p_but0.min, 0.0)
+        self.assertEqual(self.bla.p_but0.max, 1.0)
+        self.assertEqual(self.bla.p_but0.step, 1)
+        self.assertEqual(self.bla.p_but0.default, 0.0)
+        self.assertEqual(self.bla.p_but0.metadata, {})
+        self.assertEqual(self.bla.p_but0.type, "Button")
 
-        ui.addHorizontalSlider(self.ffi.NULL, b"float", slider_val, 0.0, 0.0, 2.0, 0.1)
-        self.assertTrue(hasattr(self.bla.b_bla, "p_float"))
-        self.assertEqual(self.bla.b_bla.p_float.zone, 0.0)
-        self.assertEqual(self.bla.b_bla.p_float.type, "HorizontalSlider")
+        self.bla.p_but0.zone = 1
+        self.assertEqual(self.bla.p_but0.zone, button_val0[0])
 
-        self.bla.b_bla.p_float.zone = 0.5
-        self.assertEqual(self.bla.b_bla.p_float.zone, slider_val[0])
+        button_val1 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        c_ui.addToggleButton(self.ffi.NULL, b"but1", button_val1)
+        self.assertTrue(hasattr(self.bla, "p_but1"))
+        self.assertEqual(self.bla.p_but1.label, b"but1")
+        self.assertEqual(self.bla.p_but1.zone, 0.0)
+        self.assertEqual(self.bla.p_but1.min, 0.0)
+        self.assertEqual(self.bla.p_but1.max, 1.0)
+        self.assertEqual(self.bla.p_but1.step, 1)
+        self.assertEqual(self.bla.p_but1.default, 0.0)
+        self.assertEqual(self.bla.p_but1.metadata, {})
+        self.assertEqual(self.bla.p_but1.type, "ToggleButton")
 
-        ui.closeBox(self.ffi.NULL)
+        self.bla.p_but1.zone = 1
+        self.assertEqual(self.bla.p_but1.zone, button_val0[0])
 
-        button_val = self.ffi.new("FAUSTFLOAT*", 1.0)
-        ui.addButton(self.ffi.NULL, b"float", button_val)
-        self.assertTrue(hasattr(self.bla, "p_float"))
-        self.assertEqual(self.bla.p_float.zone, 0.0)
-        self.assertEqual(self.bla.p_float.type, "Button")
+        button_val2 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        c_ui.addCheckButton(self.ffi.NULL, b"but2", button_val2)
+        self.assertTrue(hasattr(self.bla, "p_but2"))
+        self.assertEqual(self.bla.p_but2.label, b"but2")
+        self.assertEqual(self.bla.p_but2.zone, 0.0)
+        self.assertEqual(self.bla.p_but2.min, 0.0)
+        self.assertEqual(self.bla.p_but2.max, 1.0)
+        self.assertEqual(self.bla.p_but2.step, 1)
+        self.assertEqual(self.bla.p_but2.default, 0.0)
+        self.assertEqual(self.bla.p_but2.metadata, {})
+        self.assertEqual(self.bla.p_but2.type, "CheckButton")
+
+        self.bla.p_but2.zone = 1
+        self.assertEqual(self.bla.p_but2.zone, button_val0[0])
