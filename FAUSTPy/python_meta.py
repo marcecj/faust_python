@@ -29,6 +29,8 @@ class PythonMeta(object):
         else:
             self.__obj = self
 
+        self.__obj.metadata = {}
+
         def declare(mInterface, key, value):
             self.declare(ffi.string(key), ffi.string(value))
 
@@ -44,9 +46,6 @@ class PythonMeta(object):
                     doc="The Meta struct that calls back to its parent object.")
 
     def declare(self, key, value):
-
-        if not hasattr(self.__obj, "metadata"):
-            setattr(self.__obj, "metadata", {})
 
         self.__obj.metadata[key] = value
 
