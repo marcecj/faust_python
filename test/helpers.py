@@ -3,13 +3,10 @@ from tempfile import NamedTemporaryFile
 from string import Template
 from subprocess import check_call
 
-def init_ffi():
+def init_ffi(faust_dsp="dattorro_notch_cut_regalia.dsp",
+             faust_float="float"):
+
     ffi = cffi.FFI()
-
-    faust_dsp = "dattorro_notch_cut_regalia.dsp"
-
-    # just use single precision for tests
-    faust_float = "float"
 
     cdefs = "typedef {0} FAUSTFLOAT;".format(faust_float) + """
 
