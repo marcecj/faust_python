@@ -2,7 +2,6 @@
 # Python 2 and Python 3
 import string
 import os
-from . python_dsp import PythonDSP
 valid_ident = string.ascii_letters + string.digits + "_"
 
 def str_to_identifier(s):
@@ -333,7 +332,9 @@ class PythonUI(object):
         # to the correct parameters
         for p in self.__boxes[-1].__dict__.values():
 
-            if type(p) not in (Param, Box, PythonDSP):
+            # TODO: add the Display class (or whatever it will be called) to
+            # this list once *Display and *Bargraph are implemented
+            if type(p) not in (Param,):
                 continue
 
             # iterate over the meta-data that has accumulated in the current box
