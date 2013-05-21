@@ -26,6 +26,9 @@ class PythonDSP(object):
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
         """
+        
+        if fs <= 0:
+            raise ValueError("The sampling rate must have a positive value.")
 
         self.__C           = C
         self.__ffi         = ffi
