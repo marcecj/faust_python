@@ -44,7 +44,7 @@ class PythonDSP(object):
             self.__dtype = float128
 
         # calls both classInitmydsp() and instanceInitmydsp()
-        C.initmydsp(self.__dsp, fs)
+        C.initmydsp(self.__dsp, int(fs))
 
         # allocate the input and output pointers so that they are not
         # allocated/deallocated at every call to compute()
