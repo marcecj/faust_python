@@ -1,7 +1,7 @@
 import os
 import unittest
 import cffi
-from . helpers import init_ffi
+from . helpers import init_ffi, empty
 from FAUSTPy import PythonMeta
 
 #################################
@@ -12,10 +12,7 @@ class test_faustmeta(unittest.TestCase):
 
     def setUp(self):
 
-        class empty(object):
-            pass
         self.bla = empty()
-
         self.ffi, self.C = init_ffi()
 
         self.addCleanup(
