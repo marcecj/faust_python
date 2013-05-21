@@ -199,7 +199,6 @@ in the source directory.  This will display four plots:
 
 - finish the UIGlue wrapper
 - finish the test suite
-- Find out why cdef/verify string caching does not work.  Since the sources don't
-  actually change, the strings should not change and hence the cffi should not
-  recompile objects every time a DSP object is created.  This is probably
-  because I use str.format() and Templates.  File a bug or find a workaround.
+- Fix caching for in-line DSP strings.  Possible solutions:
+  - an optional file name argument
+  - generate a file name based on a hash of the code string

@@ -104,7 +104,7 @@ class FAUST(object):
 
             with NamedTemporaryFile(suffix=".c") as c_file:
                 self.__compile_faust(faust_dsp, c_file.name, faust_float)
-                self.__ffi, self.__C = self.__gen_ffi(c_file.name, faust_float, **kwargs)
+                self.__ffi, self.__C = self.__gen_ffi(c_file, faust_float, **kwargs)
 
         # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, fs)
@@ -243,8 +243,11 @@ class FAUST(object):
                 void* uiInterface;
             } UIGlue;
 
-            #include "${FAUSTC}"
-            """).substitute(FAUSTFLOAT=faust_float, FAUSTC=FAUSTC),
+            ${FAUSTC}
+            """).substitute(
+                FAUSTFLOAT=faust_float,
+                FAUSTC=b''.join(FAUSTC.readlines()).decode()
+            ),
             **kwargs
         )
 
