@@ -186,20 +186,15 @@ class PythonUI(object):
             label = ffi.string(c_label)
             self.addNumEntry(label, zone, init, min, max, step)
         def addButton(ignore, c_label, zone):
-            label = ffi.string(c_label)
-            self.addButton(label, zone)
+            self.addButton(ffi.string(c_label), zone)
         def addToggleButton(ignore, c_label, zone):
-            label = ffi.string(c_label)
-            self.addToggleButton(label, zone)
+            self.addToggleButton(ffi.string(c_label), zone)
         def addCheckButton(ignore, c_label, zone):
-            label = ffi.string(c_label)
-            self.addCheckButton(label, zone)
+            self.addCheckButton(ffi.string(c_label), zone)
         def addNumDisplay(ignore, c_label, zone, p):
-            label = ffi.string(c_label)
-            self.addNumDisplay(label, zone, p)
+            self.addNumDisplay(ffi.string(c_label), zone, p)
         def addTextDisplay(ignore, c_label, zone, names, min, max):
-            label = ffi.string(c_label)
-            self.addTextDisplay(label, zone, names, min, max)
+            self.addTextDisplay(ffi.string(c_label), zone, names, min, max)
         def addHorizontalBargraph(ignore, c_label, zone, min, max):
             label = ffi.string(c_label)
             self.addHorizontalBargraph(label, zone, min, max)
