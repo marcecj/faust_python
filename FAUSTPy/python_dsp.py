@@ -27,14 +27,14 @@ class PythonDSP(object):
             The sampling rate the FAUST DSP should be initialised with.
         """
         
-        if fs <= 0:
-            raise ValueError("The sampling rate must have a positive value.")
-
         self.__C           = C
         self.__ffi         = ffi
         self.__faust_float = ffi.getctype("FAUSTFLOAT")
         self.__dsp         = C.newmydsp()
         self.metadata      = {}
+
+        if fs <= 0:
+            raise ValueError("The sampling rate must have a positive value.")
 
         if   self.__faust_float == "float":
             self.__dtype = float32
