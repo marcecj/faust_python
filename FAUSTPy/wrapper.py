@@ -81,6 +81,7 @@ class FAUST(object):
 
         self.FAUST_PATH = FAUST_PATH
         self.FAUST_FLAGS = ["-lang", "c"] + faust_flags
+        self.is_inline = False
 
         # compile the FAUST DSP to C and compile it with the CFFI
         with NamedTemporaryFile(suffix=".dsp") as dsp_file:
@@ -102,16 +103,24 @@ class FAUST(object):
 
                 faust_dsp = dsp_file.name
 
+                self.is_inline = True
+
             with NamedTemporaryFile(suffix=".c") as c_file:
                 self.__compile_faust(faust_dsp, c_file.name, faust_float)
-                self.__ffi, self.__C = self.__gen_ffi(c_file, faust_float, **kwargs)
+                self.__ffi, self.__C = self.__gen_ffi(
+                    c_file, faust_float, faust_dsp, **kwargs
+                )
 
         # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, fs)
 
         # set up the UI
         if ui_class:
-            UI = ui_class(self.__ffi, faust_dsp, self.__dsp)
+            # add a "." so that str.rpartition('.') returns "123first_box" as
+            # the first element instead of ""
+            fname = ("123first_box." if self.is_inline else faust_dsp)
+
+            UI = ui_class(self.__ffi, fname, self.__dsp)
             self.__C.buildUserInterfacemydsp(self.__dsp.dsp, UI.ui)
 
         # get the meta-data of the DSP
@@ -145,10 +154,21 @@ class FAUST(object):
 
         check_call([faust_cmd] + faust_args)
 
-    def __gen_ffi(self, FAUSTC, faust_float, **kwargs):
+    def __gen_ffi(self, FAUSTC, faust_float, faust_dsp, **kwargs):
 
         # define the ffi object
         ffi = cffi.FFI()
+
+        c_code = b''.join(FAUSTC.readlines()).decode()
+
+        # if the DSP is from an inline code string we replace the "label"
+        # argument to the first call to open*Box() (which is always the DSP file
+        # base name sans suffix) with something predictable so that the caching
+        # mechanism of the CFFI still works, but make it somewhat unusual to
+        # reduce the likelihood of a name clash
+        if self.is_inline:
+            fname = os.path.basename(faust_dsp).rpartition('.')[0]
+            c_code = c_code.replace(fname, "123first_box")
 
         c_flags = ["-std=c99", "-march=native", "-O3"]
         kwargs["extra_compile_args"] = c_flags + kwargs.get("extra_compile_args", [])
@@ -244,10 +264,7 @@ typedef struct {
 } UIGlue;
 
 ${FAUSTC}
-            """).substitute(
-                FAUSTFLOAT=faust_float,
-                FAUSTC=b''.join(FAUSTC.readlines()).decode()
-            ),
+            """).substitute(FAUSTFLOAT=faust_float, FAUSTC=c_code),
             **kwargs
         )
 
