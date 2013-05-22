@@ -24,6 +24,7 @@ class test_faustui(unittest.TestCase):
         self.ui = PythonUI(self.ffi, "", self.obj)
 
     def test_attributes(self):
+        "Verify presence of various attributes."
 
         self.assertTrue(hasattr(self.ui, "ui"))
 
