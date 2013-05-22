@@ -26,7 +26,7 @@ class PythonDSP(object):
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
         """
-        
+
         self.__C           = C
         self.__ffi         = ffi
         self.__faust_float = ffi.getctype("FAUSTFLOAT")
