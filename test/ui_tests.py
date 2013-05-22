@@ -164,7 +164,7 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.p_but1.type, "ToggleButton")
 
         self.bla.p_but1.zone = 1
-        self.assertEqual(self.bla.p_but1.zone, button_val0[0])
+        self.assertEqual(self.bla.p_but1.zone, button_val1[0])
 
     def test_addCheckButton(self):
         "Test the addCheckButton C callback."
@@ -184,4 +184,4 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.p_but2.type, "CheckButton")
 
         self.bla.p_but2.zone = 1
-        self.assertEqual(self.bla.p_but2.zone, button_val0[0])
+        self.assertEqual(self.bla.p_but2.zone, button_val2[0])
