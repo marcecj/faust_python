@@ -199,6 +199,9 @@ in the source directory.  This will display four plots:
 
 - finish the UIGlue wrapper
 - finish the test suite
+  - finish the unit tests
+  - add functional tests so that you can test how everything works together
+    (perhaps use "UITester.dsp" and maybe one other DSP from the examples)
 - Fix caching for in-line DSP strings.  Possible solutions:
   - an optional file name argument
   - generate a file name based on a hash of the code string
