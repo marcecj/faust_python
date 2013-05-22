@@ -60,6 +60,25 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.b_baz.label, b"baz")
         c_ui.closeBox(c_ui.uiInterface)
 
+    def test_closeBox(self):
+        "Test the closeBox C callback."
+
+        c_ui = self.ui.ui
+
+        c_ui.openVerticalBox(c_ui.uiInterface, b"box1")
+        c_ui.openHorizontalBox(c_ui.uiInterface, b"box2")
+        c_ui.closeBox(c_ui.uiInterface)
+        c_ui.openTabBox(c_ui.uiInterface, b"box3")
+        c_ui.closeBox(c_ui.uiInterface)
+        c_ui.closeBox(c_ui.uiInterface)
+        c_ui.openTabBox(c_ui.uiInterface, b"box4")
+        c_ui.closeBox(c_ui.uiInterface)
+
+        self.assertTrue(hasattr(self.bla        , "b_box1"))
+        self.assertTrue(hasattr(self.bla.b_box1 , "b_box2"))
+        self.assertTrue(hasattr(self.bla.b_box1 , "b_box3"))
+        self.assertTrue(hasattr(self.bla        , "b_box4"))
+
     def test_addHorizontalSlider(self):
         "Test the addHorizontalSlider C callback."
 
