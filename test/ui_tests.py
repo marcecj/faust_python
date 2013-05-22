@@ -28,6 +28,67 @@ class test_faustui(unittest.TestCase):
 
         self.assertTrue(hasattr(self.ui, "ui"))
 
+    def test_declare_group(self):
+        "Test declaration of group meta-data."
+
+        c_ui = self.ui.ui
+
+        c_ui.declare(c_ui.uiInterface, self.ffi.NULL, b"key1", b"val1")
+        c_ui.openTabBox(c_ui.uiInterface, b"box1")
+        c_ui.declare(c_ui.uiInterface, self.ffi.NULL, b"key1", b"val1")
+        c_ui.declare(c_ui.uiInterface, self.ffi.NULL, b"key2", b"val2")
+        c_ui.openTabBox(c_ui.uiInterface, b"box2")
+        c_ui.closeBox(c_ui.uiInterface)
+        c_ui.declare(c_ui.uiInterface, self.ffi.NULL, b"key2", b"val2")
+        c_ui.declare(c_ui.uiInterface, self.ffi.NULL, b"key3", b"val3")
+        c_ui.openTabBox(c_ui.uiInterface, b"box3")
+        c_ui.closeBox(c_ui.uiInterface)
+        c_ui.closeBox(c_ui.uiInterface)
+
+        self.assertTrue(hasattr(self.obj.b_box1,        "metadata"))
+        self.assertTrue(hasattr(self.obj.b_box1.b_box2, "metadata"))
+        self.assertTrue(hasattr(self.obj.b_box1.b_box3, "metadata"))
+
+        self.assertDictEqual(self.obj.b_box1.metadata,
+                             {b"key1": b"val1"})
+        self.assertDictEqual(self.obj.b_box1.b_box2.metadata,
+                             {b"key1": b"val1", b"key2": b"val2"})
+        self.assertDictEqual(self.obj.b_box1.b_box3.metadata,
+                             {b"key2": b"val2", b"key3": b"val3"})
+
+    def test_declare_parameter(self):
+        "Test declaration of parameter meta-data."
+
+        c_ui = self.ui.ui
+
+        param1 = self.ffi.new("FAUSTFLOAT*", 0.0)
+        param2 = self.ffi.new("FAUSTFLOAT*", 0.5)
+        param3 = self.ffi.new("FAUSTFLOAT*", 1.0)
+
+        c_ui.declare(c_ui.uiInterface, param1, b"key1", b"val1")
+        c_ui.addVerticalSlider(c_ui.uiInterface, b"slider1", param1, 0.0, 0.0, 2.0, 0.1)
+        c_ui.declare(c_ui.uiInterface, param2, b"key1", b"val1")
+        c_ui.declare(c_ui.uiInterface, param2, b"key2", b"val2")
+        c_ui.addHorizontalSlider(c_ui.uiInterface, b"slider2", param2, 0.0, 0.0, 2.0, 0.1)
+        c_ui.declare(c_ui.uiInterface, param3, b"key2", b"val2")
+        c_ui.declare(c_ui.uiInterface, param3, b"key3", b"val3")
+        c_ui.addNumEntry(c_ui.uiInterface, b"numentry", param3, 0.0, 0.0, 2.0, 0.1)
+
+        # closeBox triggers assignment of parameter meta-data
+        c_ui.closeBox(c_ui.uiInterface)
+
+        self.assertTrue(hasattr(self.obj.p_slider1, "metadata"))
+        self.assertTrue(hasattr(self.obj.p_slider2, "metadata"))
+        self.assertTrue(hasattr(self.obj.p_numentry, "metadata"))
+
+        self.assertDictEqual(self.obj.p_slider1.metadata,
+                             {b"key1": b"val1"})
+        self.assertDictEqual(self.obj.p_slider2.metadata,
+                             {b"key1": b"val1", b"key2": b"val2"})
+        self.assertDictEqual(self.obj.p_numentry.metadata,
+                             {b"key2": b"val2", b"key3": b"val3"})
+
+
     def test_openVerticalBox(self):
         "Test the openVerticalBox C callback."
 
