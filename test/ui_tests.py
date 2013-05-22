@@ -27,8 +27,8 @@ class test_faustui(unittest.TestCase):
 
         self.assertTrue(hasattr(self.ui, "ui"))
 
-    def test_boxes(self):
-        "Test the box related C callbacks."
+    def test_openVerticalBox(self):
+        "Test the openVerticalBox C callback."
 
         c_ui = self.ui.ui
 
@@ -38,11 +38,21 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.b_foo.label, b"foo")
         c_ui.closeBox(c_ui.uiInterface)
 
+    def test_openHorizontalBox(self):
+        "Test the openHorizontalBox C callback."
+
+        c_ui = self.ui.ui
+
         c_ui.openHorizontalBox(c_ui.uiInterface, b"bar")
         self.assertTrue(hasattr(self.bla, "b_bar"))
         self.assertEqual(self.bla.b_bar.layout, "horizontal")
         self.assertEqual(self.bla.b_bar.label, b"bar")
         c_ui.closeBox(c_ui.uiInterface)
+
+    def test_openTabBox(self):
+        "Test the openTabBox C callback."
+
+        c_ui = self.ui.ui
 
         c_ui.openTabBox(c_ui.uiInterface, b"baz")
         self.assertTrue(hasattr(self.bla, "b_baz"))
@@ -50,17 +60,13 @@ class test_faustui(unittest.TestCase):
         self.assertEqual(self.bla.b_baz.label, b"baz")
         c_ui.closeBox(c_ui.uiInterface)
 
-    def test_sliders(self):
-        "Test the sliders related C callbacks."
+    def test_addHorizontalSlider(self):
+        "Test the addHorizontalSlider C callback."
 
         c_ui = self.ui.ui
 
         slider_val0 = self.ffi.new("FAUSTFLOAT*", 1.0)
-        slider_val1 = self.ffi.new("FAUSTFLOAT*", 1.0)
-        slider_val2 = self.ffi.new("FAUSTFLOAT*", 1.0)
         self.assertEqual(slider_val0[0], 1.0)
-        self.assertEqual(slider_val1[0], 1.0)
-        self.assertEqual(slider_val2[0], 1.0)
 
         c_ui.addHorizontalSlider(c_ui.uiInterface, b"slider0", slider_val0, 0.0, 0.0, 2.0, 0.1)
         self.assertTrue(hasattr(self.bla, "p_slider0"))
@@ -76,6 +82,14 @@ class test_faustui(unittest.TestCase):
         self.bla.p_slider0.zone = 0.5
         self.assertEqual(self.bla.p_slider0.zone, slider_val0[0])
 
+    def test_addVerticalSlider(self):
+        "Test the addVerticalSlider C callback."
+
+        c_ui = self.ui.ui
+
+        slider_val1 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        self.assertEqual(slider_val1[0], 1.0)
+
         c_ui.addVerticalSlider(c_ui.uiInterface, b"slider1", slider_val1, 0.0, 0.0, 2.0, 0.1)
         self.assertTrue(hasattr(self.bla, "p_slider1"))
         self.assertEqual(self.bla.p_slider1.label, b"slider1")
@@ -89,6 +103,14 @@ class test_faustui(unittest.TestCase):
 
         self.bla.p_slider1.zone = 0.5
         self.assertEqual(self.bla.p_slider1.zone, slider_val1[0])
+
+    def test_addNumEntry(self):
+        "Test the addNumEntry C callback."
+
+        c_ui = self.ui.ui
+
+        slider_val2 = self.ffi.new("FAUSTFLOAT*", 1.0)
+        self.assertEqual(slider_val2[0], 1.0)
 
         c_ui.addNumEntry(c_ui.uiInterface, b"slider2", slider_val2, 0.0, 0.0, 2.0, 0.1)
         self.assertTrue(hasattr(self.bla, "p_slider2"))
@@ -104,9 +126,8 @@ class test_faustui(unittest.TestCase):
         self.bla.p_slider2.zone = 0.5
         self.assertEqual(self.bla.p_slider2.zone, slider_val2[0])
 
-    # TODO: split up these tests and complete them
-    def test_buttons(self):
-        "Test the buttons related C callbacks."
+    def test_addButton(self):
+        "Test the addButton C callback."
 
         c_ui = self.ui.ui
 
@@ -125,6 +146,11 @@ class test_faustui(unittest.TestCase):
         self.bla.p_but0.zone = 1
         self.assertEqual(self.bla.p_but0.zone, button_val0[0])
 
+    def test_addToggleButton(self):
+        "Test the addToggleButton C callback."
+
+        c_ui = self.ui.ui
+
         button_val1 = self.ffi.new("FAUSTFLOAT*", 1.0)
         c_ui.addToggleButton(c_ui.uiInterface, b"but1", button_val1)
         self.assertTrue(hasattr(self.bla, "p_but1"))
@@ -139,6 +165,11 @@ class test_faustui(unittest.TestCase):
 
         self.bla.p_but1.zone = 1
         self.assertEqual(self.bla.p_but1.zone, button_val0[0])
+
+    def test_addCheckButton(self):
+        "Test the addCheckButton C callback."
+
+        c_ui = self.ui.ui
 
         button_val2 = self.ffi.new("FAUSTFLOAT*", 1.0)
         c_ui.addCheckButton(c_ui.uiInterface, b"but2", button_val2)
