@@ -50,6 +50,21 @@ class test_faustwrapper(unittest.TestCase):
         """
         self.dsp2 = FAUST(dsp_code, 48000)
 
+    def test_attributes(self):
+        "Verify presence of various attributes."
+
+        self.assertTrue(hasattr(self.dsp1, "dsp"))
+        self.assertTrue(hasattr(self.dsp1.dsp, "ui"))
+        self.assertTrue(hasattr(self.dsp1.dsp, "metadata"))
+
+        self.assertTrue(hasattr(self.dsp2, "dsp"))
+        self.assertTrue(hasattr(self.dsp2.dsp, "ui"))
+        self.assertTrue(hasattr(self.dsp2.dsp, "metadata"))
+
+        self.assertDictEqual(self.dsp2.dsp.metadata,
+                             {b"name": b"Inline Test",
+                              b"author": b"Some Guy"})
+
     def test_compute(self):
         """Test the compute() method."""
 
