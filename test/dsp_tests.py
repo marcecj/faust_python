@@ -113,7 +113,7 @@ class test_faustdsp(unittest.TestCase):
 
         audio = np.zeros((self.dsp.num_in,0), dtype=self.dsp.dtype)
         out = self.dsp.compute(audio)
-        self.assertEquals(out.size,0)
+        self.assertEqual(out.size,0)
 
     def test_compute_bad_dtype(self):
         "Test the compute() method with inputs of incorrect dtype."
@@ -136,7 +136,7 @@ class test_faustdsp(unittest.TestCase):
         "Test the compute() for synthesizer effects with zero output samples."
 
         out = self.synth.compute(0)
-        self.assertEquals(out.size, 0)
+        self.assertEqual(out.size, 0)
 
     def test_compute_synth_neg_count(self):
         """
