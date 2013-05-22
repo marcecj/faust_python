@@ -33,10 +33,11 @@ class test_faustui(unittest.TestCase):
         c_ui = self.ui.ui
 
         c_ui.openVerticalBox(c_ui.uiInterface, b"foo")
+        c_ui.closeBox(c_ui.uiInterface)
+
         self.assertTrue(hasattr(self.bla, "b_foo"))
         self.assertEqual(self.bla.b_foo.layout, "vertical")
         self.assertEqual(self.bla.b_foo.label, b"foo")
-        c_ui.closeBox(c_ui.uiInterface)
 
     def test_openHorizontalBox(self):
         "Test the openHorizontalBox C callback."
@@ -44,10 +45,11 @@ class test_faustui(unittest.TestCase):
         c_ui = self.ui.ui
 
         c_ui.openHorizontalBox(c_ui.uiInterface, b"bar")
+        c_ui.closeBox(c_ui.uiInterface)
+
         self.assertTrue(hasattr(self.bla, "b_bar"))
         self.assertEqual(self.bla.b_bar.layout, "horizontal")
         self.assertEqual(self.bla.b_bar.label, b"bar")
-        c_ui.closeBox(c_ui.uiInterface)
 
     def test_openTabBox(self):
         "Test the openTabBox C callback."
@@ -55,10 +57,11 @@ class test_faustui(unittest.TestCase):
         c_ui = self.ui.ui
 
         c_ui.openTabBox(c_ui.uiInterface, b"baz")
+        c_ui.closeBox(c_ui.uiInterface)
+
         self.assertTrue(hasattr(self.bla, "b_baz"))
         self.assertEqual(self.bla.b_baz.layout, "tab")
         self.assertEqual(self.bla.b_baz.label, b"baz")
-        c_ui.closeBox(c_ui.uiInterface)
 
     def test_closeBox(self):
         "Test the closeBox C callback."
