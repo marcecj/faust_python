@@ -83,6 +83,19 @@ class test_faustdsp(unittest.TestCase):
         self.dsp   = PythonDSP(self.C1,self.ffi1,48000)
         self.synth = PythonDSP(self.C2,self.ffi2,48000)
 
+    def tearDown(self):
+
+        # TODO: for some reason, this prevents strange errors along the line of
+        #
+        # "Exception TypeError: "initializer for ctype 'struct $mydsp *' must be
+        # a pointer to same type, not cdata 'struct $mydsp *'" in <bound method
+        # PythonDSP.__del__ of <FAUSTPy.python_dsp.PythonDSP object at
+        # 0x16cae50>> ignored"
+        #
+        # Find out why!
+        del self.dsp
+        del self.synth
+
     def test_attributes(self):
         "Verify presence of various attributes."
 
