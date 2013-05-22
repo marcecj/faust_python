@@ -8,14 +8,12 @@ from FAUSTPy import FAUST
 # test FAUST
 #################################
 
+def tearDownClass():
+    cffi.verifier.cleanup_tmpdir(
+        tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
+    )
+
 class test_faustwrapper(unittest.TestCase):
-
-    def setUp(self):
-
-        self.addCleanup(
-            cffi.verifier.cleanup_tmpdir,
-            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
-        )
 
     def test_init(self):
         """Test initialisation of FAUST objects."""

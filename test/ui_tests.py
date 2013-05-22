@@ -8,17 +8,17 @@ from FAUSTPy import PythonUI
 # test PythonUI
 #################################
 
+def tearDownModule():
+    cffi.verifier.cleanup_tmpdir(
+        tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
+    )
+
 class test_faustui(unittest.TestCase):
 
     def setUp(self):
 
         self.bla = empty()
         self.ffi, self.C = init_ffi()
-
-        self.addCleanup(
-            cffi.verifier.cleanup_tmpdir,
-            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
-        )
 
         # grab the C object from the PythonUI instance
         self.ui = PythonUI(self.ffi, "", self.bla)

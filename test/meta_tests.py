@@ -8,17 +8,17 @@ from FAUSTPy import PythonMeta
 # test PythonMeta
 #################################
 
+def tearDownModule():
+    cffi.verifier.cleanup_tmpdir(
+        tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
+    )
+
 class test_faustmeta(unittest.TestCase):
 
     def setUp(self):
 
         self.bla = empty()
         self.ffi, self.C = init_ffi()
-
-        self.addCleanup(
-            cffi.verifier.cleanup_tmpdir,
-            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
-        )
 
         # grab the C object from the PythonMeta instance
         self.meta = PythonMeta(self.ffi, self.bla)

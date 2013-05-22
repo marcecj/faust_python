@@ -9,17 +9,17 @@ from FAUSTPy import PythonDSP
 # test PythonDSP
 #################################
 
+def tearDownModule():
+    cffi.verifier.cleanup_tmpdir(
+        tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
+    )
+
 class test_faustdsp_init(unittest.TestCase):
 
     def setUp(self):
 
         self.ffi, self.C = zip(*[init_ffi(faust_float=ff) for ff in
                                  ("float", "double", "long double")])
-
-        self.addCleanup(
-            cffi.verifier.cleanup_tmpdir,
-            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
-        )
 
     def test_init_different_fs(self):
         """
@@ -74,11 +74,6 @@ class test_faustdsp(unittest.TestCase):
 
         self.ffi1, self.C1 = init_ffi()
         self.ffi2, self.C2 = init_ffi(faust_dsp="test_synth.dsp")
-
-        self.addCleanup(
-            cffi.verifier.cleanup_tmpdir,
-            tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
-        )
 
         self.dsp   = PythonDSP(self.C1,self.ffi1,48000)
         self.synth = PythonDSP(self.C2,self.ffi2,48000)
