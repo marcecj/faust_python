@@ -205,3 +205,5 @@ in the source directory.  This will display four plots:
 - Fix caching for in-line DSP strings.  Possible solutions:
   - an optional file name argument
   - generate a file name based on a hash of the code string
+  - patch the C code using a regexp (and make sure `PythonUI` does the right
+    thing)
