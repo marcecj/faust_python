@@ -144,4 +144,3 @@ class test_faustdsp(unittest.TestCase):
         """
 
         self.assertRaises(ValueError, self.synth.compute, -1)
-
