@@ -30,7 +30,7 @@ class PythonDSP(object):
         self.__C           = C
         self.__ffi         = ffi
         self.__faust_float = ffi.getctype("FAUSTFLOAT")
-        self.__dsp         = C.newmydsp()
+        self.__dsp         = ffi.gc(C.newmydsp(), C.deletemydsp)
         self.metadata      = {}
 
         if fs <= 0:
@@ -69,15 +69,6 @@ class PythonDSP(object):
 
     num_out = property(fget=lambda s: s.__C.getNumOutputsmydsp(s.__dsp),
                        doc="The number of output channels.")
-
-    def __del__(self):
-        """Deallocate the FAUST DSP object.
-
-        This method makes sure to properly deallocate the internal C data
-        structures (as required).
-        """
-
-        self.__C.deletemydsp(self.__dsp)
 
     def compute(self, audio):
         """
