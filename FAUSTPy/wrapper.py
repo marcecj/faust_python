@@ -102,7 +102,7 @@ class FAUST(object):
                 dsp_code = f.read()
             dsp_fname = faust_dsp
 
-        with NamedTemporaryFile(suffix=".c") as c_file:
+        with NamedTemporaryFile(suffix=".c", mode="rt") as c_file:
             self.__compile_faust(dsp_code, dsp_fname, c_file.name, faust_float)
             self.__ffi, self.__C = self.__gen_ffi(
                 c_file, faust_float, faust_dsp, **kwargs
@@ -145,7 +145,7 @@ class FAUST(object):
         # define the ffi object
         ffi = cffi.FFI()
 
-        c_code = b''.join(c_file.readlines()).decode()
+        c_code = c_file.read()
 
         c_flags = ["-std=c99", "-march=native", "-O3"]
         kwargs["extra_compile_args"] = c_flags + kwargs.get("extra_compile_args", [])
