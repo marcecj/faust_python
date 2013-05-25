@@ -1,11 +1,10 @@
 import cffi
 import os
-from subprocess import check_call
 from tempfile import NamedTemporaryFile
 from string import Template
 from . import python_ui, python_meta, python_dsp
+from . libfaust import compile_faust
 
-FAUST_PATH = ""
 FAUSTFLOATS = frozenset(("float", "double", "long double"))
 
 class FAUST(object):
@@ -79,48 +78,42 @@ class FAUST(object):
         if faust_float not in FAUSTFLOATS:
             raise ValueError("Invalid value for faust_float!")
 
-        self.FAUST_PATH = FAUST_PATH
         self.FAUST_FLAGS = ["-lang", "c"] + faust_flags
-        self.is_inline = False
 
-        # compile the FAUST DSP to C and compile it with the CFFI
-        with NamedTemporaryFile(suffix=".dsp") as dsp_file:
+        # Two things:
+        #
+        # 1.) In Python 3, in-line code *has* to be a byte array, so if
+        # faust_dsp is a string the test is short-circuited and we assume
+        # that it represents a file name.
+        #
+        # 2.) In Python 2, string literals are all byte arrays, so also
+        # check whether the string ends with ".dsp", in which case we assume
+        # that it represents a file name, otherwise it must be a code block.
+        if type(faust_dsp) is bytes and not faust_dsp.endswith(b".dsp"):
+            # if the DSP is from an inline code string we set the DSP file name
+            # to something predictable so that the caching mechanism of the CFFI
+            # still works, but make it somewhat unusual to reduce the likelihood
+            # of a name clash; add a "." so that str.rpartition('.') returns
+            # "123first_box" as the first element instead of ""
+            dsp_code = faust_dsp
+            dsp_fname = "123first_box."
+        else:
+            with open(faust_dsp, 'rb') as f:
+                dsp_code = f.read()
+            dsp_fname = faust_dsp
 
-            # Two things:
-            #
-            # 1.) In Python 3, in-line code *has* to be a byte array, so if
-            # faust_dsp is a string the test is short-circuited and we assume
-            # that it represents a file name.
-            #
-            # 2.) In Python 2, string literals are all byte arrays, so also
-            # check whether the string ends with ".dsp", in which case we assume
-            # that it represents a file name, otherwise it must be a code block.
-            if type(faust_dsp) is bytes and not faust_dsp.endswith(b".dsp"):
-                dsp_file.write(faust_dsp)
-
-                # make sure the data is immediately written to disc
-                dsp_file.flush()
-
-                faust_dsp = dsp_file.name
-
-                self.is_inline = True
-
-            with NamedTemporaryFile(suffix=".c") as c_file:
-                self.__compile_faust(faust_dsp, c_file.name, faust_float)
-                self.__ffi, self.__C = self.__gen_ffi(
-                    c_file, faust_float, faust_dsp, **kwargs
-                )
+        with NamedTemporaryFile(suffix=".c") as c_file:
+            self.__compile_faust(dsp_code, dsp_fname, c_file.name, faust_float)
+            self.__ffi, self.__C = self.__gen_ffi(
+                c_file, faust_float, faust_dsp, **kwargs
+            )
 
         # initialise the DSP object
         self.__dsp = dsp_class(self.__C, self.__ffi, fs)
 
         # set up the UI
         if ui_class:
-            # add a "." so that str.rpartition('.') returns "123first_box" as
-            # the first element instead of ""
-            fname = ("123first_box." if self.is_inline else faust_dsp)
-
-            UI = ui_class(self.__ffi, fname, self.__dsp)
+            UI = ui_class(self.__ffi, dsp_fname, self.__dsp)
             self.__C.buildUserInterfacemydsp(self.__dsp.dsp, UI.ui)
 
         # get the meta-data of the DSP
@@ -136,7 +129,7 @@ class FAUST(object):
     dsp = property(fget=lambda x: x.__dsp,
                    doc="The internal PythonDSP object.")
 
-    def __compile_faust(self, dsp_fname, c_fname, faust_float):
+    def __compile_faust(self, dsp_code, dsp_fname, c_fname, faust_float):
 
         if   faust_float == "float":
             self.FAUST_FLAGS.append("-single")
@@ -145,14 +138,7 @@ class FAUST(object):
         elif faust_float == "long double":
             self.FAUST_FLAGS.append("-quad")
 
-        if self.FAUST_PATH:
-            faust_cmd = os.sep.join([self.FAUST_PATH, "faust"])
-        else:
-            faust_cmd = "faust"
-
-        faust_args = self.FAUST_FLAGS + ["-o", c_fname, dsp_fname]
-
-        check_call([faust_cmd] + faust_args)
+        compile_faust(dsp_code, dsp_fname, c_fname, *self.FAUST_FLAGS)
 
     def __gen_ffi(self, c_file, faust_float, dsp_fname, **kwargs):
 
@@ -160,15 +146,6 @@ class FAUST(object):
         ffi = cffi.FFI()
 
         c_code = b''.join(c_file.readlines()).decode()
-
-        # if the DSP is from an inline code string we replace the "label"
-        # argument to the first call to open*Box() (which is always the DSP file
-        # base name sans suffix) with something predictable so that the caching
-        # mechanism of the CFFI still works, but make it somewhat unusual to
-        # reduce the likelihood of a name clash
-        if self.is_inline:
-            fname = os.path.basename(dsp_fname).rpartition('.')[0]
-            c_code = c_code.replace(fname, "123first_box")
 
         c_flags = ["-std=c99", "-march=native", "-O3"]
         kwargs["extra_compile_args"] = c_flags + kwargs.get("extra_compile_args", [])
