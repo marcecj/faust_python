@@ -145,8 +145,6 @@ class FAUST(object):
         # define the ffi object
         ffi = cffi.FFI()
 
-        c_code = c_file.read()
-
         c_flags = ["-std=c99", "-march=native", "-O3"]
         kwargs["extra_compile_args"] = c_flags + kwargs.get("extra_compile_args", [])
 
@@ -241,7 +239,7 @@ typedef struct {
 } UIGlue;
 
 ${FAUSTC}
-            """).substitute(FAUSTFLOAT=faust_float, FAUSTC=c_code),
+            """).substitute(FAUSTFLOAT=faust_float, FAUSTC=c_file.read()),
             **kwargs
         )
 
