@@ -136,7 +136,7 @@ class FAUST(object):
     dsp = property(fget=lambda x: x.__dsp,
                    doc="The internal PythonDSP object.")
 
-    def __compile_faust(self, dsp_fname, faust_c, faust_float):
+    def __compile_faust(self, dsp_fname, c_fname, faust_float):
 
         if   faust_float == "float":
             self.FAUST_FLAGS.append("-single")
@@ -150,16 +150,16 @@ class FAUST(object):
         else:
             faust_cmd = "faust"
 
-        faust_args = self.FAUST_FLAGS + ["-o", faust_c, dsp_fname]
+        faust_args = self.FAUST_FLAGS + ["-o", c_fname, dsp_fname]
 
         check_call([faust_cmd] + faust_args)
 
-    def __gen_ffi(self, FAUSTC, faust_float, dsp_fname, **kwargs):
+    def __gen_ffi(self, c_file, faust_float, dsp_fname, **kwargs):
 
         # define the ffi object
         ffi = cffi.FFI()
 
-        c_code = b''.join(FAUSTC.readlines()).decode()
+        c_code = b''.join(c_file.readlines()).decode()
 
         # if the DSP is from an inline code string we replace the "label"
         # argument to the first call to open*Box() (which is always the DSP file
