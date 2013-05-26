@@ -112,7 +112,7 @@ typedef struct {
 ${FAUSTC}
             """).substitute(
                 FAUSTFLOAT=faust_float,
-                FAUSTC=b''.join(f.readlines()).decode()
+                FAUSTC=f.read().decode()
             ),
             extra_compile_args=["-std=c99", "-march=native", "-O3"],
         )
