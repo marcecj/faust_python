@@ -136,7 +136,7 @@ class FAUST(object):
     dsp = property(fget=lambda x: x.__dsp,
                    doc="The internal PythonDSP object.")
 
-    def __compile_faust(self, faust_dsp, faust_c, faust_float):
+    def __compile_faust(self, dsp_fname, faust_c, faust_float):
 
         if   faust_float == "float":
             self.FAUST_FLAGS.append("-single")
@@ -150,11 +150,11 @@ class FAUST(object):
         else:
             faust_cmd = "faust"
 
-        faust_args = self.FAUST_FLAGS + ["-o", faust_c, faust_dsp]
+        faust_args = self.FAUST_FLAGS + ["-o", faust_c, dsp_fname]
 
         check_call([faust_cmd] + faust_args)
 
-    def __gen_ffi(self, FAUSTC, faust_float, faust_dsp, **kwargs):
+    def __gen_ffi(self, FAUSTC, faust_float, dsp_fname, **kwargs):
 
         # define the ffi object
         ffi = cffi.FFI()
@@ -167,7 +167,7 @@ class FAUST(object):
         # mechanism of the CFFI still works, but make it somewhat unusual to
         # reduce the likelihood of a name clash
         if self.is_inline:
-            fname = os.path.basename(faust_dsp).rpartition('.')[0]
+            fname = os.path.basename(dsp_fname).rpartition('.')[0]
             c_code = c_code.replace(fname, "123first_box")
 
         c_flags = ["-std=c99", "-march=native", "-O3"]
