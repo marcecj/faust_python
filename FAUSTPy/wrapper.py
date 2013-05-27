@@ -1,9 +1,7 @@
 import cffi
 import os
-from tempfile import NamedTemporaryFile
-from string import Template
 from . import python_ui, python_meta, python_dsp
-from . libfaust import compile_faust
+from . libfaust import LibFaust
 
 FAUSTFLOATS = frozenset(("float", "double", "long double"))
 
@@ -78,7 +76,7 @@ class FAUST(object):
         if faust_float not in FAUSTFLOATS:
             raise ValueError("Invalid value for faust_float!")
 
-        self.FAUST_FLAGS = ["-lang", "c"] + faust_flags
+        self.FAUST_FLAGS = faust_flags
 
         # Two things:
         #
@@ -102,24 +100,25 @@ class FAUST(object):
                 dsp_code = f.read()
             dsp_fname = faust_dsp
 
-        with NamedTemporaryFile(suffix=".c", mode="rt") as c_file:
-            self.__compile_faust(dsp_code, dsp_fname, c_file.name, faust_float)
-            self.__ffi, self.__C = self.__gen_ffi(
-                c_file, faust_float, faust_dsp, **kwargs
-            )
+        # create a libfaust wrapper and use it to compile the FAUST code; store
+        # the llvm_dsp_factory instance since it is required to delete the
+        # llvm_dsp instance
+        faust = LibFaust(faust_float, **kwargs)
+        self.__ffi, self.__C = faust.ffi, faust.C
+        factory, dsp = faust.compile_faust(dsp_code, dsp_fname)
 
         # initialise the DSP object
-        self.__dsp = dsp_class(self.__C, self.__ffi, fs)
+        self.__dsp = dsp_class(self.__C, self.__ffi, factory, dsp, fs)
 
         # set up the UI
         if ui_class:
             UI = ui_class(self.__ffi, dsp_fname, self.__dsp)
-            self.__C.buildUserInterfacemydsp(self.__dsp.dsp, UI.ui)
+            self.__C.buildUserInterfaceCDSPInstance(self.__dsp.dsp, UI.ui)
 
         # get the meta-data of the DSP
         if meta_class:
             Meta = meta_class(self.__ffi, self.__dsp)
-            self.__C.metadatamydsp(Meta.meta)
+            self.__C.metadataCDSPFactory(factory, Meta.meta)
 
         # add shortcuts to the compute* functions
         self.compute  = self.__dsp.compute
@@ -128,119 +127,3 @@ class FAUST(object):
     # expose some internal attributes as properties
     dsp = property(fget=lambda x: x.__dsp,
                    doc="The internal PythonDSP object.")
-
-    def __compile_faust(self, dsp_code, dsp_fname, c_fname, faust_float):
-
-        if   faust_float == "float":
-            self.FAUST_FLAGS.append("-single")
-        elif faust_float == "double":
-            self.FAUST_FLAGS.append("-double")
-        elif faust_float == "long double":
-            self.FAUST_FLAGS.append("-quad")
-
-        compile_faust(dsp_code, dsp_fname, c_fname, *self.FAUST_FLAGS)
-
-    def __gen_ffi(self, c_file, faust_float, dsp_fname, **kwargs):
-
-        # define the ffi object
-        ffi = cffi.FFI()
-
-        c_flags = ["-std=c99", "-march=native", "-O3"]
-        kwargs["extra_compile_args"] = c_flags + kwargs.get("extra_compile_args", [])
-
-        # declare various types and functions
-        #
-        # These declarations need to be here -- independently of the code in the
-        # ffi.verify() call below -- so that the CFFI knows the contents of the
-        # data structures and the available functions.
-        cdefs = "typedef {0} FAUSTFLOAT;".format(faust_float) + """
-
-typedef struct {
-    void *mInterface;
-    void (*declare)(void* interface, const char* key, const char* value);
-} MetaGlue;
-
-typedef struct {
-    // widget layouts
-    void (*openVerticalBox)(void*, const char* label);
-    void (*openHorizontalBox)(void*, const char* label);
-    void (*openTabBox)(void*, const char* label);
-    void (*declare)(void*, FAUSTFLOAT*, char*, char*);
-    // passive widgets
-    void (*addNumDisplay)(void*, const char* label, FAUSTFLOAT* zone, int p);
-    void (*addTextDisplay)(void*, const char* label, FAUSTFLOAT* zone, const char* names[], FAUSTFLOAT min, FAUSTFLOAT max);
-    void (*addHorizontalBargraph)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
-    void (*addVerticalBargraph)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
-    // active widgets
-    void (*addHorizontalSlider)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*addVerticalSlider)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*addButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addToggleButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addCheckButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addNumEntry)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*closeBox)(void*);
-    void* uiInterface;
-} UIGlue;
-
-typedef struct {...;} mydsp;
-
-mydsp *newmydsp();
-void deletemydsp(mydsp*);
-void metadatamydsp(MetaGlue* m);
-int getSampleRatemydsp(mydsp* dsp);
-int getNumInputsmydsp(mydsp* dsp);
-int getNumOutputsmydsp(mydsp* dsp);
-int getInputRatemydsp(mydsp* dsp, int channel);
-int getOutputRatemydsp(mydsp* dsp, int channel);
-void classInitmydsp(int samplingFreq);
-void instanceInitmydsp(mydsp* dsp, int samplingFreq);
-void initmydsp(mydsp* dsp, int samplingFreq);
-void buildUserInterfacemydsp(mydsp* dsp, UIGlue* interface);
-void computemydsp(mydsp* dsp, int count, FAUSTFLOAT** inputs, FAUSTFLOAT** outputs);
-        """
-        ffi.cdef(cdefs)
-
-        # compile the code
-        C = ffi.verify(
-            Template("""
-#define FAUSTFLOAT ${FAUSTFLOAT}
-
-// helper function definitions
-FAUSTFLOAT min(FAUSTFLOAT x, FAUSTFLOAT y) { return x < y ? x : y;};
-FAUSTFLOAT max(FAUSTFLOAT x, FAUSTFLOAT y) { return x > y ? x : y;};
-
-// the MetaGlue struct that will be wrapped
-typedef struct {
-    void *mInterface;
-    void (*declare)(void* interface, const char* key, const char* value);
-} MetaGlue;
-
-// the UIGlue struct that will be wrapped
-typedef struct {
-    // widget layouts
-    void (*openVerticalBox)(void*, const char* label);
-    void (*openHorizontalBox)(void*, const char* label);
-    void (*openTabBox)(void*, const char* label);
-    void (*declare)(void*, FAUSTFLOAT*, char*, char*);
-    // passive widgets
-    void (*addNumDisplay)(void*, const char* label, FAUSTFLOAT* zone, int p);
-    void (*addTextDisplay)(void*, const char* label, FAUSTFLOAT* zone, const char* names[], FAUSTFLOAT min, FAUSTFLOAT max);
-    void (*addHorizontalBargraph)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
-    void (*addVerticalBargraph)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
-    // active widgets
-    void (*addHorizontalSlider)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*addVerticalSlider)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*addButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addToggleButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addCheckButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addNumEntry)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*closeBox)(void*);
-    void* uiInterface;
-} UIGlue;
-
-${FAUSTC}
-            """).substitute(FAUSTFLOAT=faust_float, FAUSTC=c_file.read()),
-            **kwargs
-        )
-
-        return ffi, C

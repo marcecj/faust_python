@@ -18,8 +18,9 @@ class test_faustdsp_init(unittest.TestCase):
 
     def setUp(self):
 
-        self.ffi, self.C = zip(*[init_ffi(faust_float=ff) for ff in
-                                 ("float", "double", "long double")])
+        self.ffi, self.C, self.factory, self.dsp = \
+                zip(*[init_ffi(faust_float=ff) for ff in
+                      ("float", "double", "long double")])
 
     def test_init_different_fs(self):
         """
@@ -27,12 +28,22 @@ class test_faustdsp_init(unittest.TestCase):
         sampling rate.
         """
 
-        # just try various sampling rates
-        PythonDSP(self.C[0],self.ffi[0],32000)
-        PythonDSP(self.C[0],self.ffi[0],44100)
-        PythonDSP(self.C[0],self.ffi[0],48000)
-        self.assertRaises(ValueError, PythonDSP, self.C[0], self.ffi[0], 0)
-        self.assertRaises(ValueError, PythonDSP, self.C[0], self.ffi[0], -1)
+        # just try various sampling rates; use different self.dsp's to prevent
+        # initialisation of an already initialised llvm_dsp
+        PythonDSP(self.C[0],self.ffi[0],self.factory[0],self.dsp[0],32000)
+        PythonDSP(self.C[1],self.ffi[1],self.factory[1],self.dsp[1],44100)
+        PythonDSP(self.C[2],self.ffi[2],self.factory[2],self.dsp[2],48000)
+
+    def test_init_bad_fs(self):
+        """
+        Test initialisation of PythonDSP objects with bad values for the
+        sampling rate.
+        """
+
+        self.assertRaises(ValueError, PythonDSP, self.C[0], self.ffi[0],
+                          self.factory[0], self.dsp[0], 0)
+        self.assertRaises(ValueError, PythonDSP, self.C[1], self.ffi[1],
+                          self.factory[1], self.dsp[1], -1)
 
     def test_init_different_faustfloats(self):
         """
@@ -41,9 +52,9 @@ class test_faustdsp_init(unittest.TestCase):
         """
 
         # this should not do anything
-        PythonDSP(self.C[0],self.ffi[0],48000)
-        PythonDSP(self.C[1],self.ffi[1],48000)
-        PythonDSP(self.C[2],self.ffi[2],48000)
+        PythonDSP(self.C[0],self.ffi[0],self.factory[0],self.dsp[0],48000)
+        PythonDSP(self.C[1],self.ffi[1],self.factory[1],self.dsp[1],48000)
+        PythonDSP(self.C[2],self.ffi[2],self.factory[2],self.dsp[2],48000)
 
     def test_init_bad_ffi_combos(self):
         """
@@ -63,7 +74,7 @@ class test_faustdsp_init(unittest.TestCase):
         # will; this is due to the fact that you cannot tell whether a
         # FFILibrary object come from a given FFI object or not
         for C, ffi in ffis:
-            dsp = PythonDSP(C,ffi,48000)
+            dsp = PythonDSP(C,ffi,self.factory[0],self.dsp[0],48000)
             audio = np.zeros((dsp.num_in,48e3), dtype=dsp.dtype)
             audio[:,0] = 1
             self.assertRaises(TypeError, dsp.compute, audio)
@@ -72,11 +83,11 @@ class test_faustdsp(unittest.TestCase):
 
     def setUp(self):
 
-        self.ffi1, self.C1 = init_ffi()
-        self.ffi2, self.C2 = init_ffi(faust_dsp="test_synth.dsp")
+        self.ffi1, self.C1, factory1, dsp1 = init_ffi()
+        self.ffi2, self.C2, factory2, dsp2 = init_ffi(faust_dsp="test_synth.dsp")
 
-        self.dsp   = PythonDSP(self.C1,self.ffi1,48000)
-        self.synth = PythonDSP(self.C2,self.ffi2,48000)
+        self.dsp   = PythonDSP(self.C1, self.ffi1, factory1, dsp1, 48000)
+        self.synth = PythonDSP(self.C2, self.ffi2, factory2, dsp2, 48000)
 
     def tearDown(self):
 

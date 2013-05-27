@@ -18,7 +18,7 @@ class test_faustui(unittest.TestCase):
     def setUp(self):
 
         self.obj = empty()
-        self.ffi, self.C = init_ffi()
+        self.ffi, self.C = init_ffi()[:2]
 
         # grab the C object from the PythonUI instance
         self.ui = PythonUI(self.ffi, "", self.obj)

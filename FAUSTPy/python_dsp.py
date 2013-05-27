@@ -7,7 +7,7 @@ class PythonDSP(object):
     abstraction that sits directly on top of the FAUST DSP struct.
     """
 
-    def __init__(self, C, ffi, fs):
+    def __init__(self, C, ffi, factory, dsp, fs):
         """Initialise a PythonDSP object.
 
         To instantiate this object, you create a cffi.FFI object that contains
@@ -30,11 +30,14 @@ class PythonDSP(object):
         self.__C           = C
         self.__ffi         = ffi
         self.__faust_float = ffi.getctype("FAUSTFLOAT")
-        self.__dsp         = ffi.gc(C.newmydsp(), C.deletemydsp)
+        self.__factory     = factory
+        self.__dsp         = dsp
         self.metadata      = {}
 
         if fs <= 0:
             raise ValueError("The sampling rate must have a positive value.")
+
+        self.__fs = fs
 
         if   self.__faust_float == "float":
             self.__dtype = float32
@@ -43,14 +46,19 @@ class PythonDSP(object):
         elif self.__faust_float == "long double":
             self.__dtype = float128
 
-        # calls both classInitmydsp() and instanceInitmydsp()
-        C.initmydsp(self.__dsp, int(fs))
+        # calls both classInitCDSPInstance() and instanceInitCDSPInstance()
+        C.initCDSPInstance(dsp, int(fs))
 
         # allocate the input and output pointers so that they are not
         # allocated/deallocated at every call to compute()
         # TODO: can the number of inputs/outputs change at run time?
         self.__input_p  = self.__ffi.new("FAUSTFLOAT*[]", self.num_in)
         self.__output_p = self.__ffi.new("FAUSTFLOAT*[]", self.num_out)
+
+    def __del__(self):
+
+        self.__C.deleteCDSPInstance(self.__dsp)
+        self.__C.deleteCDSPFactory(self.__factory)
 
     dsp = property(fget=lambda x: x.__dsp,
                    doc="The DSP struct that calls back to its parent object.")
@@ -61,13 +69,13 @@ class PythonDSP(object):
     faustfloat = property(fget=lambda x: x.__faust_float,
                           doc="The value of FAUSTFLOAT for this DSP.")
 
-    fs = property(fget=lambda s: s.__C.getSampleRatemydsp(s.__dsp),
+    fs = property(fget=lambda s: s.__fs,
                  doc="The sampling rate of the DSP.")
 
-    num_in = property(fget=lambda s: s.__C.getNumInputsmydsp(s.__dsp),
+    num_in = property(fget=lambda s: s.__C.getNumInputsCDSPInstance(s.__dsp),
                       doc="The number of input channels.")
 
-    num_out = property(fget=lambda s: s.__C.getNumOutputsmydsp(s.__dsp),
+    num_out = property(fget=lambda s: s.__C.getNumOutputsCDSPInstance(s.__dsp),
                        doc="The number of output channels.")
 
     def compute(self, audio):
@@ -135,7 +143,7 @@ class PythonDSP(object):
                                                  output[i].ctypes.data)
 
         # call the DSP
-        self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
+        self.__C.computeCDSPInstance(self.__dsp, count, self.__input_p, self.__output_p)
 
         return output
 
@@ -187,6 +195,6 @@ class PythonDSP(object):
                                                 audio[i].ctypes.data)
 
         # call the DSP
-        self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
+        self.__C.computeCDSPInstance(self.__dsp, count, self.__input_p, self.__output_p)
 
         return output
