@@ -17,7 +17,6 @@ def init_ffi(faust_dsp="dattorro_notch_cut_regalia.dsp",
         dsp_fname = faust_dsp
 
     faust = LibFaust(faust_float)
-    ffi, C = faust.ffi, faust.C
     factory, dsp = faust.compile_faust(dsp_code, dsp_fname)
 
-    return ffi, C, factory, dsp
+    return faust.ffi, faust.C, factory, dsp
