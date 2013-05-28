@@ -86,11 +86,6 @@ void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOA
         C = ffi.verify(
             Template("""
 #define FAUSTFLOAT ${FAUSTFLOAT}
-
-typedef struct {} llvm_dsp_factory;
-typedef struct {} llvm_dsp;
-typedef struct {} llvm_dsp_imp;
-
 #include <faust/gui/CUI.h>
 #include <faust/llvm-c-dsp.h>
             """).substitute(FAUSTFLOAT=faust_float),
