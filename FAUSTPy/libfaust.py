@@ -29,29 +29,53 @@ class LibFaust(object):
         ffi.cdef(
 "typedef {0} FAUSTFLOAT;".format(faust_float) + """
 
-typedef struct {
-    void *mInterface;
-    void (*declare)(void* interface, const char* key, const char* value);
-} MetaGlue;
+/*******************************************************************************
+ * CUI : Faust User Interface for C or LLVM generated code.
+ ******************************************************************************/
+
+/* -- layout groups */
+
+typedef void (* openTabBoxFun) (void* interface, const char* label);
+typedef void (* openHorizontalBoxFun) (void* interface, const char* label);
+typedef void (* openVerticalBoxFun) (void* interface, const char* label);
+typedef void (*closeBoxFun) (void* interface);
+
+/* -- active widgets */
+
+typedef void (* addButtonFun) (void* interface, const char* label, FAUSTFLOAT* zone);
+typedef void (* addCheckButtonFun) (void* interface, const char* label, FAUSTFLOAT* zone);
+typedef void (* addVerticalSliderFun) (void* interface, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
+typedef void (* addHorizontalSliderFun) (void* interface, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
+typedef void (* addNumEntryFun) (void* interface, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
+
+/* -- passive display widgets */
+
+typedef void (* addHorizontalBargraphFun) (void* interface, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
+typedef void (* addVerticalBargraphFun) (void* interface, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
+
+typedef void (* declareFun) (void* interface, FAUSTFLOAT* zone, const char* key, const char* value);
 
 typedef struct {
     void* uiInterface;
-    // widget layouts
-    void (*openTabBox)(void*, const char* label);
-    void (*openHorizontalBox)(void*, const char* label);
-    void (*openVerticalBox)(void*, const char* label);
-    void (*closeBox)(void*);
-    // active widgets
-    void (*addButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addCheckButton)(void*, const char* label, FAUSTFLOAT* zone);
-    void (*addVerticalSlider)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*addHorizontalSlider)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    void (*addNumEntry)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step);
-    // passive widgets
-    void (*addHorizontalBargraph)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
-    void (*addVerticalBargraph)(void*, const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max);
-    void (*declare)(void*, FAUSTFLOAT*, char*, char*);
+    openTabBoxFun openTabBox;
+    openHorizontalBoxFun openHorizontalBox;
+    openVerticalBoxFun openVerticalBox;
+    closeBoxFun closeBox;
+    addButtonFun addButton;
+    addCheckButtonFun addCheckButton;
+    addVerticalSliderFun addVerticalSlider;
+    addHorizontalSliderFun addHorizontalSlider;
+    addNumEntryFun addNumEntry;
+    addHorizontalBargraphFun addHorizontalBargraph;
+    addVerticalBargraphFun addVerticalBargraph;
+    declareFun declare;
 } UIGlue;
+
+typedef void (* metaDeclareFun) (void* interface, const char* key, const char* value);
+typedef struct {
+    void* mInterface;
+    metaDeclareFun declare;
+} MetaGlue;
 
 typedef ... llvm_dsp;
 typedef ... llvm_dsp_factory;
