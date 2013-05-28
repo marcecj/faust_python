@@ -26,7 +26,8 @@ class LibFaust(object):
         # These declarations need to be here -- independently of the code in the
         # ffi.verify() call below -- so that the CFFI knows the contents of the
         # data structures and the available functions.
-        cdefs = "typedef {0} FAUSTFLOAT;".format(faust_float) + """
+        ffi.cdef(
+"typedef {0} FAUSTFLOAT;".format(faust_float) + """
 
 typedef struct {
     void *mInterface;
@@ -79,7 +80,7 @@ void initCDSPInstance(llvm_dsp* dsp, int samplingFreq);
 void buildUserInterfaceCDSPInstance(llvm_dsp* dsp, UIGlue* interface);
 void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOAT** output);
         """
-        ffi.cdef(cdefs)
+        )
 
         # compile the code
         C = ffi.verify(
