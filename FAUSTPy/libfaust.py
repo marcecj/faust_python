@@ -53,9 +53,9 @@ typedef struct {
     void (*declare)(void*, FAUSTFLOAT*, char*, char*);
 } UIGlue;
 
-typedef struct {...;} llvm_dsp;
-typedef struct {...;} llvm_dsp_factory;
-typedef struct {...;} llvm_dsp_imp;
+typedef ... llvm_dsp;
+typedef ... llvm_dsp_factory;
+typedef ... llvm_dsp_imp;
 
 llvm_dsp_factory* createCDSPFactory(int argc, const char *argv[],
                         const char* library_path,
