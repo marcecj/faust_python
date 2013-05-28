@@ -230,26 +230,6 @@ class test_faustui(unittest.TestCase):
         self.obj.p_button.zone = 1
         self.assertEqual(self.obj.p_button.zone, param[0])
 
-    def test_addToggleButton(self):
-        "Test the addToggleButton C callback."
-
-        c_ui = self.ui.ui
-
-        param = self.ffi.new("FAUSTFLOAT*", 1.0)
-        c_ui.addToggleButton(c_ui.uiInterface, b"button", param)
-        self.assertTrue(hasattr(self.obj, "p_button"))
-        self.assertEqual(self.obj.p_button.label, b"button")
-        self.assertEqual(self.obj.p_button.zone, 0.0)
-        self.assertEqual(self.obj.p_button.min, 0.0)
-        self.assertEqual(self.obj.p_button.max, 1.0)
-        self.assertEqual(self.obj.p_button.step, 1)
-        self.assertEqual(self.obj.p_button.default, 0.0)
-        self.assertEqual(self.obj.p_button.metadata, {})
-        self.assertEqual(self.obj.p_button.type, "ToggleButton")
-
-        self.obj.p_button.zone = 1
-        self.assertEqual(self.obj.p_button.zone, param[0])
-
     def test_addCheckButton(self):
         "Test the addCheckButton C callback."
 

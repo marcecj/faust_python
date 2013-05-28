@@ -187,14 +187,8 @@ class PythonUI(object):
             self.addNumEntry(label, zone, init, min, max, step)
         def addButton(ignore, c_label, zone):
             self.addButton(ffi.string(c_label), zone)
-        def addToggleButton(ignore, c_label, zone):
-            self.addToggleButton(ffi.string(c_label), zone)
         def addCheckButton(ignore, c_label, zone):
             self.addCheckButton(ffi.string(c_label), zone)
-        def addNumDisplay(ignore, c_label, zone, p):
-            self.addNumDisplay(ffi.string(c_label), zone, p)
-        def addTextDisplay(ignore, c_label, zone, names, min, max):
-            self.addTextDisplay(ffi.string(c_label), zone, names, min, max)
         def addHorizontalBargraph(ignore, c_label, zone, min, max):
             label = ffi.string(c_label)
             self.addHorizontalBargraph(label, zone, min, max)
@@ -221,10 +215,7 @@ class PythonUI(object):
             addNumEntry
         )
         self.__addButton_c       = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addButton)
-        self.__addToggleButton_c = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addToggleButton)
         self.__addCheckButton_c  = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addCheckButton)
-        self.__addNumDisplay_c   = ffi.callback("void(void*, char*, FAUSTFLOAT*, int)", addNumDisplay)
-        self.__addTextDisplay_c  = ffi.callback("void(void*, char*, FAUSTFLOAT*, char*[], FAUSTFLOAT, FAUSTFLOAT)", addTextDisplay)
         self.__addHorizontalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addHorizontalBargraph)
         self.__addVerticalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addVerticalBargraph)
 
@@ -239,10 +230,7 @@ class PythonUI(object):
         ui.addVerticalSlider     = self.__addVerticalSlider_c
         ui.addNumEntry           = self.__addNumEntry_c
         ui.addButton             = self.__addButton_c
-        ui.addToggleButton       = self.__addToggleButton_c
         ui.addCheckButton        = self.__addCheckButton_c
-        ui.addNumDisplay         = self.__addNumDisplay_c
-        ui.addTextDisplay        = self.__addTextDisplay_c
         ui.addHorizontalBargraph = self.__addHorizontalBargraph_c
         ui.addVerticalBargraph   = self.__addVerticalBargraph_c
         ui.uiInterface           = ffi.NULL # we don't use this anyway
@@ -376,19 +364,9 @@ class PythonUI(object):
 
         self.add_input(label, zone, 0, 0, 1, 1, "Button")
 
-    def addToggleButton(self, label, zone):
-
-        self.add_input(label, zone, 0, 0, 1, 1, "ToggleButton")
-
     def addCheckButton(self, label, zone):
 
         self.add_input(label, zone, 0, 0, 1, 1, "CheckButton")
-
-    def addNumDisplay(self, label, zone, p):
-        pass
-
-    def addTextDisplay(self, label, zone, names, min, max):
-        pass
 
     def addHorizontalBargraph(self, label, zone, min, max):
         pass
