@@ -14,7 +14,7 @@ hence creates the wrapper dynamically at run-time.
 FAUSTPy has the following requirements:
 
 - [FAUST](http://faust.grame.fr/), specifically the FAUST2 branch, because
-  FAUSTPy requires the C backend.
+  FAUSTPy requires libfaust.
 - [CFFI](https://cffi.readthedocs.org/), tested with version 0.6.
 - A C compiler; the default CFLAGS assume a GCC compatible one.
 - [NumPy](http://numpy.scipy.org/), tested with version 1.6.
@@ -45,12 +45,12 @@ This will create a wrapper that initialises the FAUST DSP with the sampling rate
 `fs` and with `FAUSTFLOAT` set to the default value of `float` (the default
 precision that is set by the FAUST compiler).  Note that this
 
-1. compiles the FAUST DSP to C,
-2. compiles and links the C code, and
+1. compiles and links the libfaust wrapper,
+2. compiles the FAUST DSP using libfaust, and
 3. initialises the C objects,
 
-all of which happens in the background, thanks to the CFFI.  Furthermore, this
-wrapper class
+all of which happens in the background, thanks to the CFFI and libfaust.
+Furthermore, this wrapper class
 
 1. initialises the UI as a `ui` attribute of the DSP, and
 2. stores the meta-data declared by the DSP as a `metadata` attribute.
@@ -202,3 +202,6 @@ in the source directory.  This will display four plots:
   - finish the unit tests
   - add functional tests so that you can test how everything works together
     (perhaps use "UITester.dsp" and maybe one other DSP from the examples)
+- figure out how to fix the following class of errors:
+
+    TypeError: initializer for ctype 'struct $llvm_dsp *' must be a pointer to same type, not cdata 'struct $llvm_dsp *'
