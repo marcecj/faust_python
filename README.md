@@ -204,4 +204,4 @@ in the source directory.  This will display four plots:
     (perhaps use "UITester.dsp" and maybe one other DSP from the examples)
 - figure out how to fix the following class of errors:
 
-    TypeError: initializer for ctype 'struct $llvm_dsp *' must be a pointer to same type, not cdata 'struct $llvm_dsp *'
+        TypeError: initializer for ctype 'struct $llvm_dsp *' must be a pointer to same type, not cdata 'struct $llvm_dsp *'
