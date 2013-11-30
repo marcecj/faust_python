@@ -99,7 +99,6 @@ void metadataCDSPFactory(llvm_dsp_factory* factory, MetaGlue* meta);
 
 int getNumInputsCDSPInstance(llvm_dsp* dsp);
 int getNumOutputsCDSPInstance(llvm_dsp* dsp);
-void instanceInitCDSPInstance(llvm_dsp* dsp, int samplingFreq);
 void initCDSPInstance(llvm_dsp* dsp, int samplingFreq);
 void buildUserInterfaceCDSPInstance(llvm_dsp* dsp, UIGlue* interface);
 void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOAT** output);
