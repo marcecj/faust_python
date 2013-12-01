@@ -205,3 +205,7 @@ in the source directory.  This will display four plots:
 - figure out how to fix the following class of errors:
 
         TypeError: initializer for ctype 'struct $llvm_dsp *' must be a pointer to same type, not cdata 'struct $llvm_dsp *'
+
+  - Update: it seems that on the master branch I don't get these anymore, so
+    maybe the bug was not in my code, after all. Once I resolve the crash issue
+    with the current FAUST2 branch I'll see if it's gone on this branch, too.
