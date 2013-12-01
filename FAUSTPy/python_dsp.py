@@ -12,7 +12,7 @@ class PythonDSP(object):
 
         To instantiate this object, you create a cffi.FFI object that contains
         all required declarations (check the FAUSTPy.FAUST code for an example).
-        Then you compile the code via ffi.verfiy(), which creates an FFILibrary
+        Then you compile the code via ffi.verify(), which creates an FFILibrary
         object.  Both of these are then passed to this constructor along with
         the other parameters specified below.
 
