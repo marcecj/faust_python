@@ -81,11 +81,10 @@ typedef ... llvm_dsp;
 typedef ... llvm_dsp_factory;
 typedef ... llvm_dsp_imp;
 
-llvm_dsp_factory* createCDSPFactory(int argc, const char *argv[],
-                        const char* library_path,
-                        const char* draw_path,
-                        const char* name,
-                        const char* input,
+
+llvm_dsp_factory* createCDSPFactoryFromString(const char* name_app,
+                        const char* dsp_content,
+                        int argc, const char* argv[],
                         const char* target,
                         char* error_msg,
                         int opt_level);
@@ -143,12 +142,10 @@ void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOA
         if type(dsp_fname) == str:
             dsp_fname = dsp_fname.encode("utf-8")
 
-        factory = self.__C.createCDSPFactory(
-            len(faust_args), faust_args,
-            b"",
-            self.__ffi.new("char[]", b""),
+        factory = self.__C.createCDSPFactoryFromString(
             dsp_fname,
             dsp_code,
+            len(faust_args), faust_args,
             b"",
             err,
             opt_level
