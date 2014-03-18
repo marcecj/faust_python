@@ -2,6 +2,17 @@ from string import Template
 import cffi
 
 
+# TODO: think of a way to cache existing libfaust wrappers, because creating a
+# new, identical instance will invalidate the old one.  Doing this will give a
+# warning, like so:
+#
+#  /usr/lib64/python3.3/site-packages/cffi/vengine_cpy.py:166: UserWarning:
+#      reimporting '_cffi__x8d5b106dx146bdea1' might overwrite older
+#      definitions
+#    % (self.verifier.get_module_name()))
+#
+# One solution might be to pre-compile one instance for each possible
+# FAUSTFLOAT, then reference those instances in wrapper.py.
 class LibFaust(object):
 
     def __init__(self, faust_float, **kwargs):
