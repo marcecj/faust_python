@@ -170,87 +170,91 @@ class PythonUI(object):
         # get the DSP file name sans suffix
         self.__dsp_fname = os.path.basename(dsp_file_name).rpartition('.')[0]
 
-        # define wrapper functions that know the global PythonUI object
+        # define C callbacks that know the global PythonUI object
+        @ffi.callback("void(void*, FAUSTFLOAT*, char*, char*)")
         def declare(mInterface, zone, key, value):
             self.declare(zone, ffi.string(key), ffi.string(value))
+
+        @ffi.callback("void(void*, char*)")
         def openVerticalBox(mInterface, label):
             self.openVerticalBox(ffi.string(label))
+
+        @ffi.callback("void(void*, char*)")
         def openHorizontalBox(mInterface, label):
             self.openHorizontalBox(ffi.string(label))
+
+        @ffi.callback("void(void*, char*)")
         def openTabBox(mInterface, label):
             self.openTabBox(ffi.string(label))
+
+        @ffi.callback("void(void*)")
         def closeBox(mInterface):
             self.closeBox()
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)")
         def addHorizontalSlider(ignore, c_label, zone, init, min, max, step):
             label = ffi.string(c_label)
             self.addHorizontalSlider(label, zone, init, min, max, step)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)")
         def addVerticalSlider(ignore, c_label, zone, init, min, max, step):
             label = ffi.string(c_label)
             self.addVerticalSlider(label, zone, init, min, max, step)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)")
         def addNumEntry(ignore, c_label, zone, init, min, max, step):
             label = ffi.string(c_label)
             self.addNumEntry(label, zone, init, min, max, step)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*)")
         def addButton(ignore, c_label, zone):
             self.addButton(ffi.string(c_label), zone)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*)")
         def addToggleButton(ignore, c_label, zone):
             self.addToggleButton(ffi.string(c_label), zone)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*)")
         def addCheckButton(ignore, c_label, zone):
             self.addCheckButton(ffi.string(c_label), zone)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*, int)")
         def addNumDisplay(ignore, c_label, zone, p):
             self.addNumDisplay(ffi.string(c_label), zone, p)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*, char*[], FAUSTFLOAT, FAUSTFLOAT)")
         def addTextDisplay(ignore, c_label, zone, names, min, max):
             self.addTextDisplay(ffi.string(c_label), zone, names, min, max)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)")
         def addHorizontalBargraph(ignore, c_label, zone, min, max):
             label = ffi.string(c_label)
             self.addHorizontalBargraph(label, zone, min, max)
+
+        @ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)")
         def addVerticalBargraph(ignore, c_label, zone, min, max):
             label = ffi.string(c_label)
             self.addVerticalBargraph(label, zone, min, max)
 
-        # define C callbacks that call the above Python functions
-        self.__declare_c = ffi.callback("void(void*, FAUSTFLOAT*, char*, char*)", declare)
-        self.__openVerticalBox_c = ffi.callback("void(void*, char*)", openVerticalBox)
-        self.__openHorizontalBox_c = ffi.callback("void(void*, char*)", openHorizontalBox)
-        self.__openTabBox_c = ffi.callback("void(void*, char*)", openTabBox)
-        self.__closeBox_c = ffi.callback("void(void*)", closeBox)
-        self.__addHorizontalSlider_c = ffi.callback(
-            "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
-            addHorizontalSlider
-        )
-        self.__addVerticalSlider_c = ffi.callback(
-            "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
-            addVerticalSlider
-        )
-        self.__addNumEntry_c = ffi.callback(
-            "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
-            addNumEntry
-        )
-        self.__addButton_c = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addButton)
-        self.__addToggleButton_c = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addToggleButton)
-        self.__addCheckButton_c = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addCheckButton)
-        self.__addNumDisplay_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, int)", addNumDisplay)
-        self.__addTextDisplay_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, char*[], FAUSTFLOAT, FAUSTFLOAT)", addTextDisplay)
-        self.__addHorizontalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addHorizontalBargraph)
-        self.__addVerticalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addVerticalBargraph)
-
         # create a UI object and store the above callbacks as it's function
-        # pointers
+        # pointers; also store the above functions in self so that they don't
+        # get garbage collected
         ui = ffi.new("UIGlue*")
-        ui.declare = self.__declare_c
-        ui.openVerticalBox = self.__openVerticalBox_c
-        ui.openHorizontalBox = self.__openHorizontalBox_c
-        ui.openTabBox = self.__openTabBox_c
-        ui.closeBox = self.__closeBox_c
-        ui.addHorizontalSlider = self.__addHorizontalSlider_c
-        ui.addVerticalSlider = self.__addVerticalSlider_c
-        ui.addNumEntry = self.__addNumEntry_c
-        ui.addButton = self.__addButton_c
-        ui.addToggleButton = self.__addToggleButton_c
-        ui.addCheckButton = self.__addCheckButton_c
-        ui.addNumDisplay = self.__addNumDisplay_c
-        ui.addTextDisplay = self.__addTextDisplay_c
-        ui.addHorizontalBargraph = self.__addHorizontalBargraph_c
-        ui.addVerticalBargraph = self.__addVerticalBargraph_c
+        ui.declare = self.__declare_c = declare
+        ui.openVerticalBox = self.__openVerticalBox_c = openVerticalBox
+        ui.openHorizontalBox = self.__openHorizontalBox_c = openHorizontalBox
+        ui.openTabBox = self.__openTabBox_c = openTabBox
+        ui.closeBox = self.__closeBox_c = closeBox
+        ui.addHorizontalSlider = self.__addHorizontalSlider_c = addHorizontalSlider
+        ui.addVerticalSlider = self.__addVerticalSlider_c = addVerticalSlider
+        ui.addNumEntry = self.__addNumEntry_c = addNumEntry
+        ui.addButton = self.__addButton_c = addButton
+        ui.addToggleButton = self.__addToggleButton_c = addToggleButton
+        ui.addCheckButton = self.__addCheckButton_c = addCheckButton
+        ui.addNumDisplay = self.__addNumDisplay_c = addNumDisplay
+        ui.addTextDisplay = self.__addTextDisplay_c = addTextDisplay
+        ui.addHorizontalBargraph = self.__addHorizontalBargraph_c = addHorizontalBargraph
+        ui.addVerticalBargraph = self.__addVerticalBargraph_c = addVerticalBargraph
         ui.uiInterface = ffi.NULL  # we don't use this anyway
 
         self.__ui = ui
