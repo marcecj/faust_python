@@ -4,6 +4,7 @@ import string
 import os
 valid_ident = string.ascii_letters + string.digits + "_"
 
+
 def str_to_identifier(s):
     """Convert a "bytes" to a valid (in Python 2 and 3) identifier."""
 
@@ -12,9 +13,9 @@ def str_to_identifier(s):
 
     def filter_chars(s):
         for c in s:
-            # periods are used for abbreviations and look ugly when converted to
-            # underscore, so filter them out completely
-            if   c == ".":
+            # periods are used for abbreviations and look ugly when converted
+            # to underscore, so filter them out completely
+            if c == ".":
                 yield ""
             elif c in valid_ident or c == "_":
                 yield c
@@ -25,6 +26,7 @@ def str_to_identifier(s):
         s = "_"+s
 
     return ''.join(filter_chars(s))
+
 
 class Param(object):
     """A UI parameter object.
@@ -59,24 +61,24 @@ class Param(object):
         """
 
         # NOTE: _zone is a CData holding a float*
-        self.label    = label
-        self._zone    = zone
+        self.label = label
+        self._zone = zone
         self._zone[0] = init
-        self.min      = min
-        self.max      = max
-        self.step     = step
-        self.type     = param_type
+        self.min = min
+        self.max = max
+        self.step = step
+        self.type = param_type
 
         # extra attributes
-        self.default  = init
+        self.default = init
         self.metadata = {}
-        self.__doc__  = "min={0}, max={1}, step={2}".format(min,max,step)
+        self.__doc__ = "min={0}, max={1}, step={2}".format(min, max, step)
 
     def __zone_getter(self):
         return self._zone[0]
 
     def __zone_setter(self, x):
-        if   x >= self.max:
+        if x >= self.max:
             self._zone[0] = self.max
         elif x <= self.min:
             self._zone[0] = self.min
@@ -90,11 +92,12 @@ class Param(object):
 
         self.zone = value
 
+
 class Box(object):
     def __init__(self, label, layout):
-        self.label       = label
-        self.layout      = layout
-        self.metadata    = {}
+        self.label = label
+        self.layout = layout
+        self.metadata = {}
 
     def __setattr__(self, name, value):
 
@@ -102,6 +105,7 @@ class Box(object):
             self.__dict__[name].__set__(self, value)
         else:
             object.__setattr__(self, name, value)
+
 
 # TODO: implement the *Display() and *Bargraph() methods
 class PythonUI(object):
@@ -111,8 +115,9 @@ class PythonUI(object):
 
     In FAUST, UI's are specified by the DSP object, which calls methods of a UI
     object to create them.  The PythonUI class implements such a UI object.  It
-    creates C callbacks to its methods and stores then in a UI struct, which can
-    then be passed to the buildUserInterface() function of a FAUST DSP object.
+    creates C callbacks to its methods and stores then in a UI struct, which
+    can then be passed to the buildUserInterface() function of a FAUST DSP
+    object.
 
     The DSP object basically calls the methods of the PythonUI class from C via
     the callbacks in the UI struct and thus creates a hierarchical namespace of
@@ -143,13 +148,13 @@ class PythonUI(object):
         ffi : cffi.FFI
             The CFFI instance that holds all the data type declarations.
         dsp_file_name : file name of the DSP (optional)
-            The file name of the DSP whose UI is being wrapped.  This is used to
-            special case the first UI group, which is constructed from the DSP's
-            file name.  If empty (the default), the first group is named after
-            the file name, otherwise it will be named "ui".
+            The file name of the DSP whose UI is being wrapped.  This is used
+            to special case the first UI group, which is constructed from the
+            DSP's file name.  If empty (the default), the first group is named
+            after the file name, otherwise it will be named "ui".
         obj : object (optional)
-            The Python object to which the UI elements are to be added.  If None
-            (the default) the PythonUI instance manipulates itself.
+            The Python object to which the UI elements are to be added.  If
+            None (the default) the PythonUI instance manipulates itself.
         """
 
         if obj:
@@ -157,10 +162,10 @@ class PythonUI(object):
         else:
             self.__boxes = [self]
 
-        self.__num_anon_boxes  = [0]
+        self.__num_anon_boxes = [0]
         self.__num_anon_params = [0]
-        self.__metadata        = [{}]
-        self.__group_metadata  = {}
+        self.__metadata = [{}]
+        self.__group_metadata = {}
 
         # get the DSP file name sans suffix
         self.__dsp_fname = os.path.basename(dsp_file_name).rpartition('.')[0]
@@ -197,11 +202,11 @@ class PythonUI(object):
             self.addVerticalBargraph(label, zone, min, max)
 
         # define C callbacks that call the above Python functions
-        self.__declare_c           = ffi.callback("void(void*, FAUSTFLOAT*, char*, char*)", declare)
-        self.__openVerticalBox_c   = ffi.callback("void(void*, char*)", openVerticalBox)
+        self.__declare_c = ffi.callback("void(void*, FAUSTFLOAT*, char*, char*)", declare)
+        self.__openVerticalBox_c = ffi.callback("void(void*, char*)", openVerticalBox)
         self.__openHorizontalBox_c = ffi.callback("void(void*, char*)", openHorizontalBox)
-        self.__openTabBox_c        = ffi.callback("void(void*, char*)", openTabBox)
-        self.__closeBox_c          = ffi.callback("void(void*)", closeBox)
+        self.__openTabBox_c = ffi.callback("void(void*, char*)", openTabBox)
+        self.__closeBox_c = ffi.callback("void(void*)", closeBox)
         self.__addHorizontalSlider_c = ffi.callback(
             "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
             addHorizontalSlider
@@ -214,26 +219,27 @@ class PythonUI(object):
             "void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT, FAUSTFLOAT)",
             addNumEntry
         )
-        self.__addButton_c       = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addButton)
-        self.__addCheckButton_c  = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addCheckButton)
+        self.__addButton_c = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addButton)
+        self.__addCheckButton_c = ffi.callback("void(void*, char*, FAUSTFLOAT*)", addCheckButton)
         self.__addHorizontalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addHorizontalBargraph)
         self.__addVerticalBargraph_c = ffi.callback("void(void*, char*, FAUSTFLOAT*, FAUSTFLOAT, FAUSTFLOAT)", addVerticalBargraph)
 
-        # create a UI object and store the above callbacks as it's function pointers
+        # create a UI object and store the above callbacks as it's function
+        # pointers
         ui = ffi.new("UIGlue*")
-        ui.declare               = self.__declare_c
-        ui.openVerticalBox       = self.__openVerticalBox_c
-        ui.openHorizontalBox     = self.__openHorizontalBox_c
-        ui.openTabBox            = self.__openTabBox_c
-        ui.closeBox              = self.__closeBox_c
-        ui.addHorizontalSlider   = self.__addHorizontalSlider_c
-        ui.addVerticalSlider     = self.__addVerticalSlider_c
-        ui.addNumEntry           = self.__addNumEntry_c
-        ui.addButton             = self.__addButton_c
-        ui.addCheckButton        = self.__addCheckButton_c
+        ui.declare = self.__declare_c
+        ui.openVerticalBox = self.__openVerticalBox_c
+        ui.openHorizontalBox = self.__openHorizontalBox_c
+        ui.openTabBox = self.__openTabBox_c
+        ui.closeBox = self.__closeBox_c
+        ui.addHorizontalSlider = self.__addHorizontalSlider_c
+        ui.addVerticalSlider = self.__addVerticalSlider_c
+        ui.addNumEntry = self.__addNumEntry_c
+        ui.addButton = self.__addButton_c
+        ui.addCheckButton = self.__addCheckButton_c
         ui.addHorizontalBargraph = self.__addHorizontalBargraph_c
-        ui.addVerticalBargraph   = self.__addVerticalBargraph_c
-        ui.uiInterface           = ffi.NULL # we don't use this anyway
+        ui.addVerticalBargraph = self.__addVerticalBargraph_c
+        ui.uiInterface = ffi.NULL  # we don't use this anyway
 
         self.__ui = ui
         self.__ffi = ffi
@@ -253,8 +259,8 @@ class PythonUI(object):
             # store parameter meta-data
             #
             # since the only identifier we get is the zone (pointer to the
-            # control value), we have to store this for now and assign it to the
-            # corresponding parameter later in closeBox()
+            # control value), we have to store this for now and assign it to
+            # the corresponding parameter later in closeBox()
             if zone not in self.__metadata[-1]:
                 self.__metadata[-1][zone] = {}
             self.__metadata[-1][zone][key] = value
@@ -268,9 +274,9 @@ class PythonUI(object):
         # current Box
         if label:
             # special case the first box, which is always the file name sans
-            # suffix, so that it has a consistent name independent of file name;
-            # this is also important for in-line DSP code, which is stored in a
-            # temporary file with a randomised name
+            # suffix, so that it has a consistent name independent of file
+            # name; this is also important for in-line DSP code, which is
+            # stored in a temporary file with a randomised name
             if label.decode() == self.__dsp_fname:
                 sane_label = "ui"
             else:
@@ -281,10 +287,9 @@ class PythonUI(object):
             sane_label = "b_anon" + str(self.__num_anon_boxes[-1])
 
         # create a new sub-Box and make it a child of the current Box
-        box        = Box(label, layout)
+        box = Box(label, layout)
         setattr(self.__boxes[-1], sane_label, box)
         self.__boxes.append(box)
-
 
         # store the group meta-data in the newly opened box and reset
         # self.__group_metadata
@@ -320,8 +325,8 @@ class PythonUI(object):
             if type(p) not in (Param,):
                 continue
 
-            # iterate over the meta-data that has accumulated in the current box
-            # and assign it to its corresponding Param objects
+            # iterate over the meta-data that has accumulated in the current
+            # box and assign it to its corresponding Param objects
             for zone, mdata in cur_metadata.items():
                 if p._zone == zone:
                     p.metadata.update(mdata)

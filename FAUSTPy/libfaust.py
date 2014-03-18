@@ -1,6 +1,7 @@
 from string import Template
 import cffi
 
+
 class LibFaust(object):
 
     def __init__(self, faust_float, **kwargs):
@@ -11,21 +12,21 @@ class LibFaust(object):
         # c_flags = ["-std=c99", "-march=native", "-O3"]
         c_flags = ["-std=c99", "-march=native", "-O0", "-g"]
         kwargs["extra_compile_args"] = c_flags + \
-                kwargs.get("extra_compile_args", [])
+            kwargs.get("extra_compile_args", [])
 
         kwargs["extra_link_args"] = ["-Wl,-rpath,/usr/lib/faust"] + \
-                kwargs.get("extra_link_args", [])
+            kwargs.get("extra_link_args", [])
 
-        kwargs["library_dirs"]    = ["/usr/lib/faust"] + \
-                kwargs.get("library_dirs", [])
+        kwargs["library_dirs"] = ["/usr/lib/faust"] + \
+            kwargs.get("library_dirs", [])
 
-        kwargs["libraries"]       = ["faust"] + kwargs.get("libraries", [])
+        kwargs["libraries"] = ["faust"] + kwargs.get("libraries", [])
 
         # declare various types and functions
         #
-        # These declarations need to be here -- independently of the code in the
-        # ffi.verify() call below -- so that the CFFI knows the contents of the
-        # data structures and the available functions.
+        # These declarations need to be here -- independently of the code in
+        # the ffi.verify() call below -- so that the CFFI knows the contents of
+        # the data structures and the available functions.
         ffi.cdef(
 "typedef {0} FAUSTFLOAT;".format(faust_float) + """
 
@@ -116,13 +117,12 @@ void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOA
 
         self.__faust_float = faust_float
         self.__ffi = ffi
-        self.__C   = C
+        self.__C = C
 
-    def compile_faust(self, dsp_code, dsp_fname, opt_level=3,
-                      *kargs):
+    def compile_faust(self, dsp_code, dsp_fname, opt_level=3, *kargs):
 
         args = list(kargs)
-        if   self.__faust_float == "float":
+        if self.__faust_float == "float":
             args.append("-single")
         elif self.__faust_float == "double":
             args.append("-double")
@@ -163,4 +163,4 @@ void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOA
         return factory, dsp
 
     ffi = property(fget=lambda x: x.__ffi)
-    C   = property(fget=lambda x: x.__C)
+    C = property(fget=lambda x: x.__C)

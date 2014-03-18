@@ -1,9 +1,8 @@
-import cffi
-import os
 from . import python_ui, python_meta, python_dsp
 from . libfaust import LibFaust
 
 FAUSTFLOATS = frozenset(("float", "double", "long double"))
+
 
 class FAUST(object):
     """Wraps a FAUST DSP using the CFFI.  The DSP file is compiled to C, which
@@ -13,12 +12,12 @@ class FAUST(object):
     """
 
     def __init__(self, faust_dsp, fs,
-                 faust_float = "float",
-                 faust_flags = [],
-                 dsp_class   = python_dsp.PythonDSP,
-                 ui_class    = python_ui.PythonUI,
-                 meta_class  = python_meta.PythonMeta,
-                **kwargs):
+                 faust_float="float",
+                 faust_flags=[],
+                 dsp_class=python_dsp.PythonDSP,
+                 ui_class=python_ui.PythonUI,
+                 meta_class=python_meta.PythonMeta,
+                 **kwargs):
         """
         Initialise a FAUST object.
 
@@ -26,8 +25,8 @@ class FAUST(object):
         -----------
 
         faust_dsp : string / bytes
-            This can be either the path to a FAUST DSP file (which should end in
-            ".dsp") or a string of FAUST code.  Note that in Python 3 a code
+            This can be either the path to a FAUST DSP file (which should end
+            in ".dsp") or a string of FAUST code.  Note that in Python 3 a code
             string must be of type "bytes".
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
@@ -89,10 +88,10 @@ class FAUST(object):
         # that it represents a file name, otherwise it must be a code block.
         if type(faust_dsp) is bytes and not faust_dsp.endswith(b".dsp"):
             # if the DSP is from an inline code string we set the DSP file name
-            # to something predictable so that the caching mechanism of the CFFI
-            # still works, but make it somewhat unusual to reduce the likelihood
-            # of a name clash; add a "." so that str.rpartition('.') returns
-            # "123first_box" as the first element instead of ""
+            # to something predictable so that the caching mechanism of the
+            # CFFI still works, but make it somewhat unusual to reduce the
+            # likelihood of a name clash; add a "." so that str.rpartition('.')
+            # returns "123first_box" as the first element instead of ""
             dsp_code = faust_dsp
             dsp_fname = "123first_box."
         else:
@@ -121,7 +120,7 @@ class FAUST(object):
             self.__C.metadataCDSPFactory(factory, Meta.meta)
 
         # add shortcuts to the compute* functions
-        self.compute  = self.__dsp.compute
+        self.compute = self.__dsp.compute
         self.compute2 = self.__dsp.compute2
 
     # expose some internal attributes as properties

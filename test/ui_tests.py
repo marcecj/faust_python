@@ -8,10 +8,12 @@ from FAUSTPy import PythonUI
 # test PythonUI
 #################################
 
+
 def tearDownModule():
     cffi.verifier.cleanup_tmpdir(
         tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
     )
+
 
 class test_faustui(unittest.TestCase):
 
@@ -66,13 +68,16 @@ class test_faustui(unittest.TestCase):
         param3 = self.ffi.new("FAUSTFLOAT*", 1.0)
 
         c_ui.declare(c_ui.uiInterface, param1, b"key1", b"val1")
-        c_ui.addVerticalSlider(c_ui.uiInterface, b"slider1", param1, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addVerticalSlider(c_ui.uiInterface, b"slider1", param1, 0.0, 0.0,
+                               2.0, 0.1)
         c_ui.declare(c_ui.uiInterface, param2, b"key1", b"val1")
         c_ui.declare(c_ui.uiInterface, param2, b"key2", b"val2")
-        c_ui.addHorizontalSlider(c_ui.uiInterface, b"slider2", param2, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addHorizontalSlider(c_ui.uiInterface, b"slider2", param2, 0.0,
+                                 0.0, 2.0, 0.1)
         c_ui.declare(c_ui.uiInterface, param3, b"key2", b"val2")
         c_ui.declare(c_ui.uiInterface, param3, b"key3", b"val3")
-        c_ui.addNumEntry(c_ui.uiInterface, b"numentry", param3, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addNumEntry(c_ui.uiInterface, b"numentry", param3, 0.0, 0.0, 2.0,
+                         0.1)
 
         # closeBox triggers assignment of parameter meta-data
         c_ui.closeBox(c_ui.uiInterface)
@@ -87,7 +92,6 @@ class test_faustui(unittest.TestCase):
                              {b"key1": b"val1", b"key2": b"val2"})
         self.assertDictEqual(self.obj.p_numentry.metadata,
                              {b"key2": b"val2", b"key3": b"val3"})
-
 
     def test_openVerticalBox(self):
         "Test the openVerticalBox C callback."
@@ -139,10 +143,10 @@ class test_faustui(unittest.TestCase):
         c_ui.openTabBox(c_ui.uiInterface, b"box4")
         c_ui.closeBox(c_ui.uiInterface)
 
-        self.assertTrue(hasattr(self.obj        , "b_box1"))
-        self.assertTrue(hasattr(self.obj.b_box1 , "b_box2"))
-        self.assertTrue(hasattr(self.obj.b_box1 , "b_box3"))
-        self.assertTrue(hasattr(self.obj        , "b_box4"))
+        self.assertTrue(hasattr(self.obj, "b_box1"))
+        self.assertTrue(hasattr(self.obj.b_box1, "b_box2"))
+        self.assertTrue(hasattr(self.obj.b_box1, "b_box3"))
+        self.assertTrue(hasattr(self.obj, "b_box4"))
 
     def test_addHorizontalSlider(self):
         "Test the addHorizontalSlider C callback."
@@ -152,7 +156,8 @@ class test_faustui(unittest.TestCase):
         param = self.ffi.new("FAUSTFLOAT*", 1.0)
         self.assertEqual(param[0], 1.0)
 
-        c_ui.addHorizontalSlider(c_ui.uiInterface, b"slider", param, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addHorizontalSlider(c_ui.uiInterface, b"slider", param, 0.0, 0.0,
+                                 2.0, 0.1)
         self.assertTrue(hasattr(self.obj, "p_slider"))
         self.assertEqual(self.obj.p_slider.label, b"slider")
         self.assertEqual(self.obj.p_slider.zone, 0.0)
@@ -174,7 +179,8 @@ class test_faustui(unittest.TestCase):
         param = self.ffi.new("FAUSTFLOAT*", 1.0)
         self.assertEqual(param[0], 1.0)
 
-        c_ui.addVerticalSlider(c_ui.uiInterface, b"slider", param, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addVerticalSlider(c_ui.uiInterface, b"slider", param, 0.0, 0.0,
+                               2.0, 0.1)
         self.assertTrue(hasattr(self.obj, "p_slider"))
         self.assertEqual(self.obj.p_slider.label, b"slider")
         self.assertEqual(self.obj.p_slider.zone, 0.0)
@@ -196,7 +202,8 @@ class test_faustui(unittest.TestCase):
         param = self.ffi.new("FAUSTFLOAT*", 1.0)
         self.assertEqual(param[0], 1.0)
 
-        c_ui.addNumEntry(c_ui.uiInterface, b"numentry", param, 0.0, 0.0, 2.0, 0.1)
+        c_ui.addNumEntry(c_ui.uiInterface, b"numentry", param, 0.0, 0.0, 2.0,
+                         0.1)
         self.assertTrue(hasattr(self.obj, "p_numentry"))
         self.assertEqual(self.obj.p_numentry.label, b"numentry")
         self.assertEqual(self.obj.p_numentry.zone, 0.0)

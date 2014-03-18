@@ -1,28 +1,30 @@
 import os
-from setuptools import find_packages, setup
+from setuptools import setup
+
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+
 setup(
-    name             = 'FAUSTPy',
-    version          = '0.1',
-    url              = 'https://github.com/marcecj/faust_python',
-    download_url     = 'https://github.com/marcecj/faust_python',
-    license          = 'MIT',
-    author           = 'Marc Joliet',
-    author_email     = 'marcec@gmx.de',
-    description      = 'FAUSTPy is a Python wrapper for the FAUST DSP language.',
-    packages         = ['FAUSTPy'],
-    test_suite       = "test",
-    long_description = read('README.md'),
-    platforms        = 'any',
+    name='FAUSTPy',
+    version='0.1',
+    url='https://github.com/marcecj/faust_python',
+    download_url='https://github.com/marcecj/faust_python',
+    license='MIT',
+    author='Marc Joliet',
+    author_email='marcec@gmx.de',
+    description='FAUSTPy is a Python wrapper for the FAUST DSP language.',
+    packages=['FAUSTPy'],
+    test_suite="test",
+    long_description=read('README.md'),
+    platforms='any',
 
     # the ctypes field was added before NumPy 1.0, so any version is OK
     # TODO: do I need requires, too (it makes the --requires option work)?
-    requires         = ["cffi", "numpy"],
-    install_requires = ["cffi", "numpy"],
-    provides         = ["FAUSTPy"],
+    requires=["cffi", "numpy"],
+    install_requires=["cffi", "numpy"],
+    provides=["FAUSTPy"],
 
     classifiers=[
         'Development Status :: 3 - Alpha',

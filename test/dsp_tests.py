@@ -9,18 +9,20 @@ from FAUSTPy import PythonDSP
 # test PythonDSP
 #################################
 
+
 def tearDownModule():
     cffi.verifier.cleanup_tmpdir(
         tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
     )
+
 
 class test_faustdsp_init(unittest.TestCase):
 
     def setUp(self):
 
         self.ffi, self.C, self.factory, self.dsp = \
-                zip(*[init_ffi(faust_float=ff) for ff in
-                      ("float", "double", "long double")])
+            zip(*[init_ffi(faust_float=ff) for ff in
+                  ("float", "double", "long double")])
 
     def test_init_different_fs(self):
         """
@@ -30,9 +32,9 @@ class test_faustdsp_init(unittest.TestCase):
 
         # just try various sampling rates; use different self.dsp's to prevent
         # initialisation of an already initialised llvm_dsp
-        PythonDSP(self.C[0],self.ffi[0],self.factory[0],self.dsp[0],32000)
-        PythonDSP(self.C[1],self.ffi[1],self.factory[1],self.dsp[1],44100)
-        PythonDSP(self.C[2],self.ffi[2],self.factory[2],self.dsp[2],48000)
+        PythonDSP(self.C[0], self.ffi[0], self.factory[0], self.dsp[0], 32000)
+        PythonDSP(self.C[1], self.ffi[1], self.factory[1], self.dsp[1], 44100)
+        PythonDSP(self.C[2], self.ffi[2], self.factory[2], self.dsp[2], 48000)
 
     def test_init_bad_fs(self):
         """
@@ -52,9 +54,9 @@ class test_faustdsp_init(unittest.TestCase):
         """
 
         # this should not do anything
-        PythonDSP(self.C[0],self.ffi[0],self.factory[0],self.dsp[0],48000)
-        PythonDSP(self.C[1],self.ffi[1],self.factory[1],self.dsp[1],48000)
-        PythonDSP(self.C[2],self.ffi[2],self.factory[2],self.dsp[2],48000)
+        PythonDSP(self.C[0], self.ffi[0], self.factory[0], self.dsp[0], 48000)
+        PythonDSP(self.C[1], self.ffi[1], self.factory[1], self.dsp[1], 48000)
+        PythonDSP(self.C[2], self.ffi[2], self.factory[2], self.dsp[2], 48000)
 
     def test_init_bad_ffi_combos(self):
         """
@@ -72,32 +74,35 @@ class test_faustdsp_init(unittest.TestCase):
                 (self.C[2], self.ffi[0]),
                 (self.C[2], self.ffi[1])]
 
-        # the init itself won't fail, but the type checking in later compute()'s
-        # will; this is due to the fact that you cannot tell whether a
-        # FFILibrary object come from a given FFI object or not
+        # the init itself won't fail, but the type checking in later
+        # compute()'s will; this is due to the fact that you cannot tell
+        # whether a FFILibrary object come from a given FFI object or not
         for C, ffi in ffis:
-            dsp = PythonDSP(C,ffi,self.factory[0],self.dsp[0],48000)
-            audio = np.zeros((dsp.num_in,48e3), dtype=dsp.dtype)
-            audio[:,0] = 1
+            dsp = PythonDSP(C, ffi, self.factory[0], self.dsp[0], 48000)
+            audio = np.zeros((dsp.num_in, 48e3), dtype=dsp.dtype)
+            audio[:, 0] = 1
             self.assertRaises(TypeError, dsp.compute, audio)
+
 
 class test_faustdsp(unittest.TestCase):
 
     def setUp(self):
 
         self.ffi1, self.C1, factory1, dsp1 = init_ffi()
-        self.ffi2, self.C2, factory2, dsp2 = init_ffi(faust_dsp="test_synth.dsp")
+        self.ffi2, self.C2, factory2, dsp2 = init_ffi(
+            faust_dsp="test_synth.dsp"
+        )
 
-        self.dsp   = PythonDSP(self.C1, self.ffi1, factory1, dsp1, 48000)
+        self.dsp = PythonDSP(self.C1, self.ffi1, factory1, dsp1, 48000)
         self.synth = PythonDSP(self.C2, self.ffi2, factory2, dsp2, 48000)
 
     def tearDown(self):
 
         # TODO: for some reason, this prevents strange errors along the line of
         #
-        # "Exception TypeError: "initializer for ctype 'struct $mydsp *' must be
-        # a pointer to same type, not cdata 'struct $mydsp *'" in <bound method
-        # PythonDSP.__del__ of <FAUSTPy.python_dsp.PythonDSP object at
+        # "Exception TypeError: "initializer for ctype 'struct $mydsp *' must
+        # be a pointer to same type, not cdata 'struct $mydsp *'" in <bound
+        # method PythonDSP.__del__ of <FAUSTPy.python_dsp.PythonDSP object at
         # 0x16cae50>> ignored"
         #
         # Find out why!
@@ -117,33 +122,33 @@ class test_faustdsp(unittest.TestCase):
     def test_compute(self):
         "Test the compute() method."
 
-        audio = np.zeros((self.dsp.num_in,48e3), dtype=self.dsp.dtype)
-        audio[:,0] = 1
+        audio = np.zeros((self.dsp.num_in, 48e3), dtype=self.dsp.dtype)
+        audio[:, 0] = 1
         out = self.dsp.compute(audio)
 
     def test_compute_empty_input(self):
         "Test the compute() method with zero input samples."
 
-        audio = np.zeros((self.dsp.num_in,0), dtype=self.dsp.dtype)
+        audio = np.zeros((self.dsp.num_in, 0), dtype=self.dsp.dtype)
         out = self.dsp.compute(audio)
-        self.assertEqual(out.size,0)
+        self.assertEqual(out.size, 0)
 
     def test_compute_bad_dtype(self):
         "Test the compute() method with inputs of incorrect dtype."
 
         for dtype in ("float64", "float128"):
-            audio = np.zeros((self.dsp.num_in,48e3), dtype=dtype)
-            audio[:,0] = 1
+            audio = np.zeros((self.dsp.num_in, 48e3), dtype=dtype)
+            audio[:, 0] = 1
             self.assertRaises(ValueError, self.dsp.compute, audio)
 
     def test_compute_synth(self):
         "Test the compute() for synthesizer effects."
 
         count = 128
-        ref = np.zeros((self.synth.num_out,count), dtype=self.synth.dtype)
-        ref[:,::2] = 1
+        ref = np.zeros((self.synth.num_out, count), dtype=self.synth.dtype)
+        ref[:, ::2] = 1
         out = self.synth.compute(count)
-        self.assertTrue(np.all(ref==out))
+        self.assertTrue(np.all(ref == out))
 
     def test_compute_synth_zero_count(self):
         "Test the compute() for synthesizer effects with zero output samples."
@@ -153,7 +158,8 @@ class test_faustdsp(unittest.TestCase):
 
     def test_compute_synth_neg_count(self):
         """
-        Test the compute() for synthesizer effects with negative output samples.
+        Test the compute() for synthesizer effects with negative output
+        samples.
         """
 
         self.assertRaises(ValueError, self.synth.compute, -1)

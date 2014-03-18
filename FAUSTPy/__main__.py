@@ -46,18 +46,18 @@ def_Freq = dattorro.dsp.ui.p_Center_Freq
 #######################################################
 
 audio = np.zeros((dattorro.dsp.num_in, args.fs), dtype=dattorro.dsp.dtype)
-audio[:,0] = 1
+audio[:, 0] = 1
 
 out = dattorro.compute(audio)
 
 print(audio)
 print(out)
 
-spec = np.fft.fft(out)[:,:args.fs/2]
+spec = np.fft.fft(out)[:, :args.fs/2]
 
 fig = plt.figure()
-p   = fig.add_subplot(
-    1,1,1,
+p = fig.add_subplot(
+    1, 1, 1,
     title="Frequency response with the default settings\n"
           "(Q={}, F={:.2f} Hz, G={:.0f} dB FS)".format(
               def_Q.zone, def_Freq.zone, 20*np.log10(def_Gain.zone+1e-8)
@@ -73,17 +73,17 @@ p.legend(("Left channel", "Right channel"), loc="best")
 # plot the frequency response with varying Q
 #######################################################
 
-Q  = np.linspace(def_Q.min, def_Q.max, 10)
+Q = np.linspace(def_Q.min, def_Q.max, 10)
 
 dattorro.dsp.ui.p_Center_Freq = 1e2
-dattorro.dsp.ui.p_Gain = 10**(-0.5) # -10 dB
+dattorro.dsp.ui.p_Gain = 10**(-0.5)  # -10 dB
 
 cur_G = dattorro.dsp.ui.p_Gain.zone
 cur_F = dattorro.dsp.ui.p_Center_Freq.zone
 
 fig = plt.figure()
 p = fig.add_subplot(
-    1,1,1,
+    1, 1, 1,
     title="Frequency response "
           "(G={:.0f} dB FS, F={} Hz)".format(20*np.log10(cur_G+1e-8), cur_F),
     xlabel="Frequency in Hz (log)",
@@ -94,7 +94,7 @@ p = fig.add_subplot(
 for q in Q:
     dattorro.dsp.ui.p_Q = q
     out = dattorro.compute(audio)
-    spec = np.fft.fft(out)[0,:args.fs/2]
+    spec = np.fft.fft(out)[0, :args.fs/2]
 
     p.plot(20*np.log10(np.absolute(spec.T)+1e-8),
            label="Q={}".format(q))
@@ -106,7 +106,7 @@ p.legend(loc="best")
 #######################################################
 
 # start at -60 dB because the minimum is at an extremely low -160 dB
-G  = np.logspace(-3, np.log10(def_Gain.max), 10)
+G = np.logspace(-3, np.log10(def_Gain.max), 10)
 
 dattorro.dsp.ui.p_Q = 2
 
@@ -115,7 +115,7 @@ cur_F = dattorro.dsp.ui.p_Center_Freq.zone
 
 fig = plt.figure()
 p = fig.add_subplot(
-    1,1,1,
+    1, 1, 1,
     title="Frequency response (Q={}, F={} Hz)".format(cur_Q, cur_F),
     xlabel="Frequency in Hz (log)",
     ylabel="Magnitude in dB FS",
@@ -125,7 +125,7 @@ p = fig.add_subplot(
 for g in G:
     dattorro.dsp.ui.p_Gain = g
     out = dattorro.compute(audio)
-    spec = np.fft.fft(out)[0,:args.fs/2]
+    spec = np.fft.fft(out)[0, :args.fs/2]
 
     p.plot(20*np.log10(np.absolute(spec.T)+1e-8),
            label="G={:.3g} dB FS".format(20*np.log10(g+1e-8)))
@@ -136,17 +136,17 @@ p.legend(loc="best")
 # plot the frequency response with varying center frequency
 ###########################################################
 
-F  = np.logspace(np.log10(def_Freq.min), np.log10(def_Freq.max), 10)
+F = np.logspace(np.log10(def_Freq.min), np.log10(def_Freq.max), 10)
 
-dattorro.dsp.ui.p_Q    = def_Q.default
-dattorro.dsp.ui.p_Gain = 10**(-0.5) # -10 dB
+dattorro.dsp.ui.p_Q = def_Q.default
+dattorro.dsp.ui.p_Gain = 10**(-0.5)  # -10 dB
 
 cur_Q = dattorro.dsp.ui.p_Q.zone
 cur_G = dattorro.dsp.ui.p_Gain.zone
 
 fig = plt.figure()
 p = fig.add_subplot(
-    1,1,1,
+    1, 1, 1,
     title="Frequency response "
           "(Q={}, G={:.0f} dB FS)".format(cur_Q, 20*np.log10(cur_G+1e-8)),
     xlabel="Frequency in Hz (log)",
@@ -157,7 +157,7 @@ p = fig.add_subplot(
 for f in F:
     dattorro.dsp.ui.p_Center_Freq = f
     out = dattorro.compute(audio)
-    spec = np.fft.fft(out)[0,:args.fs/2]
+    spec = np.fft.fft(out)[0, :args.fs/2]
 
     p.plot(20*np.log10(np.absolute(spec.T)+1e-8),
            label="F={:.2f} Hz".format(f))
