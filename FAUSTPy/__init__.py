@@ -19,13 +19,13 @@ from . python_dsp import PythonDSP
 
 # TODO: see which meta-data is still relevant. pydoc definitely uses "author",
 # "credits" and "version" (and "date"), should the rest be removed?
-__author__           = "Marc Joliet"
-__copyright__        = "Copyright 2013, Marc Joliet"
-__credits__          = "Marc Joliet"
-__license__          = "MIT"
-__version__          = "0.1"
-__maintainer__       = "Marc Joliet"
-__email__            = "marcec@gmx.de"
-__status__           = "Prototype"
+__author__ = "Marc Joliet"
+__copyright__ = "Copyright 2013, Marc Joliet"
+__credits__ = "Marc Joliet"
+__license__ = "MIT"
+__version__ = "0.1"
+__maintainer__ = "Marc Joliet"
+__email__ = "marcec@gmx.de"
+__status__ = "Prototype"
 
 __all__ = ["FAUST", "PythonUI", "PythonMeta", "PythonDSP", "Param", "wrapper"]

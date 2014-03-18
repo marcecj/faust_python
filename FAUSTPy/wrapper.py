@@ -8,6 +8,7 @@ from . import python_ui, python_meta, python_dsp
 FAUST_PATH = ""
 FAUSTFLOATS = frozenset(("float", "double", "long double"))
 
+
 class FAUST(object):
     """Wraps a FAUST DSP using the CFFI.  The DSP file is compiled to C, which
     is then compiled and linked to the running Python interpreter by the CFFI.
@@ -16,12 +17,12 @@ class FAUST(object):
     """
 
     def __init__(self, faust_dsp, fs,
-                 faust_float = "float",
-                 faust_flags = [],
-                 dsp_class   = python_dsp.PythonDSP,
-                 ui_class    = python_ui.PythonUI,
-                 meta_class  = python_meta.PythonMeta,
-                **kwargs):
+                 faust_float="float",
+                 faust_flags=[],
+                 dsp_class=python_dsp.PythonDSP,
+                 ui_class=python_ui.PythonUI,
+                 meta_class=python_meta.PythonMeta,
+                 **kwargs):
         """
         Initialise a FAUST object.
 
@@ -29,8 +30,8 @@ class FAUST(object):
         -----------
 
         faust_dsp : string / bytes
-            This can be either the path to a FAUST DSP file (which should end in
-            ".dsp") or a string of FAUST code.  Note that in Python 3 a code
+            This can be either the path to a FAUST DSP file (which should end
+            in ".dsp") or a string of FAUST code.  Note that in Python 3 a code
             string must be of type "bytes".
         fs : int
             The sampling rate the FAUST DSP should be initialised with.
@@ -93,8 +94,9 @@ class FAUST(object):
             # that it represents a file name.
             #
             # 2.) In Python 2, string literals are all byte arrays, so also
-            # check whether the string ends with ".dsp", in which case we assume
-            # that it represents a file name, otherwise it must be a code block.
+            # check whether the string ends with ".dsp", in which case we
+            # assume that it represents a file name, otherwise it must be a
+            # code block.
             if type(faust_dsp) is bytes and not faust_dsp.endswith(b".dsp"):
                 dsp_file.write(faust_dsp)
 
@@ -128,7 +130,7 @@ class FAUST(object):
             self.__C.metadatamydsp(Meta.meta)
 
         # add shortcuts to the compute* functions
-        self.compute  = self.__dsp.compute
+        self.compute = self.__dsp.compute
         self.compute2 = self.__dsp.compute2
 
     # expose some internal attributes as properties
@@ -137,7 +139,7 @@ class FAUST(object):
 
     def __compile_faust(self, dsp_fname, faust_float):
 
-        if   faust_float == "float":
+        if faust_float == "float":
             self.FAUST_FLAGS.append("-single")
         elif faust_float == "double":
             self.FAUST_FLAGS.append("-double")
@@ -159,22 +161,23 @@ class FAUST(object):
         ffi = cffi.FFI()
 
         # if the DSP is from an inline code string we replace the "label"
-        # argument to the first call to open*Box() (which is always the DSP file
-        # base name sans suffix) with something predictable so that the caching
-        # mechanism of the CFFI still works, but make it somewhat unusual to
-        # reduce the likelihood of a name clash
+        # argument to the first call to open*Box() (which is always the DSP
+        # file base name sans suffix) with something predictable so that the
+        # caching mechanism of the CFFI still works, but make it somewhat
+        # unusual to reduce the likelihood of a name clash
         if self.is_inline:
             fname = os.path.basename(dsp_fname).rpartition('.')[0]
             c_code = c_code.replace(fname, "123first_box")
 
         c_flags = ["-std=c99", "-march=native", "-O3"]
-        kwargs["extra_compile_args"] = c_flags + kwargs.get("extra_compile_args", [])
+        kwargs["extra_compile_args"] = c_flags + \
+            kwargs.get("extra_compile_args", [])
 
         # declare various types and functions
         #
-        # These declarations need to be here -- independently of the code in the
-        # ffi.verify() call below -- so that the CFFI knows the contents of the
-        # data structures and the available functions.
+        # These declarations need to be here -- independently of the code in
+        # the ffi.verify() call below -- so that the CFFI knows the contents of
+        # the data structures and the available functions.
         cdefs = "typedef {0} FAUSTFLOAT;".format(faust_float) + """
 
 typedef struct {

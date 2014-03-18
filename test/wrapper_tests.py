@@ -8,10 +8,12 @@ from FAUSTPy import FAUST
 # test FAUST
 #################################
 
+
 def tearDownClass():
     cffi.verifier.cleanup_tmpdir(
         tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
     )
+
 
 class test_faustwrapper_init(unittest.TestCase):
 
@@ -34,7 +36,9 @@ class test_faustwrapper_init(unittest.TestCase):
     def test_init_wrong_args(self):
         """Test initialisation of FAUST objects with bad arguments."""
 
-        self.assertRaises(ValueError, FAUST, "dattorro_notch_cut_regalia.dsp", 48000, "l double")
+        self.assertRaises(ValueError, FAUST, "dattorro_notch_cut_regalia.dsp",
+                          48000, "l double")
+
 
 class test_faustwrapper(unittest.TestCase):
 
@@ -68,9 +72,10 @@ class test_faustwrapper(unittest.TestCase):
     def test_compute(self):
         """Test the compute() method."""
 
-        audio = np.zeros((self.dsp2.dsp.num_in,48e3), dtype=self.dsp2.dsp.dtype)
-        audio[0,0] = 1
+        audio = np.zeros((self.dsp2.dsp.num_in, 48e3),
+                         dtype=self.dsp2.dsp.dtype)
+        audio[0, 0] = 1
 
         out = self.dsp2.compute(audio)
 
-        self.assertEqual(out[0,0], audio[0,0]*0.5)
+        self.assertEqual(out[0, 0], audio[0, 0]*0.5)

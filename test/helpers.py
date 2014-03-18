@@ -3,8 +3,10 @@ from tempfile import NamedTemporaryFile
 from string import Template
 from subprocess import check_call
 
+
 class empty(object):
     pass
+
 
 def init_ffi(faust_dsp="dattorro_notch_cut_regalia.dsp",
              faust_float="float"):

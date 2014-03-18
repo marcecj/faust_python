@@ -8,10 +8,12 @@ from FAUSTPy import PythonMeta
 # test PythonMeta
 #################################
 
+
 def tearDownModule():
     cffi.verifier.cleanup_tmpdir(
         tmpdir=os.sep.join([os.path.dirname(__file__), "__pycache__"])
     )
+
 
 class test_faustmeta(unittest.TestCase):
 

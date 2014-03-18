@@ -1,5 +1,6 @@
 from numpy import atleast_2d, ndarray, float32, float64, float128
 
+
 class PythonDSP(object):
     """A FAUST DSP wrapper.
 
@@ -11,10 +12,10 @@ class PythonDSP(object):
         """Initialise a PythonDSP object.
 
         To instantiate this object, you create a cffi.FFI object that contains
-        all required declarations (check the FAUSTPy.FAUST code for an example).
-        Then you compile the code via ffi.verfiy(), which creates an FFILibrary
-        object.  Both of these are then passed to this constructor along with
-        the other parameters specified below.
+        all required declarations (check the FAUSTPy.FAUST code for an
+        example).  Then you compile the code via ffi.verfiy(), which creates an
+        FFILibrary object.  Both of these are then passed to this constructor
+        along with the other parameters specified below.
 
         Parameters:
         -----------
@@ -27,16 +28,16 @@ class PythonDSP(object):
             The sampling rate the FAUST DSP should be initialised with.
         """
 
-        self.__C           = C
-        self.__ffi         = ffi
+        self.__C = C
+        self.__ffi = ffi
         self.__faust_float = ffi.getctype("FAUSTFLOAT")
-        self.__dsp         = ffi.gc(C.newmydsp(), C.deletemydsp)
-        self.metadata      = {}
+        self.__dsp = ffi.gc(C.newmydsp(), C.deletemydsp)
+        self.metadata = {}
 
         if fs <= 0:
             raise ValueError("The sampling rate must have a positive value.")
 
-        if   self.__faust_float == "float":
+        if self.__faust_float == "float":
             self.__dtype = float32
         elif self.__faust_float == "double":
             self.__dtype = float64
@@ -49,7 +50,7 @@ class PythonDSP(object):
         # allocate the input and output pointers so that they are not
         # allocated/deallocated at every call to compute()
         # TODO: can the number of inputs/outputs change at run time?
-        self.__input_p  = self.__ffi.new("FAUSTFLOAT*[]", self.num_in)
+        self.__input_p = self.__ffi.new("FAUSTFLOAT*[]", self.num_in)
         self.__output_p = self.__ffi.new("FAUSTFLOAT*[]", self.num_out)
 
     dsp = property(fget=lambda x: x.__dsp,
@@ -62,7 +63,7 @@ class PythonDSP(object):
                           doc="The value of FAUSTFLOAT for this DSP.")
 
     fs = property(fget=lambda s: s.__C.getSampleRatemydsp(s.__dsp),
-                 doc="The sampling rate of the DSP.")
+                  doc="The sampling rate of the DSP.")
 
     num_in = property(fget=lambda s: s.__C.getNumInputsmydsp(s.__dsp),
                       doc="The number of input channels.")
@@ -106,28 +107,28 @@ class PythonDSP(object):
             # returns a view, so very little overhead
             audio = atleast_2d(audio)
 
-            # Verify that audio.dtype == self.dtype, because a) Python SEGFAULTs
-            # when audio.dtype < self.dtype and b) the computation is garbage when
-            # audio.dtype > self.dtype.
+            # Verify that audio.dtype == self.dtype, because a) Python
+            # SEGFAULTs when audio.dtype < self.dtype and b) the computation is
+            # garbage when audio.dtype > self.dtype.
             if audio.dtype != self.__dtype:
                 raise ValueError("audio.dtype must be {}".format(self.__dtype))
 
-            count   = audio.shape[1] # number of samples
-            num_in  = self.num_in    # number of input channels
+            count = audio.shape[1]  # number of samples
+            num_in = self.num_in    # number of input channels
 
             # set up the input pointers
             for i in range(num_in):
                 self.__input_p[i] = self.__ffi.cast('FAUSTFLOAT *',
                                                     audio[i].ctypes.data)
         else:
-            # special case for synthesizers: the input argument is the number of
-            # samples
+            # special case for synthesizers: the input argument is the number
+            # of samples
             count = audio
 
         num_out = self.num_out   # number of output channels
 
         # initialise the output array
-        output = ndarray((num_out,count), dtype=self.__dtype)
+        output = ndarray((num_out, count), dtype=self.__dtype)
 
         # set up the output pointers
         for i in range(num_out):
@@ -135,13 +136,15 @@ class PythonDSP(object):
                                                  output[i].ctypes.data)
 
         # call the DSP
-        self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
+        self.__C.computemydsp(self.__dsp, count, self.__input_p,
+                              self.__output_p)
 
         return output
 
     # TODO: Run some more serious tests to check whether compute2() is worth
-    # keeping, because with the bundled DSP the run-time is about 83 us for 2x64
-    # samples versus about 90 us for compute(), so only about 7 us difference.
+    # keeping, because with the bundled DSP the run-time is about 83 us for
+    # 2x64 samples versus about 90 us for compute(), so only about 7 us
+    # difference.
     def compute2(self, audio):
         """
         Process an ndarray with the FAUST DSP, like compute(), but without any
@@ -169,12 +172,12 @@ class PythonDSP(object):
         This function uses the buffer protocol to avoid copying the input data.
         """
 
-        count   = audio.shape[1] # number of samples
-        num_in  = self.num_in    # number of input channels
-        num_out = self.num_out   # number of output channels
+        count = audio.shape[1]  # number of samples
+        num_in = self.num_in    # number of input channels
+        num_out = self.num_out  # number of output channels
 
         # initialise the output array
-        output = ndarray((num_out,count), dtype=audio.dtype)
+        output = ndarray((num_out, count), dtype=audio.dtype)
 
         # set up the output pointers
         for i in range(num_out):
@@ -187,6 +190,7 @@ class PythonDSP(object):
                                                 audio[i].ctypes.data)
 
         # call the DSP
-        self.__C.computemydsp(self.__dsp, count, self.__input_p, self.__output_p)
+        self.__C.computemydsp(self.__dsp, count, self.__input_p,
+                              self.__output_p)
 
         return output

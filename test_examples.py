@@ -7,8 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-p', '--path',
                     dest="examples_path",
                     default="/usr/share/faust-*/examples",
-                    help="The path to the FAUST examples."
-                   )
+                    help="The path to the FAUST examples.")
 args = parser.parse_args()
 
 fs = 48e3
