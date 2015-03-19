@@ -1,4 +1,6 @@
 from string import Template
+from subprocess import check_output
+
 import cffi
 
 
@@ -20,12 +22,16 @@ class LibFaust(object):
         # define the ffi object
         ffi = cffi.FFI()
 
+        llvm_syslibs = check_output('llvm-config --system-libs'.split()) \
+            .decode().split()
+
         # c_flags = ["-std=c99", "-march=native", "-O3"]
         c_flags = ["-std=c99", "-march=native", "-O0", "-g"]
         kwargs["extra_compile_args"] = c_flags + \
             kwargs.get("extra_compile_args", [])
 
         kwargs["extra_link_args"] = ["-Wl,-rpath,/usr/lib/faust"] + \
+            llvm_syslibs + \
             kwargs.get("extra_link_args", [])
 
         kwargs["library_dirs"] = ["/usr/lib/faust"] + \
