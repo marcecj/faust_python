@@ -143,7 +143,7 @@ void computeCDSPInstance(llvm_dsp* dsp, int count, FAUSTFLOAT** input, FAUSTFLOA
         err = self.__ffi.new("char[256]", b"")
 
         faust_args = []
-        for arg in kargs:
+        for arg in args:
 
             if type(arg) == str:
                 arg = arg.encode("utf-8")
