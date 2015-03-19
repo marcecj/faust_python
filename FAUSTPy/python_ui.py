@@ -275,9 +275,7 @@ class PythonUI(object):
         # current Box
         if label:
             # special case the first box, which is always the file name sans
-            # suffix, so that it has a consistent name independent of file
-            # name; this is also important for in-line DSP code, which is
-            # stored in a temporary file with a randomised name
+            # suffix, so that it has a consistent name independent of file name
             if label.decode() == self.__dsp_fname:
                 sane_label = "ui"
             else:
