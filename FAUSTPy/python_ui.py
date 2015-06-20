@@ -289,11 +289,9 @@ class PythonUI(object):
         # If the label is an empty string, don't do anything, just stay in the
         # current Box
         if label:
-            # special case the first box, which is always the file name sans
-            # suffix, so that it has a consistent name independent of file
-            # name; this is also important for in-line DSP code, which is
-            # stored in a temporary file with a randomised name
-            if label.decode() == self.__dsp_fname:
+            # special case the first box, which is always "0x00" (the ASCII
+            # Null character), so that it has a consistent name
+            if label.decode() == '0x00':
                 sane_label = "ui"
             else:
                 sane_label = "b_"+str_to_identifier(label)
