@@ -1,7 +1,6 @@
 # a string consisting of characters that are valid identifiers in both
 # Python 2 and Python 3
 import string
-import os
 valid_ident = string.ascii_letters + string.digits + "_"
 
 
@@ -138,7 +137,7 @@ class PythonUI(object):
     FAUSTPy.Param - wraps the UI input parameters.
     """
 
-    def __init__(self, ffi, dsp_file_name="", obj=None):
+    def __init__(self, ffi, obj=None):
         """
         Initialise a PythonUI object.
 
@@ -147,11 +146,6 @@ class PythonUI(object):
 
         ffi : cffi.FFI
             The CFFI instance that holds all the data type declarations.
-        dsp_file_name : file name of the DSP (optional)
-            The file name of the DSP whose UI is being wrapped.  This is used
-            to special case the first UI group, which is constructed from the
-            DSP's file name.  If empty (the default), the first group is named
-            after the file name, otherwise it will be named "ui".
         obj : object (optional)
             The Python object to which the UI elements are to be added.  If
             None (the default) the PythonUI instance manipulates itself.
@@ -166,9 +160,6 @@ class PythonUI(object):
         self.__num_anon_params = [0]
         self.__metadata = [{}]
         self.__group_metadata = {}
-
-        # get the DSP file name sans suffix
-        self.__dsp_fname = os.path.basename(dsp_file_name).rpartition('.')[0]
 
         # define C callbacks that know the global PythonUI object
         @ffi.callback("void(void*, FAUSTFLOAT*, char*, char*)")
