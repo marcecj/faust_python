@@ -266,7 +266,7 @@ class PythonUI(object):
         # current Box
         if label:
             # special case the first box, which is always "0x00" (the ASCII
-            # Null character), suffix, so that it has a consistent name
+            # Null character), so that it has a consistent name
             if label.decode() == '0x00':
                 sane_label = "ui"
             else:
