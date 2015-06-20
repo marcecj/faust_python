@@ -21,7 +21,7 @@ class test_faustui(unittest.TestCase):
         self.ffi, self.C = init_ffi()
 
         # grab the C object from the PythonUI instance
-        self.ui = PythonUI(self.ffi, "", self.obj)
+        self.ui = PythonUI(self.ffi, self.obj)
 
     def test_attributes(self):
         "Verify presence of various attributes."
